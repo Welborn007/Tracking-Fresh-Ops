@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/map_container"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linearLayout"
+        map:uiZoomControls="true" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:text="Product Category"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            android:padding="15dp"
+            android:textSize="@dimen/text_size"
+            android:background="@color/Button_Color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/order_open"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:padding="15dp"
+                android:layout_weight="1"
+                android:textSize="@dimen/text_size"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <View
+                android:layout_width="1dp"
+                android:background="#ccc"
+                android:layout_height="match_parent"/>
+
+            <TextView
+                android:text="@string/order_delivered"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:padding="15dp"
+                android:layout_weight="1"
+                android:textSize="@dimen/text_size"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
