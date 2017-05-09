@@ -1,6 +1,9 @@
 package com.kesari.tkfops.Dashboard;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -9,34 +12,28 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.kesari.tkfops.Customer.CustomerMapActivity;
 import com.kesari.tkfops.Map.GPSTracker;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
-import com.kesari.tkfops.network.MyApplication;
+import com.kesari.tkfops.network.IOUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,11 +50,12 @@ import java.util.Random;
  * Created by kesari on 18/04/17.
  */
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
     View f1;
+
     private Context mContext;
-    private SupportMapFragment supportMapFragment;
+    private MapFragment supportMapFragment;
     private GPSTracker gps;
     private LatLng Current_Origin;
     private GoogleMap map;
@@ -70,15 +68,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG_LONGITUDE = "longitude";
 
     private static final String TAG = "driver_Parameters";
+    private static View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View V = inflater.inflate(R.layout.fragment_map, container, false);
-        f1 = (View) V.findViewById(R.id.map_container);
-
-        return V;
+        if (view != null) {
+            ViewGroup parent = (ViewGroup) view.getParent();
+            if (parent != null)
+                parent.removeView(view);
+        }
+        try {
+            view = inflater.inflate(R.layout.fragment_map, container, false);
+        } catch (InflateException e) {
+    /* map is already there, just return view as it is */
+        }
+        return view;
     }
 
     @Override
@@ -87,10 +93,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
         mContext = getActivity();
 
-        FragmentManager fm = getActivity().getSupportFragmentManager();
-        supportMapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map_container);
+        FragmentManager fm = getActivity().getFragmentManager();
+        supportMapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
         if (supportMapFragment == null) {
-            supportMapFragment = SupportMapFragment.newInstance();
+            supportMapFragment = MapFragment.newInstance();
             fm.beginTransaction().replace(R.id.map_container, supportMapFragment).commit();
         }
         supportMapFragment.getMapAsync(this);
@@ -98,6 +104,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         gps = new GPSTracker(getActivity());
 
         Current_Origin = new LatLng(gps.getLatitude(),gps.getLongitude());
+
 
     }
 
@@ -139,7 +146,46 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
+                try
+                {
+                    // Get extra data with marker ID
+                    HashMap<String, String> marker_data = extraMarkerInfo.get(marker.getId());
 
+                    // Getting the data from Map
+                    String latitude = marker_data.get(TAG_LATITUDE);
+                    String longitude = marker_data.get(TAG_LONGITUDE);
+                    String place = marker_data.get(TAG_LOCATION_NAME);
+                    String id = marker_data.get(TAG_ID);
+
+                /*Double latitude = marker.getPosition().latitude;
+                Double longitude = marker.getPosition().longitude;*/
+
+                    Intent intent = new Intent(getActivity(), CustomerMapActivity.class);
+                    intent.putExtra("place",place);
+                    intent.putExtra("id",id);
+                    intent.putExtra("Lat", Double.parseDouble(latitude));
+                    intent.putExtra("Lon", Double.parseDouble(longitude));
+                    startActivity(intent);
+
+                }catch (NullPointerException npe)
+                {
+
+                }
+
+                /*CustomerMapFragment mapFragment = new CustomerMapFragment();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("place",place);
+                bundle.putString("id",id);
+                bundle.putDouble("Lat", Double.parseDouble(latitude));
+                bundle.putDouble("Lon", Double.parseDouble(longitude));
+                mapFragment.setArguments(bundle);
+
+                FragmentManager manager = getActivity().getSupportFragmentManager();
+                FragmentTransaction transaction = manager.beginTransaction();
+                transaction.add(R.id.fragment_holder, mapFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();*/
 
                 return false;
             }
@@ -169,8 +215,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             e.printStackTrace();
         }
 
+        IOUtils ioUtils = new IOUtils();
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+        ioUtils.sendJSONObjectRequest(url, jsonObject, new IOUtils.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                Log.d(TAG, result.toString());
+            }
+        });
+
+       /* JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 url, jsonObject,
                 new Response.Listener<JSONObject>() {
 
@@ -195,7 +249,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         //Adding request to request queue
-        MyApplication.getInstance().addRequestToQueue(jsonObjReq, "App Paramtr");
+        MyApplication.getInstance().addRequestToQueue(jsonObjReq, "App Paramtr");*/
 
     }
 
@@ -303,7 +357,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 + destLongitude;
 
         String sensor = "sensor=false";
-        String params = waypoints + "&" + sensor;
+        String key = "key=AIzaSyCWqw5vGZZrQxWCsVVvNa37yNdGxiUPQAs";
+        String params = waypoints + "&" + sensor + "&" + key;
         String output = "json";
         String url = "https://maps.googleapis.com/maps/api/directions/"
                 + output + "?"+"origin="+Current_Origin.latitude + "," + Current_Origin.longitude+"&destination="+destLatitude + ","
@@ -360,6 +415,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         protected void onPostExecute(List<List<HashMap<String, String>>> routes) {
             ArrayList<LatLng> points = null;
             PolylineOptions polyLineOptions = null;
+            String distance = "";
+            String duration = "";
 
             // traversing through routes
             try {
@@ -374,6 +431,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                         double lat = Double.parseDouble(point.get("lat"));
                         double lng = Double.parseDouble(point.get("lng"));
                         LatLng position = new LatLng(lat, lng);
+
+                        if(j==0){    // Get distance from the list
+                            distance = (String)point.get("distance");
+                            continue;
+                        }else if(j==1){ // Get duration from the list
+                            duration = (String)point.get("duration");
+                            continue;
+                        }
 
                         points.add(position);
                     }

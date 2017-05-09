@@ -50,12 +50,14 @@ public class LoginActivity extends AppCompatActivity {
                 String username = user_name.getText().toString();
                 String pass = password.getText().toString();
 
+                Intent startMainActivity = new Intent(getApplicationContext(),DashboardActivity.class);
+                startActivity(startMainActivity);
+
                 if(!username.isEmpty() && !pass.isEmpty())
                 {
                     if(username.equalsIgnoreCase("dr001") && pass.equalsIgnoreCase("dr001"))
                     {
-                        Intent startMainActivity = new Intent(getApplicationContext(),DashboardActivity.class);
-                        startActivity(startMainActivity);
+
                     }
                     else if(!username.equalsIgnoreCase("dr001"))
                     {
