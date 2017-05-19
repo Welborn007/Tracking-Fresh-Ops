@@ -56,10 +56,13 @@
             android:name=".DeliveredOrders.DeliveredOrderActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".OrderDetailsSection.OrdersProductListActivity"
+        <activity
+            android:name=".OrderDetailsSection.OrdersProductListActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            ></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".Route.RouteActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -33,6 +33,7 @@ import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.network.IOUtils;
 
 import org.json.JSONArray;
@@ -195,7 +196,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
     public void sendLocationData(String LAT,String LON){
 
         //String url = "http://192.168.1.220:8000/api/vehicle_positions";
-        String url = "http://115.112.155.181:8000/api/vehicle_positions";
+        String url = Constants.DriverLocationApi;
 
         JSONObject jsonObject = new JSONObject();
 

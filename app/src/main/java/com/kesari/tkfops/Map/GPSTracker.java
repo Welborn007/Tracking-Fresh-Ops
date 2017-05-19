@@ -20,6 +20,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.kesari.tkfops.Utilities.Constants;
+import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.MyApplication;
 
 import org.json.JSONException;
@@ -224,7 +226,7 @@ public class GPSTracker extends Service implements LocationListener {
     public void sendLocationData(String LAT,String LON){
 
         //String url = "http://192.168.1.220:8000/api/vehicle_positions";
-        String url = "http://115.112.155.181:8000/api/vehicle_positions";
+        String url = Constants.DriverLocationApi;
 
         Log.i("url",url);
 
@@ -246,8 +248,17 @@ public class GPSTracker extends Service implements LocationListener {
             e.printStackTrace();
         }
 
+        IOUtils ioUtils = new IOUtils();
 
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+        ioUtils.sendJSONObjectRequest(url, jsonObject, new IOUtils.VolleyCallback() {
+            @Override
+            public void onSuccess(String result) {
+                Log.d(TAG, result.toString());
+            }
+        });
+
+
+        /*JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 url, jsonObject,
                 new Response.Listener<JSONObject>() {
 
@@ -272,7 +283,7 @@ public class GPSTracker extends Service implements LocationListener {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         //Adding request to request queue
-        MyApplication.getInstance().addRequestToQueue(jsonObjReq, "App Paramtr");
+        MyApplication.getInstance().addRequestToQueue(jsonObjReq, "App Paramtr");*/
 
     }
 }

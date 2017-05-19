@@ -23,7 +23,7 @@ public class DashboardActivity extends AppCompatActivity implements FragmentMana
     DrawerLayout drawer;
     ActionBarDrawerToggle toggle;
     boolean mShowingBack = false;
-    TextView order_open,order_delivered;
+    TextView order_open,order_delivered,route;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +45,14 @@ public class DashboardActivity extends AppCompatActivity implements FragmentMana
 
         order_open = (TextView) findViewById(R.id.order_open);
         order_delivered = (TextView) findViewById(R.id.order_delivered);
+        route = (TextView) findViewById(R.id.route);
+
+        route.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         order_open.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,28 +1,23 @@
-package com.kesari.tkfops.Customer;
+package com.kesari.tkfops.Route;
 
-import android.Manifest;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -40,17 +35,17 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     View f1;
+
     private Context mContext;
-    private SupportMapFragment supportMapFragment;
+    private MapFragment supportMapFragment;
     private GPSTracker gps;
     private LatLng Current_Origin;
     private GoogleMap map;
@@ -58,37 +53,35 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     HashMap<String, HashMap> extraMarkerInfo = new HashMap<String, HashMap>();
 
     private static final String TAG_ID = "id";
-    private static final String TAG_LOCATION_NAME = "location_name";
+    private static final String TAG_LOCATION_NAME= "location_name";
     private static final String TAG_LATITUDE = "latitude";
     private static final String TAG_LONGITUDE = "longitude";
 
     private static final String TAG = "driver_Parameters";
-    private TextView instructions;
+    private static View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_customer_map);
+        setContentView(R.layout.activity_route);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         f1 = (View) findViewById(R.id.map_customer);
-        instructions = (TextView) findViewById(R.id.instructions);
 
-        FragmentManager fm = getSupportFragmentManager();
-        supportMapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map_customer);
+        FragmentManager fm = getFragmentManager();
+        supportMapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
         if (supportMapFragment == null) {
-            supportMapFragment = SupportMapFragment.newInstance();
-            fm.beginTransaction().replace(R.id.map_customer, supportMapFragment).commit();
+            supportMapFragment = MapFragment.newInstance();
+            fm.beginTransaction().replace(R.id.map_container, supportMapFragment).commit();
         }
         supportMapFragment.getMapAsync(this);
 
-        gps = new GPSTracker(CustomerMapActivity.this);
+        gps = new GPSTracker(RouteActivity.this);
 
         Current_Origin = new LatLng(gps.getLatitude(), gps.getLongitude());
-
     }
 
     @Override
@@ -97,32 +90,19 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         //getData();
 
         map = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        //map.setMyLocationEnabled(true);
+        map.setMyLocationEnabled(true);
         map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         Location location = new Location(LocationManager.GPS_PROVIDER);
         location.setLatitude(gps.getLatitude());
         location.setLongitude(gps.getLongitude());
 
-        //updateCurrentLocationMarker(location);
+        updateCurrentLocationMarker(location);
 
-        /*Bundle bundle = this.getArguments();
-        if (bundle != null) {
-
-        }*/
-        Double latitude = getIntent().getDoubleExtra("Lat", gps.getLatitude());
-        Double longitude = getIntent().getDoubleExtra("Lon", gps.getLongitude());
-
-        String place = getIntent().getStringExtra("place");
-        String id = getIntent().getStringExtra("id");
-
-        Log.i("place",place);
-
-        addMarkers(id,place,latitude,longitude);
-        getMapsApiDirectionsUrl(latitude,longitude);
 
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
                 13));
@@ -140,6 +120,22 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             @Override
             public boolean onMarkerClick(Marker marker) {
 
+                try
+                {
+                    // Get extra data with marker ID
+                    HashMap<String, String> marker_data = extraMarkerInfo.get(marker.getId());
+
+                    // Getting the data from Map
+                    String latitude = marker_data.get(TAG_LATITUDE);
+                    String longitude = marker_data.get(TAG_LONGITUDE);
+                    String place = marker_data.get(TAG_LOCATION_NAME);
+                    String id = marker_data.get(TAG_ID);
+
+
+                }catch (NullPointerException npe)
+                {
+
+                }
 
 
                 return false;
@@ -147,27 +143,9 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         });
     }
 
-
-
     public void updateCurrentLocationMarker(Location currentLatLng){
 
         if(map != null){
-
-            /*LatLng latLng = new LatLng(currentLatLng.getLatitude(),currentLatLng.getLongitude());
-            if(currentPositionMarker == null){
-                currentPositionMarker = new MarkerOptions();
-
-                currentPositionMarker.position(latLng)
-                        .title("My Location").
-                        icon(BitmapDescriptorFactory.fromResource(R.drawable.van));
-                currentLocationMarker = map.addMarker(currentPositionMarker);
-            }
-
-            if(currentLocationMarker != null)
-                currentLocationMarker.setPosition(latLng);
-
-            ///currentPositionMarker.position(latLng);
-            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));*/
 
             getData();
         }
@@ -284,68 +262,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             super.onPostExecute(result);
             Log.i("ReadTaskResult",result);
             new ParserTask().execute(result);
-
-            String distance = "";
-            String duration = "";
-
-            try {
-
-                JSONObject jsonObjectMain = new JSONObject(result);
-
-                JSONArray jsonArray = jsonObjectMain.getJSONArray("routes");
-
-                JSONObject jsonObject = jsonArray.getJSONObject(0);
-
-                JSONArray legs = jsonObject.getJSONArray("legs");
-
-                JSONObject jsonObject1 = legs.getJSONObject(1);
-
-                JSONObject jsonObject2 = jsonObject1.getJSONObject("distance");
-                JSONObject jsonObject3 = jsonObject1.getJSONObject("duration");
-
-                distance = jsonObject2.getString("text");
-                duration = jsonObject3.getString("text");
-
-                Log.i("Distance", String.valueOf(distance));
-                //kilometre.setText(distance);
-
-                Log.i("time", String.valueOf(duration));
-                //ETA.setText("Estimated Delivery Time: " + duration);
-
-                String EndAddress = jsonObject1.getString("end_address");
-                //kilometre.setText("Vehicle is " + distance + " away at " + EndAddress);
-
-                String StartAddress = jsonObject1.getString("start_address");
-                //GuestAddress.setText("Your Address: " + StartAddress);
-
-                JSONArray jsonArray1 = jsonObject1.getJSONArray("steps");
-                JSONObject jsonObject4 = jsonArray1.getJSONObject(0);
-
-                String Instructions = jsonObject4.getString("html_instructions");
-
-                try {
-                    // Convert from Unicode to UTF-8
-                    //String string = "abc\u5639\u563b";
-                    byte[] utf8 = Instructions.getBytes("UTF-8");
-
-                    // Convert from UTF-8 to Unicode
-                    Instructions = new String(utf8, "UTF-8");
-
-                } catch (UnsupportedEncodingException e) {}
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Log.i("Direction",String.valueOf(Html.fromHtml(Instructions,Html.FROM_HTML_MODE_LEGACY)));
-                    instructions.setText(String.valueOf(Html.fromHtml(Instructions,Html.FROM_HTML_MODE_LEGACY)));
-                }
-                else
-                {
-                    Log.i("Direction",String.valueOf(Html.fromHtml(Instructions)));
-                    instructions.setText(String.valueOf(Html.fromHtml(Instructions)));
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -373,6 +289,8 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
         protected void onPostExecute(List<List<HashMap<String, String>>> routes) {
             ArrayList<LatLng> points = null;
             PolylineOptions polyLineOptions = null;
+            String distance = "";
+            String duration = "";
 
             // traversing through routes
             try {
@@ -387,6 +305,14 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                         double lat = Double.parseDouble(point.get("lat"));
                         double lng = Double.parseDouble(point.get("lng"));
                         LatLng position = new LatLng(lat, lng);
+
+                        if(j==0){    // Get distance from the list
+                            distance = (String)point.get("distance");
+                            continue;
+                        }else if(j==1){ // Get duration from the list
+                            duration = (String)point.get("duration");
+                            continue;
+                        }
 
                         points.add(position);
                     }
@@ -406,16 +332,5 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             }
         }
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }
