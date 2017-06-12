@@ -51,7 +51,7 @@
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/map_customer"
+        android:id="@+id/map_container"
         android:layout_below="@+id/toolbar"
         android:layout_above="@+id/holder"
         class="com.google.android.gms.maps.SupportMapFragment"

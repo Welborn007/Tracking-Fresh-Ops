@@ -41,4 +41,6 @@
     <string name="order_open">Order Open</string>
     <string name="order_delivered">Order Delivered</string>
     <string name="route">Route</string>
+
+    <string name="googleMaps_ServerKey">AIzaSyDoJCSIjyCfQAO_F0NNaPXm_vPxrLhJWXM</string>
 </resources>

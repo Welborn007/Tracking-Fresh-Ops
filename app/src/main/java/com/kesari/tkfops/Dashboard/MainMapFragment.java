@@ -345,7 +345,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             extraMarkerInfo.put(marker.getId(),data);
 
             map.addMarker(new MarkerOptions().position(Current_Origin)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_delivery_van))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_van))
                     .title("TKF Vehicle"));
         }
     }
@@ -358,7 +358,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                 + destLongitude;
 
         String sensor = "sensor=false";
-        String key = "key=AIzaSyCWqw5vGZZrQxWCsVVvNa37yNdGxiUPQAs";
+        String key = "key=" + getString(R.string.googleMaps_ServerKey);
         String params = waypoints + "&" + sensor + "&" + key;
         String output = "json";
         String url = "https://maps.googleapis.com/maps/api/directions/"

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.kesari.tkfops.DeliveredOrders.DeliveredOrderActivity;
 import com.kesari.tkfops.OpenOrders.OpenOrderFragment;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.Route.RouteActivity;
 
 public class DashboardActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener{
 
@@ -50,7 +51,8 @@ public class DashboardActivity extends AppCompatActivity implements FragmentMana
         route.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(DashboardActivity.this, RouteActivity.class);
+                startActivity(intent);
             }
         });
 

@@ -253,7 +253,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 + destLongitude;
 
         String sensor = "sensor=false";
-        String key = "key=AIzaSyCWqw5vGZZrQxWCsVVvNa37yNdGxiUPQAs";
+        String key = "key=" + getString(R.string.googleMaps_ServerKey);
         String params = waypoints + "&" + sensor + "&" + key;
         String output = "json";
         String url = "https://maps.googleapis.com/maps/api/directions/"

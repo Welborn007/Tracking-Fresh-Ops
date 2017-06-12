@@ -42,12 +42,11 @@ import java.util.Random;
 
 public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    View f1;
-
     private Context mContext;
     private MapFragment supportMapFragment;
     private GPSTracker gps;
     private LatLng Current_Origin;
+    private LatLng Old_Origin;
     private GoogleMap map;
     List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
     HashMap<String, HashMap> extraMarkerInfo = new HashMap<String, HashMap>();
@@ -69,7 +68,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        f1 = (View) findViewById(R.id.map_customer);
 
         FragmentManager fm = getFragmentManager();
         supportMapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
@@ -90,10 +88,6 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         //getData();
 
         map = googleMap;
-        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
         map.setMyLocationEnabled(true);
         map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
@@ -175,7 +169,15 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 jsonIndiaModelList.add(js);
 
                 addMarkers(id,location_name,latitude,longitude);
-                getMapsApiDirectionsUrl(latitude,longitude);
+
+                if(i > 0 )
+                {
+                    getMapsApiDirectionsUrl(latitude,longitude);
+                }
+                else
+                {
+                    Old_Origin = new LatLng(latitude, longitude);
+                }
             }
 
         } catch (JSONException e) {
@@ -218,7 +220,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             extraMarkerInfo.put(marker.getId(),data);
 
             map.addMarker(new MarkerOptions().position(Current_Origin)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_delivery_van))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_van))
                     .title("TKF Vehicle"));
         }
     }
@@ -226,20 +228,23 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     public void getMapsApiDirectionsUrl(Double destLatitude, Double destLongitude) {
 
         String waypoints = "waypoints=optimize:true|"
-                + Current_Origin.latitude + "," + Current_Origin.longitude
+                + Old_Origin.latitude + "," + Old_Origin.longitude
                 + "|" + "|" + destLatitude + ","
                 + destLongitude;
 
         String sensor = "sensor=false";
-        String key = "key=AIzaSyCWqw5vGZZrQxWCsVVvNa37yNdGxiUPQAs";
+        String key = "key=" + getString(R.string.googleMaps_ServerKey);
         String params = waypoints + "&" + sensor + "&" + key;
         String output = "json";
         String url = "https://maps.googleapis.com/maps/api/directions/"
-                + output + "?"+"origin="+Current_Origin.latitude + "," + Current_Origin.longitude+"&destination="+destLatitude + ","
+                + output + "?"+"origin="+Old_Origin.latitude + "," + Old_Origin.longitude+"&destination="+destLatitude + ","
                 + destLongitude +"&" + params;
 
         ReadTask downloadTask = new ReadTask();
         downloadTask.execute(url);
+
+
+        Old_Origin = new LatLng(destLatitude, destLongitude);
 
     }
 
