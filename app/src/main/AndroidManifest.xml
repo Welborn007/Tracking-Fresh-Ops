@@ -60,9 +60,15 @@
             android:name=".OrderDetailsSection.OrdersProductListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Route.RouteActivity"
+        <activity
+            android:name=".Route.RouteActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".OrderReview.OrderReviewActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <service android:name=".Utilities.LocationServiceNew" />
     </application>
 
 </manifest>

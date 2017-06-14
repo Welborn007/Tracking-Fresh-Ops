@@ -2,13 +2,17 @@ package com.kesari.tkfops.Customer;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -28,11 +32,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.kesari.tkfops.Map.GPSTracker;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.Utilities.LocationServiceNew;
+import com.kesari.tkfops.Utilities.SharedPrefUtil;
+import com.kesari.tkfops.network.FireToast;
+import com.kesari.tkfops.network.IOUtils;
+import com.kesari.tkfops.network.NetworkUtils;
+import com.kesari.tkfops.network.NetworkUtilsReceiver;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.listeners.ActionClickListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,12 +57,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback , NetworkUtilsReceiver.NetworkResponseInt{
 
     View f1;
     private Context mContext;
     private SupportMapFragment supportMapFragment;
-    private GPSTracker gps;
+    //private GPSTracker gps;
     private LatLng Current_Origin;
     private GoogleMap map;
     List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
@@ -62,32 +73,61 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private static final String TAG_LATITUDE = "latitude";
     private static final String TAG_LONGITUDE = "longitude";
 
-    private static final String TAG = "driver_Parameters";
     private TextView instructions;
+
+    private String TAG = this.getClass().getSimpleName();
+
+    private NetworkUtilsReceiver networkUtilsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
 
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        try
+        {
 
-        f1 = (View) findViewById(R.id.map_customer);
-        instructions = (TextView) findViewById(R.id.instructions);
+            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        FragmentManager fm = getSupportFragmentManager();
-        supportMapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map_customer);
-        if (supportMapFragment == null) {
-            supportMapFragment = SupportMapFragment.newInstance();
-            fm.beginTransaction().replace(R.id.map_customer, supportMapFragment).commit();
+        /*Register receiver*/
+            networkUtilsReceiver = new NetworkUtilsReceiver(this);
+            registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+            final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+            if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+            {
+                IOUtils.buildAlertMessageNoGps(CustomerMapActivity.this);
+            }
+            else
+            {
+                if (!IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+                    // LOCATION SERVICE
+                    startService(new Intent(this, LocationServiceNew.class));
+                    Log.e(TAG, "Location service is already running");
+                }
+            }
+
+            f1 = (View) findViewById(R.id.map_customer);
+            instructions = (TextView) findViewById(R.id.instructions);
+
+            FragmentManager fm = getSupportFragmentManager();
+            supportMapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map_customer);
+            if (supportMapFragment == null) {
+                supportMapFragment = SupportMapFragment.newInstance();
+                fm.beginTransaction().replace(R.id.map_customer, supportMapFragment).commit();
+            }
+            supportMapFragment.getMapAsync(this);
+
+            //gps = new GPSTracker(CustomerMapActivity.this);
+
+            Current_Origin = new LatLng(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
         }
-        supportMapFragment.getMapAsync(this);
-
-        gps = new GPSTracker(CustomerMapActivity.this);
-
-        Current_Origin = new LatLng(gps.getLatitude(), gps.getLongitude());
 
     }
 
@@ -96,55 +136,63 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
         //getData();
 
-        map = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        //map.setMyLocationEnabled(true);
-        map.animateCamera(CameraUpdateFactory.zoomTo(15));
+        try
+        {
 
-        Location location = new Location(LocationManager.GPS_PROVIDER);
-        location.setLatitude(gps.getLatitude());
-        location.setLongitude(gps.getLongitude());
+            map = googleMap;
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            //map.setMyLocationEnabled(true);
+            map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-        //updateCurrentLocationMarker(location);
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+            location.setLatitude(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
+            location.setLongitude(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
+
+            //updateCurrentLocationMarker(location);
 
         /*Bundle bundle = this.getArguments();
         if (bundle != null) {
 
         }*/
-        Double latitude = getIntent().getDoubleExtra("Lat", gps.getLatitude());
-        Double longitude = getIntent().getDoubleExtra("Lon", gps.getLongitude());
+            Double latitude = getIntent().getDoubleExtra("Lat", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
+            Double longitude = getIntent().getDoubleExtra("Lon", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
 
-        String place = getIntent().getStringExtra("place");
-        String id = getIntent().getStringExtra("id");
+            String place = getIntent().getStringExtra("place");
+            String id = getIntent().getStringExtra("id");
 
-        Log.i("place",place);
+            Log.i("place",place);
 
-        addMarkers(id,place,latitude,longitude);
-        getMapsApiDirectionsUrl(latitude,longitude);
+            addMarkers(id,place,latitude,longitude);
+            getMapsApiDirectionsUrl(latitude,longitude);
 
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                13));
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
+                    13));
 
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
+            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
 
-                String Lat = String.valueOf(latLng.latitude);
-                String Long = String.valueOf(latLng.longitude);
-            }
-        });
+                    String Lat = String.valueOf(latLng.latitude);
+                    String Long = String.valueOf(latLng.longitude);
+                }
+            });
 
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
+            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
 
 
 
-                return false;
-            }
-        });
+                    return false;
+                }
+            });
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
+
     }
 
 
@@ -223,45 +271,59 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
     private void addMarkers(String id,String location_name,Double latitude,Double longitude) {
 
-        LatLng dest = new LatLng(latitude, longitude);
+        try
+        {
 
-        HashMap<String, String> data = new HashMap<String, String>();
+            LatLng dest = new LatLng(latitude, longitude);
 
-        if (map != null) {
-            Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_icon))
-                    .title(location_name));
+            HashMap<String, String> data = new HashMap<String, String>();
 
-            data.put(TAG_ID,id);
-            data.put(TAG_LOCATION_NAME,location_name);
-            data.put(TAG_LATITUDE, String.valueOf(latitude));
-            data.put(TAG_LONGITUDE, String.valueOf(longitude));
+            if (map != null) {
+                Marker marker = map.addMarker(new MarkerOptions().position(dest)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_icon))
+                        .title(location_name));
 
-            extraMarkerInfo.put(marker.getId(),data);
+                data.put(TAG_ID,id);
+                data.put(TAG_LOCATION_NAME,location_name);
+                data.put(TAG_LATITUDE, String.valueOf(latitude));
+                data.put(TAG_LONGITUDE, String.valueOf(longitude));
 
-            map.addMarker(new MarkerOptions().position(Current_Origin)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_delivery_van))
-                    .title("TKF Vehicle"));
+                extraMarkerInfo.put(marker.getId(),data);
+
+                map.addMarker(new MarkerOptions().position(Current_Origin)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_delivery_van))
+                        .title("TKF Vehicle"));
+            }
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
         }
     }
 
     public void getMapsApiDirectionsUrl(Double destLatitude, Double destLongitude) {
 
-        String waypoints = "waypoints=optimize:true|"
-                + Current_Origin.latitude + "," + Current_Origin.longitude
-                + "|" + "|" + destLatitude + ","
-                + destLongitude;
+        try
+        {
 
-        String sensor = "sensor=false";
-        String key = "key=" + getString(R.string.googleMaps_ServerKey);
-        String params = waypoints + "&" + sensor + "&" + key;
-        String output = "json";
-        String url = "https://maps.googleapis.com/maps/api/directions/"
-                + output + "?"+"origin="+Current_Origin.latitude + "," + Current_Origin.longitude+"&destination="+destLatitude + ","
-                + destLongitude +"&" + params;
+            String waypoints = "waypoints=optimize:true|"
+                    + Current_Origin.latitude + "," + Current_Origin.longitude
+                    + "|" + "|" + destLatitude + ","
+                    + destLongitude;
 
-        ReadTask downloadTask = new ReadTask();
-        downloadTask.execute(url);
+            String sensor = "sensor=false";
+            String key = "key=" + getString(R.string.googleMaps_ServerKey);
+            String params = waypoints + "&" + sensor + "&" + key;
+            String output = "json";
+            String url = "https://maps.googleapis.com/maps/api/directions/"
+                    + output + "?"+"origin="+Current_Origin.latitude + "," + Current_Origin.longitude+"&destination="+destLatitude + ","
+                    + destLongitude +"&" + params;
+
+            ReadTask downloadTask = new ReadTask();
+            downloadTask.execute(url);
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
 
     }
 
@@ -416,6 +478,52 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            unregisterReceiver(networkUtilsReceiver);
+
+            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+                // LOCATION SERVICE
+                stopService(new Intent(this, LocationServiceNew.class));
+                Log.e(TAG, "Location service is stopped");
+            }
+
+        }catch (Exception e)
+        {
+            Log.i(TAG,e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void NetworkOpen() {
+
+    }
+
+    @Override
+    public void NetworkClose() {
+
+        try {
+
+            if (!NetworkUtils.isNetworkConnectionOn(this)) {
+                FireToast.customSnackbarWithListner(this, "No internet access", "Settings", new ActionClickListener() {
+                    @Override
+                    public void onActionClicked(Snackbar snackbar) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                });
+                return;
+            }
+
+        }catch (Exception e)
+        {
+            Log.i(TAG,e.getMessage());
         }
     }
 }

@@ -26,11 +26,11 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.kesari.tkfops.Map.GPSTracker;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.Utilities.SharedPrefUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,7 +52,7 @@ public class CustomerMapFragment extends Fragment implements OnMapReadyCallback 
     View f1;
     private Context mContext;
     private SupportMapFragment supportMapFragment;
-    private GPSTracker gps;
+    //private GPSTracker gps;
     private LatLng Current_Origin;
     private GoogleMap map;
     List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
@@ -89,9 +89,9 @@ public class CustomerMapFragment extends Fragment implements OnMapReadyCallback 
         }
         supportMapFragment.getMapAsync(this);
 
-        gps = new GPSTracker(getActivity());
+        //gps = new GPSTracker(getActivity());
 
-        Current_Origin = new LatLng(gps.getLatitude(),gps.getLongitude());
+        Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude() ,SharedPrefUtil.getLocation(getActivity()).getLongitude());
 
         getView().setFocusableInTouchMode(true);
         getView().requestFocus();
@@ -127,15 +127,15 @@ public class CustomerMapFragment extends Fragment implements OnMapReadyCallback 
         map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         Location location = new Location(LocationManager.GPS_PROVIDER);
-        location.setLatitude(gps.getLatitude());
-        location.setLongitude(gps.getLongitude());
+        location.setLatitude(SharedPrefUtil.getLocation(getActivity()).getLatitude());
+        location.setLongitude(SharedPrefUtil.getLocation(getActivity()).getLongitude());
 
         //updateCurrentLocationMarker(location);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            Double latitude = bundle.getDouble("Lat", gps.getLatitude());
-            Double longitude = bundle.getDouble("Lon", gps.getLongitude());
+            Double latitude = bundle.getDouble("Lat", SharedPrefUtil.getLocation(getActivity()).getLatitude());
+            Double longitude = bundle.getDouble("Lon", SharedPrefUtil.getLocation(getActivity()).getLongitude());
 
             String place = bundle.getString("place");
             String id = bundle.getString("id");

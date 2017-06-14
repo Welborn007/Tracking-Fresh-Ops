@@ -4,11 +4,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -20,24 +23,38 @@ import android.widget.Toast;
 
 import com.kesari.tkfops.Dashboard.DashboardActivity;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.Utilities.LocationServiceNew;
+import com.kesari.tkfops.network.FireToast;
+import com.kesari.tkfops.network.IOUtils;
+import com.kesari.tkfops.network.NetworkUtils;
+import com.kesari.tkfops.network.NetworkUtilsReceiver;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
 
     public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
     boolean permission = false;
 
     Button btnLogin;
     EditText user_name,password;
+    private String TAG = this.getClass().getSimpleName();
+
+    private NetworkUtilsReceiver networkUtilsReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        /*Register receiver*/
+        networkUtilsReceiver = new NetworkUtilsReceiver(this);
+        registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
         btnLogin = (Button) findViewById(R.id.btnLogin);
         user_name = (EditText) findViewById(R.id.user_name);
@@ -86,7 +103,20 @@ public class LoginActivity extends AppCompatActivity {
 
             if(checkAndRequestPermissions())
             {
+                final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
+                if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+                {
+                    IOUtils.buildAlertMessageNoGps(LoginActivity.this);
+                }
+                else
+                {
+                    if (!IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+                        // LOCATION SERVICE
+                        startService(new Intent(this, LocationServiceNew.class));
+                        Log.e(TAG, "Location service is already running");
+                    }
+                }
             }
             else
             {
@@ -137,7 +167,20 @@ public class LoginActivity extends AppCompatActivity {
             Log.i("permission","backPressed");
             if(checkAndRequestPermissions())
             {
+                final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
+                if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+                {
+                    IOUtils.buildAlertMessageNoGps(LoginActivity.this);
+                }
+                else
+                {
+                    if (!IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+                        // LOCATION SERVICE
+                        startService(new Intent(this, LocationServiceNew.class));
+                        Log.e(TAG, "Location service is already running");
+                    }
+                }
             }
         }
 
@@ -194,6 +237,21 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         Log.d(TAG, "All permission granted");
                         Toast.makeText(getApplicationContext(),"All permission granted",Toast.LENGTH_LONG).show();
+
+                        final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+                        if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+                        {
+                            IOUtils.buildAlertMessageNoGps(LoginActivity.this);
+                        }
+                        else
+                        {
+                            if (!IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+                                // LOCATION SERVICE
+                                startService(new Intent(this, LocationServiceNew.class));
+                                Log.e(TAG, "Location service is already running");
+                            }
+                        }
                         //showDeviceDetails();
                         // process the normal flow
                         //else any one or both the permissions are not granted
@@ -208,6 +266,20 @@ public class LoginActivity extends AppCompatActivity {
                         {
                             if(checkAndRequestPermissions()) {
                                 // carry on the normal flow, as the case of  permissions  granted.
+                                final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+
+                                if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
+                                {
+                                    IOUtils.buildAlertMessageNoGps(LoginActivity.this);
+                                }
+                                else
+                                {
+                                    if (!IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+                                        // LOCATION SERVICE
+                                        startService(new Intent(this, LocationServiceNew.class));
+                                        Log.e(TAG, "Location service is already running");
+                                    }
+                                }
                             }
                         }
                         //permission is denied (and never ask again is  checked)
@@ -242,5 +314,51 @@ public class LoginActivity extends AppCompatActivity {
                 .setPositiveButton("Settings", settingsListener)
                 .create()
                 .show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            unregisterReceiver(networkUtilsReceiver);
+
+            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+                // LOCATION SERVICE
+                stopService(new Intent(this, LocationServiceNew.class));
+                Log.e(TAG, "Location service is stopped");
+            }
+
+        }catch (Exception e)
+        {
+            Log.i(TAG,e.getMessage());
+        }
+    }
+
+
+    @Override
+    public void NetworkOpen() {
+
+    }
+
+    @Override
+    public void NetworkClose() {
+
+        try {
+
+            if (!NetworkUtils.isNetworkConnectionOn(this)) {
+                FireToast.customSnackbarWithListner(this, "No internet access", "Settings", new ActionClickListener() {
+                    @Override
+                    public void onActionClicked(Snackbar snackbar) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                });
+                return;
+            }
+
+        }catch (Exception e)
+        {
+            Log.i(TAG,e.getMessage());
+        }
     }
 }

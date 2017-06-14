@@ -28,12 +28,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.kesari.tkfops.Customer.CustomerMapActivity;
-import com.kesari.tkfops.Map.GPSTracker;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
+import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.IOUtils;
 
 import org.json.JSONArray;
@@ -57,7 +57,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
     private Context mContext;
     private MapFragment supportMapFragment;
-    private GPSTracker gps;
+    //private GPSTracker gps;
     private LatLng Current_Origin;
     private GoogleMap map;
     List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
@@ -92,20 +92,26 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        mContext = getActivity();
+        try
+        {
 
-        FragmentManager fm = getActivity().getFragmentManager();
-        supportMapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
-        if (supportMapFragment == null) {
-            supportMapFragment = MapFragment.newInstance();
-            fm.beginTransaction().replace(R.id.map_container, supportMapFragment).commit();
+            mContext = getActivity();
+
+            FragmentManager fm = getActivity().getFragmentManager();
+            supportMapFragment = (MapFragment) fm.findFragmentById(R.id.map_container);
+            if (supportMapFragment == null) {
+                supportMapFragment = MapFragment.newInstance();
+                fm.beginTransaction().replace(R.id.map_container, supportMapFragment).commit();
+            }
+            supportMapFragment.getMapAsync(this);
+
+            //gps = new GPSTracker(getActivity());
+
+            Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
         }
-        supportMapFragment.getMapAsync(this);
-
-        gps = new GPSTracker(getActivity());
-
-        Current_Origin = new LatLng(gps.getLatitude(),gps.getLongitude());
-
 
     }
 
@@ -114,64 +120,67 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
         //getData();
 
-        map = googleMap;
-        if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        map.setMyLocationEnabled(true);
-        map.animateCamera(CameraUpdateFactory.zoomTo(15));
+        try
+        {
 
-        Location location = new Location(LocationManager.GPS_PROVIDER);
-        location.setLatitude(gps.getLatitude());
-        location.setLongitude(gps.getLongitude());
-
-        updateCurrentLocationMarker(location);
-
-
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                13));
-
-        map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-                String Lat = String.valueOf(latLng.latitude);
-                String Long = String.valueOf(latLng.longitude);
-
-                sendLocationData(Lat,Long);
+            map = googleMap;
+            if (ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
             }
-        });
+            map.setMyLocationEnabled(true);
+            map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+            location.setLatitude(SharedPrefUtil.getLocation(getActivity()).getLatitude());
+            location.setLongitude(SharedPrefUtil.getLocation(getActivity()).getLongitude());
 
-                try
-                {
-                    // Get extra data with marker ID
-                    HashMap<String, String> marker_data = extraMarkerInfo.get(marker.getId());
+            updateCurrentLocationMarker(location);
 
-                    // Getting the data from Map
-                    String latitude = marker_data.get(TAG_LATITUDE);
-                    String longitude = marker_data.get(TAG_LONGITUDE);
-                    String place = marker_data.get(TAG_LOCATION_NAME);
-                    String id = marker_data.get(TAG_ID);
+
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
+                    13));
+
+            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(LatLng latLng) {
+
+                    String Lat = String.valueOf(latLng.latitude);
+                    String Long = String.valueOf(latLng.longitude);
+
+                    sendLocationData(Lat,Long);
+                }
+            });
+
+            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(Marker marker) {
+
+                    try
+                    {
+                        // Get extra data with marker ID
+                        HashMap<String, String> marker_data = extraMarkerInfo.get(marker.getId());
+
+                        // Getting the data from Map
+                        String latitude = marker_data.get(TAG_LATITUDE);
+                        String longitude = marker_data.get(TAG_LONGITUDE);
+                        String place = marker_data.get(TAG_LOCATION_NAME);
+                        String id = marker_data.get(TAG_ID);
 
                 /*Double latitude = marker.getPosition().latitude;
                 Double longitude = marker.getPosition().longitude;*/
 
-                    Intent intent = new Intent(getActivity(), CustomerMapActivity.class);
-                    intent.putExtra("place",place);
-                    intent.putExtra("id",id);
-                    intent.putExtra("Lat", Double.parseDouble(latitude));
-                    intent.putExtra("Lon", Double.parseDouble(longitude));
-                    startActivity(intent);
+                        Intent intent = new Intent(getActivity(), CustomerMapActivity.class);
+                        intent.putExtra("place",place);
+                        intent.putExtra("id",id);
+                        intent.putExtra("Lat", Double.parseDouble(latitude));
+                        intent.putExtra("Lon", Double.parseDouble(longitude));
+                        startActivity(intent);
 
-                }catch (NullPointerException npe)
-                {
+                    }catch (NullPointerException npe)
+                    {
 
-                }
+                    }
 
                 /*CustomerMapFragment mapFragment = new CustomerMapFragment();
 
@@ -188,91 +197,61 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                 transaction.addToBackStack(null);
                 transaction.commit();*/
 
-                return false;
-            }
-        });
+                    return false;
+                }
+            });
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
+
     }
 
     public void sendLocationData(String LAT,String LON){
 
-        //String url = "http://192.168.1.220:8000/api/vehicle_positions";
-        String url = Constants.DriverLocationApi;
+        try
+        {
 
-        JSONObject jsonObject = new JSONObject();
+            //String url = "http://192.168.1.220:8000/api/vehicle_positions";
+            String url = Constants.DriverLocationApi;
 
-        try {
+            JSONObject jsonObject = new JSONObject();
 
-            JSONObject postObject = new JSONObject();
+            try {
 
-            postObject.put("driver_id","dr001");
-            postObject.put("latitude",LAT);
-            postObject.put("longitude",LON);
+                JSONObject postObject = new JSONObject();
 
-            jsonObject.put("post",postObject);
+                postObject.put("driver_id","dr001");
+                postObject.put("latitude",LAT);
+                postObject.put("longitude",LON);
 
-            Log.i("JSON CREATED", jsonObject.toString());
+                jsonObject.put("post",postObject);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
+                Log.i("JSON CREATED", jsonObject.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            IOUtils ioUtils = new IOUtils();
+
+            ioUtils.sendJSONObjectRequest(url, jsonObject, new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d(TAG, result.toString());
+                }
+            });
+
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
         }
-
-        IOUtils ioUtils = new IOUtils();
-
-        ioUtils.sendJSONObjectRequest(url, jsonObject, new IOUtils.VolleyCallback() {
-            @Override
-            public void onSuccess(String result) {
-                Log.d(TAG, result.toString());
-            }
-        });
-
-       /* JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                url, jsonObject,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
-                        // pDialog.hide();
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                // hide the progress dialog
-                //pDialog.hide();
-            }
-        });
-
-        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        //Adding request to request queue
-        MyApplication.getInstance().addRequestToQueue(jsonObjReq, "App Paramtr");*/
-
     }
 
     public void updateCurrentLocationMarker(Location currentLatLng){
 
         if(map != null){
 
-            /*LatLng latLng = new LatLng(currentLatLng.getLatitude(),currentLatLng.getLongitude());
-            if(currentPositionMarker == null){
-                currentPositionMarker = new MarkerOptions();
-
-                currentPositionMarker.position(latLng)
-                        .title("My Location").
-                        icon(BitmapDescriptorFactory.fromResource(R.drawable.van));
-                currentLocationMarker = map.addMarker(currentPositionMarker);
-            }
-
-            if(currentLocationMarker != null)
-                currentLocationMarker.setPosition(latLng);
-
-            ///currentPositionMarker.position(latLng);
-            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));*/
 
             getData();
         }
@@ -305,7 +284,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                 getMapsApiDirectionsUrl(latitude,longitude);
             }
 
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -328,45 +307,59 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
     private void addMarkers(String id,String location_name,Double latitude,Double longitude) {
 
-        LatLng dest = new LatLng(latitude, longitude);
+        try
+        {
 
-        HashMap<String, String> data = new HashMap<String, String>();
+            LatLng dest = new LatLng(latitude, longitude);
 
-        if (map != null) {
-            Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_icon))
-                    .title(location_name));
+            HashMap<String, String> data = new HashMap<String, String>();
 
-            data.put(TAG_ID,id);
-            data.put(TAG_LOCATION_NAME,location_name);
-            data.put(TAG_LATITUDE, String.valueOf(latitude));
-            data.put(TAG_LONGITUDE, String.valueOf(longitude));
+            if (map != null) {
+                Marker marker = map.addMarker(new MarkerOptions().position(dest)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_icon))
+                        .title(location_name));
 
-            extraMarkerInfo.put(marker.getId(),data);
+                data.put(TAG_ID,id);
+                data.put(TAG_LOCATION_NAME,location_name);
+                data.put(TAG_LATITUDE, String.valueOf(latitude));
+                data.put(TAG_LONGITUDE, String.valueOf(longitude));
 
-            map.addMarker(new MarkerOptions().position(Current_Origin)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_van))
-                    .title("TKF Vehicle"));
+                extraMarkerInfo.put(marker.getId(),data);
+
+                map.addMarker(new MarkerOptions().position(Current_Origin)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .title("TKF Vehicle"));
+            }
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
         }
     }
 
     public void getMapsApiDirectionsUrl(Double destLatitude, Double destLongitude) {
 
-        String waypoints = "waypoints=optimize:true|"
-                + Current_Origin.latitude + "," + Current_Origin.longitude
-                + "|" + "|" + destLatitude + ","
-                + destLongitude;
+        try
+        {
 
-        String sensor = "sensor=false";
-        String key = "key=" + getString(R.string.googleMaps_ServerKey);
-        String params = waypoints + "&" + sensor + "&" + key;
-        String output = "json";
-        String url = "https://maps.googleapis.com/maps/api/directions/"
-                + output + "?"+"origin="+Current_Origin.latitude + "," + Current_Origin.longitude+"&destination="+destLatitude + ","
-                + destLongitude +"&" + params;
+            String waypoints = "waypoints=optimize:true|"
+                    + Current_Origin.latitude + "," + Current_Origin.longitude
+                    + "|" + "|" + destLatitude + ","
+                    + destLongitude;
 
-        ReadTask downloadTask = new ReadTask();
-        downloadTask.execute(url);
+            String sensor = "sensor=false";
+            String key = "key=" + getString(R.string.googleMaps_ServerKey);
+            String params = waypoints + "&" + sensor + "&" + key;
+            String output = "json";
+            String url = "https://maps.googleapis.com/maps/api/directions/"
+                    + output + "?"+"origin="+Current_Origin.latitude + "," + Current_Origin.longitude+"&destination="+destLatitude + ","
+                    + destLongitude +"&" + params;
+
+            ReadTask downloadTask = new ReadTask();
+            downloadTask.execute(url);
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
 
     }
 
