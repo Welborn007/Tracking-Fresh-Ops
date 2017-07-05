@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 
-import com.kesari.tkfops.Login.LoginActivity;
+import com.kesari.tkfops.BikerDashboard.BikerDashboardActivity;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.SelectLogin.SelectLoginActivity;
+import com.kesari.tkfops.Utilities.SharedPrefUtil;
+import com.kesari.tkfops.VehicleDashboard.VehicleDashboardActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -36,8 +39,38 @@ public class SplashActivity extends AppCompatActivity {
 
     public void startApp()
     {
-        Intent startMainActivity = new Intent(getApplicationContext(),LoginActivity.class);
-        startActivity(startMainActivity);
-        finish();
+        if (SharedPrefUtil.getToken(SplashActivity.this) != null) {
+            if(!SharedPrefUtil.getToken(SplashActivity.this).isEmpty())
+            {
+
+                if (SharedPrefUtil.getKeyLoginType(SplashActivity.this) != null) {
+
+                    if(SharedPrefUtil.getKeyLoginType(SplashActivity.this).equalsIgnoreCase("Vehicle"))
+                    {
+                        Intent startMainActivity = new Intent(getApplicationContext(),VehicleDashboardActivity.class);
+                        startActivity(startMainActivity);
+                        finish();
+                    }
+                    else if(SharedPrefUtil.getKeyLoginType(SplashActivity.this).equalsIgnoreCase("Biker"))
+                    {
+                        Intent startMainActivity = new Intent(getApplicationContext(),BikerDashboardActivity.class);
+                        startActivity(startMainActivity);
+                        finish();
+                    }
+                }
+            }
+            else
+            {
+                Intent startMainActivity = new Intent(getApplicationContext(),SelectLoginActivity.class);
+                startActivity(startMainActivity);
+                finish();
+            }
+        }
+        else
+        {
+            Intent startMainActivity = new Intent(getApplicationContext(),SelectLoginActivity.class);
+            startActivity(startMainActivity);
+            finish();
+        }
     }
 }

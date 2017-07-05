@@ -14,7 +14,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
-            android:background="@color/colorPrimary"
+            android:background="@color/LightRed"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:paddingBottom="@dimen/activity_vertical_margin"
@@ -22,15 +22,6 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
             android:layout_height="150dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/nav_header_vertical_spacing"
-                android:visibility="gone"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_account"
-                android:id="@+id/imageView" />
 
             <de.hdodenhof.circleimageview.CircleImageView
                 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -42,36 +33,22 @@
                 app:civ_border_width="2dp"
                 app:civ_border_color="@android:color/transparent"/>
 
-            <!--app:srcCompat="@android:drawable/sym_def_app_icon"-->
-
-            <LinearLayout
-                android:orientation="vertical"
+            <TextView
+                android:id="@+id/name_Login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:text="Guest"
+                />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size"
-                    android:text="Vaibhav Palyekar"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_gravity="center"
-                    android:text="Holiday@kesari.in"
-                    android:id="@+id/textView" />
-
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:orientation="vertical"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -120,6 +97,7 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
+                android:id="@+id/profile_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -164,21 +142,22 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
+                android:id="@+id/assigned_stock_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
-                    android:id="@+id/refer_logo"
-                    android:src="@drawable/ic_refer"
+                    android:id="@+id/assigned_stock_logo"
+                    android:src="@drawable/ic_myaccount"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
                     android:layout_width="40dp"
                     android:layout_height="wrap_content" />
 
                 <TextView
-                    android:text="@string/refer_earn"
+                    android:text="@string/assigned_stock"
                     android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/refer_logo"
+                    android:layout_toRightOf="@+id/assigned_stock_logo"
                     android:padding="20dp"
                     android:gravity="center"
                     android:textStyle="bold"
@@ -208,6 +187,52 @@
             android:layout_height="wrap_content">
 
             <RelativeLayout
+                android:id="@+id/stock_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/stock_logo"
+                    android:src="@drawable/ic_myaccount"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:text="@string/stocks"
+                    android:textColor="@color/black"
+                    android:layout_toRightOf="@+id/stock_logo"
+                    android:padding="20dp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/text_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:src="@drawable/ic_arrow"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginRight="5dp"
+                android:background="#ccc"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:id="@+id/help_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -223,50 +248,6 @@
                     android:text="@string/help"
                     android:textColor="@color/black"
                     android:layout_toRightOf="@+id/help_logo"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_arrow"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginRight="5dp"
-                android:background="#ccc"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/settings_logo"
-                    android:src="@drawable/ic_settings"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerInParent="true"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:text="@string/settings"
-                    android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/settings_logo"
                     android:padding="20dp"
                     android:gravity="center"
                     android:textStyle="bold"

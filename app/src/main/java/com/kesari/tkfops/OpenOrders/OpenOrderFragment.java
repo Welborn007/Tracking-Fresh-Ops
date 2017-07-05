@@ -16,14 +16,9 @@ import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
+import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,8 +58,6 @@ public class OpenOrderFragment extends Fragment {
         try
         {
 
-            //gps = new GPSTracker(getActivity());
-
             gson = new Gson();
 
             recListOrders.setHasFixedSize(true);
@@ -72,8 +65,6 @@ public class OpenOrderFragment extends Fragment {
             Orders.setOrientation(LinearLayoutManager.VERTICAL);
             recListOrders.setLayoutManager(Orders);
 
-
-            //getData();
             getOrderList(getActivity());
 
         } catch (Exception e) {
@@ -90,7 +81,7 @@ public class OpenOrderFragment extends Fragment {
             IOUtils ioUtils = new IOUtils();
 
             Map<String, String> params = new HashMap<String, String>();
-            params.put("Authorization", "JWT " + "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IndlbGJvcm5tYWNoYWRvQGdtYWlsLmNvbSIsImlhdCI6MTQ5NzI1ODU0Miwic3ViIjoiY2oyZnUxOXZ1MDAwMm1uMXR0cGVjZ2hyeiJ9.LO3nS6c_Epckw5g7wquxatGyAGgrOlSrIbydbl6U02o");
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(context));
 
             ioUtils.getGETStringRequestHeader(context, url , params , new IOUtils.VolleyCallback() {
                 @Override
@@ -112,70 +103,18 @@ public class OpenOrderFragment extends Fragment {
         {
             orderMainPOJO = gson.fromJson(Response, OrderMainPOJO.class);
 
-
-            adapterOrders = new OrdersListRecycler_Adapter(orderMainPOJO.getData(),context);
-            recListOrders.setAdapter(adapterOrders);
+            if(orderMainPOJO.getData().isEmpty())
+            {
+                FireToast.customSnackbar(context,"No Orders!!!","Swipe");
+            }
+            else
+            {
+                adapterOrders = new OrdersListRecycler_Adapter(orderMainPOJO.getData(),context);
+                recListOrders.setAdapter(adapterOrders);
+            }
 
         } catch (Exception e) {
             Log.i("Openorder", e.getMessage());
         }
-    }
-
-    public void getData() {
-        try {
-            JSONArray jsonArray = new JSONArray(loadJSONFromAsset());
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                JSONObject jo_inside = jsonArray.getJSONObject(i);
-
-                JSON_POJO js = new JSON_POJO();
-
-                String location_name = jo_inside.getString("location_name");
-                Double latitude = jo_inside.getDouble("latitude");
-                Double longitude = jo_inside.getDouble("longitude");
-                String id = jo_inside.getString("id");
-                String customer_name = jo_inside.getString("customer_name");
-                String payment_mode = jo_inside.getString("payment_mode");
-                String payment_confirmation = jo_inside.getString("payment_confirmation");
-
-                //getMapsApiDirectionsUrl(latitude,longitude);
-
-                js.setId(id);
-                js.setLatitude(latitude);
-                js.setLongitude(longitude);
-                js.setLocation_name(location_name);
-                js.setCustomer_name(customer_name);
-                js.setPayment_mode(payment_mode);
-                js.setPayment_confirmation(payment_confirmation);
-                /*js.setDistance(distance);
-                js.setTime(duration);*/
-
-                jsonIndiaModelList.add(js);
-
-            }
-
-            adapterOrders = new OpenOrdersRecycler_Adapter(jsonIndiaModelList, SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
-            recListOrders.setAdapter(adapterOrders);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getActivity().getAssets().open("mock_data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
     }
 }

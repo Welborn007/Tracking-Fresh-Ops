@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,6 +33,7 @@ import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
@@ -50,6 +52,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback ,NetworkUtilsReceiver.NetworkResponseInt{
@@ -83,7 +86,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
@@ -198,7 +201,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
         if(map != null){
 
-            getData();
+            //getData();
+            getVehicleRoute();
         }
     }
 
@@ -242,6 +246,77 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
+    private void getVehicleRoute()
+    {
+        try
+        {
+
+            String url = Constants.VehicleRoute;
+
+            IOUtils ioUtils = new IOUtils();
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(RouteActivity.this));
+
+            ioUtils.getGETStringRequestHeader(RouteActivity.this, url , params , new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d(TAG, result.toString());
+                    SetVehicleRouteResponse(result);
+                }
+            });
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
+    }
+
+    private void SetVehicleRouteResponse(String Response)
+    {
+        try {
+
+            JSONObject jsonObject = new JSONObject(Response);
+
+            JSONObject data = jsonObject.getJSONObject("data");
+
+            JSONArray jsonArray = data.getJSONArray("routes");
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+
+                JSONObject jo_inside = jsonArray.getJSONObject(i);
+
+                JSON_POJO js = new JSON_POJO();
+
+                String location_name = jo_inside.getString("from_location");
+                Double latitude = jo_inside.getDouble("from_lat");
+                Double longitude = jo_inside.getDouble("from_lng");
+                String id = jo_inside.getString("_id");
+
+                js.setId(id);
+                js.setLatitude(latitude);
+                js.setLongitude(longitude);
+                js.setLocation_name(location_name);
+
+                jsonIndiaModelList.add(js);
+
+                addMarkers(id,location_name,latitude,longitude);
+
+                if(i > 0 )
+                {
+                    getMapsApiDirectionsUrl(latitude,longitude);
+                }
+                else
+                {
+                    Old_Origin = new LatLng(latitude, longitude);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public String loadJSONFromAsset() {
         String json = null;
         try {
@@ -269,7 +344,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
             if (map != null) {
                 Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker_hi))
                         .title(location_name));
 
                 data.put(TAG_ID,id);
@@ -408,6 +483,16 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             }
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

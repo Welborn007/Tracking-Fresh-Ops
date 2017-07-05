@@ -246,7 +246,7 @@
 
             <Button
                 android:id="@+id/accept"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Accept"
                 android:layout_weight="1"
@@ -259,7 +259,7 @@
 
             <Button
                 android:id="@+id/reject"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Reject"
                 android:layout_weight="1"
@@ -272,10 +272,10 @@
                 />
 
             <Button
-                android:id="@+id/pending"
-                android:layout_width="match_parent"
+                android:id="@+id/assign"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pending"
+                android:text="Assign"
                 android:layout_weight="1"
                 android:layout_marginLeft="5dp"
                 android:textSize="@dimen/text_size"
@@ -286,12 +286,42 @@
                 />
 
             <Button
+                android:id="@+id/path"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Path"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:textSize="@dimen/text_size"
+                android:background="@drawable/rounded_btn"
+                android:textStyle="bold"
+                android:textColor="@color/TextColor"
+                android:textAppearance="?android:textAppearanceMedium"
+                />
+
+            <Button
+                android:id="@+id/pending"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:layout_marginLeft="5dp"
+                android:textSize="@dimen/text_size"
+                android:background="@drawable/rounded_btn"
+                android:textStyle="bold"
+                android:textColor="@color/TextColor"
+                android:textAppearance="?android:textAppearanceMedium"
+                />
+
+            <Button
                 android:id="@+id/cancel"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cancel"
                 android:layout_weight="1"
                 android:textSize="@dimen/text_size"
+                android:visibility="gone"
                 android:layout_marginLeft="5dp"
                 android:background="@drawable/rounded_btn"
                 android:textStyle="bold"

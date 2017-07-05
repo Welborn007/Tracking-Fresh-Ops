@@ -20,6 +20,15 @@
         android:layout_alignRight="@+id/linearLayout"
         android:layout_alignEnd="@+id/linearLayout" />
 
+    <TextView
+        android:padding="10dp"
+        android:text="Vehicle Login"
+        android:gravity="center"
+        android:layout_below="@+id/imageView2"
+        android:textSize="30sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <LinearLayout
         android:layout_width="305dp"
         android:layout_height="wrap_content"

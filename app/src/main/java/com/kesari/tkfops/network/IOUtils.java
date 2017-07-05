@@ -129,7 +129,7 @@ public class IOUtils {
     }
 
     //Volley JSON Object Post Request
-    public void sendJSONObjectRequest(String url, JSONObject jsonObject, final VolleyCallback callback) {
+    public void sendJSONObjectRequest(final Context context,String url, JSONObject jsonObject, final VolleyCallback callback) {
 
         Log.i("url", url);
         Log.i("JSON CREATED", jsonObject.toString());
@@ -155,6 +155,8 @@ public class IOUtils {
                     NetworkResponse response = error.networkResponse;
                     json = new String(response.data);
                     Log.d("Error", json);
+
+                    ErrorResponse(json,context);
                 }catch (Exception e)
                 {
                     Log.d("Error", e.getMessage());
@@ -298,10 +300,136 @@ public class IOUtils {
 
     }
 
+    //Volley JSON Object Post Request
+    public void sendJSONObjectRequestHeader(final Context context, String url, final Map<String, String> paramsHeaders, JSONObject jsonObject, final VolleyCallback callback) {
+
+        Log.i("url", url);
+        Log.i("JSON CREATED", jsonObject.toString());
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.progressdialog);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.show();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
+                url, jsonObject,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        Log.d("response", response.toString());
+                        dialog.dismiss();
+                        callback.onSuccess(response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                //VolleyLog.d("Error", "Error: " + error.getMessage());
+                dialog.dismiss();
+
+                try{
+                    String json = null;
+                    NetworkResponse response = error.networkResponse;
+                    json = new String(response.data);
+                    Log.d("Error", json);
+
+                    ErrorResponse(json,context);
+
+                }catch (Exception e)
+                {
+                    //Log.d("Error", e.getMessage());
+                    FireToast.customSnackbar(context, "Oops Something Went Wrong!!", "");
+                }
+            }
+        })
+
+        {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                /*Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Nintendo Gameboy");*/
+
+                return paramsHeaders;
+            }
+        };;
+
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
+                30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+        //Adding request to request queue
+        MyApplication.getInstance().addRequestToQueue(jsonObjReq, "");
+
+    }
+
+    // Volley String POST Request with Header
+    public void getPOSTStringRequestHeader(final Context context, String url, final Map<String, String> paramsHeaders , final VolleyCallback callback) {
+
+        //RequestQueue queue = Volley.newRequestQueue(this);
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.progressdialog);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialog.show();
+
+        Log.i("url", url);
+        StringRequest postRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        // response
+                        Log.d("Response", response);
+                        dialog.dismiss();
+                        callback.onSuccess(response);
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // TODO Auto-generated method stub
+                        //Log.d("ERROR","error => "+error.toString());
+                        dialog.dismiss();
+
+                        try{
+                            String json = null;
+                            NetworkResponse response = error.networkResponse;
+                            json = new String(response.data);
+
+
+                            ErrorResponse(json,context);
+
+                        }catch (Exception e)
+                        {
+                            //Log.d("Error", e.getMessage());
+                        }
+                    }
+                }
+        ) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                /*Map<String, String> params = new HashMap<String, String>();
+                params.put("User-Agent", "Nintendo Gameboy");*/
+
+                return paramsHeaders;
+            }
+        };
+
+        postRequest.setRetryPolicy(new DefaultRetryPolicy(30000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        MyApplication.getInstance().addRequestToQueue(postRequest, "");
+    }
+
     private void ErrorResponse(String Response,Context context)
     {
         gson = new Gson();
         errorPOJO = gson.fromJson(Response, ErrorPOJO.class);
+        Log.d("Error", Response);
 
         if(errorPOJO.getErrors() != null)
         {

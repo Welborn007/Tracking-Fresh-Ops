@@ -280,7 +280,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
             if (map != null) {
                 Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_map_icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_man_icon))
                         .title(location_name));
 
                 data.put(TAG_ID,id);

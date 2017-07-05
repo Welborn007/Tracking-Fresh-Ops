@@ -250,7 +250,7 @@ public class GPSTracker extends Service implements LocationListener {
 
         IOUtils ioUtils = new IOUtils();
 
-        ioUtils.sendJSONObjectRequest(url, jsonObject, new IOUtils.VolleyCallback() {
+        ioUtils.sendJSONObjectRequest(getApplicationContext(),url, jsonObject, new IOUtils.VolleyCallback() {
             @Override
             public void onSuccess(String result) {
                 Log.d(TAG, result.toString());
