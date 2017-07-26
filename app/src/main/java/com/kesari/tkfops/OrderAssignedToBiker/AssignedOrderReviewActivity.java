@@ -1,4 +1,4 @@
-package com.kesari.tkfops.VehicleOrderReview;
+package com.kesari.tkfops.OrderAssignedToBiker;
 
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +20,8 @@ import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
+import com.kesari.tkfops.VehicleOrderReview.VehicleOrderReViewRecyclerAdapter;
+import com.kesari.tkfops.VehicleOrderReview.VehicleOrderReviewMainPOJO;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.NetworkUtils;
@@ -30,7 +32,7 @@ import com.nispok.snackbar.listeners.ActionClickListener;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VehicleOrderReviewActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
+public class AssignedOrderReviewActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
 
     private String TAG = this.getClass().getSimpleName();
     private NetworkUtilsReceiver networkUtilsReceiver;
@@ -42,12 +44,12 @@ public class VehicleOrderReviewActivity extends AppCompatActivity implements Net
     VehicleOrderReviewMainPOJO vehicleOrderReviewMainPOJO;
     private RecyclerView.Adapter adapterProducts;
 
-    TextView total_price,payment_status,payment_mode,fullName,buildingName,landmark,address,mobileNo;
-
+    TextView total_price,payment_status,payment_mode,fullName,buildingName,landmark,address,mobileNo,bikeNo,bikerName;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_vehicle_order_review);
+        setContentView(R.layout.activity_assigned_order_review);
 
         try
         {
@@ -61,11 +63,11 @@ public class VehicleOrderReviewActivity extends AppCompatActivity implements Net
 
             gson = new Gson();
 
-            OrderID = getIntent().getStringExtra("orderID");
+
             recListProducts = (RecyclerView) findViewById(R.id.recyclerView);
 
             recListProducts.setHasFixedSize(true);
-            ProductsLayout = new LinearLayoutManager(VehicleOrderReviewActivity.this);
+            ProductsLayout = new LinearLayoutManager(AssignedOrderReviewActivity.this);
             ProductsLayout.setOrientation(LinearLayoutManager.VERTICAL);
             recListProducts.setLayoutManager(ProductsLayout);
 
@@ -78,11 +80,24 @@ public class VehicleOrderReviewActivity extends AppCompatActivity implements Net
             address = (TextView) findViewById(R.id.address);
             mobileNo = (TextView) findViewById(R.id.mobileNo);
 
+            bikeNo = (TextView) findViewById(R.id.bikeNo);
+            bikerName = (TextView) findViewById(R.id.bikerName);
+
+            try
+            {
+                OrderID = getIntent().getStringExtra("orderID");
+                bikeNo.setText(getIntent().getStringExtra("bikeNo"));
+                bikerName.setText(getIntent().getStringExtra("bikerName"));
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+
             final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
             if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
             {
-                IOUtils.buildAlertMessageNoGps(VehicleOrderReviewActivity.this);
+                IOUtils.buildAlertMessageNoGps(AssignedOrderReviewActivity.this);
             }
             else
             {
@@ -108,9 +123,9 @@ public class VehicleOrderReviewActivity extends AppCompatActivity implements Net
             IOUtils ioUtils = new IOUtils();
 
             Map<String, String> params = new HashMap<String, String>();
-            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(VehicleOrderReviewActivity.this));
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(AssignedOrderReviewActivity.this));
 
-            ioUtils.getGETStringRequestHeader(VehicleOrderReviewActivity.this, url, params, new IOUtils.VolleyCallback() {
+            ioUtils.getGETStringRequestHeader(AssignedOrderReviewActivity.this, url, params, new IOUtils.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {
                     Log.d(TAG, result.toString());
@@ -130,7 +145,7 @@ public class VehicleOrderReviewActivity extends AppCompatActivity implements Net
         {
             vehicleOrderReviewMainPOJO = gson.fromJson(Response, VehicleOrderReviewMainPOJO.class);
 
-            adapterProducts = new VehicleOrderReViewRecyclerAdapter(vehicleOrderReviewMainPOJO.getData().getOrders(),VehicleOrderReviewActivity.this);
+            adapterProducts = new VehicleOrderReViewRecyclerAdapter(vehicleOrderReviewMainPOJO.getData().getOrders(),AssignedOrderReviewActivity.this);
             recListProducts.setAdapter(adapterProducts);
 
             payment_status = (TextView) findViewById(R.id.payment_status);

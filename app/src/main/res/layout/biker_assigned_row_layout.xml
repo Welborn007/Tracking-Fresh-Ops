@@ -129,41 +129,56 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:id="@+id/bikeNo_Holder"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:visibility="gone">
+                        android:orientation="horizontal">
 
-                        <mehdi.sakout.fancybuttons.FancyButton
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:padding="5dp"
-                            fancy:fb_borderColor="#000000"
-                            fancy:fb_borderWidth="1dp"
-                            fancy:fb_defaultColor="@color/colorPrimary"
-                            fancy:fb_focusColor="#2e5071"
-                            fancy:fb_fontIconSize="14dp"
-                            fancy:fb_radius="5dp"
-                            fancy:fb_text="Accept"
-                            fancy:fb_textColor="@color/DarkRed"
-                            fancy:fb_textSize="14sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Order assigned to:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            android:textStyle="bold" />
 
-                        <mehdi.sakout.fancybuttons.FancyButton
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
+                        <TextView
+                            android:id="@+id/bikeNo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="bikeNo"
                             android:layout_marginLeft="10dp"
-                            android:layout_weight="1"
-                            android:padding="5dp"
-                            fancy:fb_borderColor="#000000"
-                            fancy:fb_borderWidth="1dp"
-                            fancy:fb_defaultColor="@color/colorPrimary"
-                            fancy:fb_focusColor="#2e5071"
-                            fancy:fb_fontIconSize="14dp"
-                            fancy:fb_radius="5dp"
-                            fancy:fb_text="Reject"
-                            fancy:fb_textColor="@color/Gray"
-                            fancy:fb_textSize="14sp" />
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/bikerName_Holder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Biker Name:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/bikerName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="bikerName"
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            android:textStyle="bold" />
 
                     </LinearLayout>
 
@@ -199,61 +214,7 @@
 
             </LinearLayout>
 
-
         </RelativeLayout>
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:weightSum="3"
-            android:padding="5dp"
-            android:layout_below="@+id/holder"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/delivered"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Delivered"
-                android:layout_weight="1"
-                android:textSize="@dimen/text_size"
-                android:background="@drawable/rounded_btn"
-                android:textStyle="bold"
-                android:textColor="@color/TextColor"
-                android:textAppearance="?android:textAppearanceMedium"
-                />
-
-            <Button
-                android:id="@+id/rejected"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rejected"
-                android:layout_weight="1"
-                android:visibility="gone"
-                android:layout_marginLeft="5dp"
-                android:textSize="@dimen/text_size"
-                android:background="@drawable/rounded_btn"
-                android:textStyle="bold"
-                android:textColor="@color/TextColor"
-                android:textAppearance="?android:textAppearanceMedium"
-                />
-
-            <Button
-                android:id="@+id/path"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Path"
-                android:layout_weight="1"
-                android:layout_marginLeft="5dp"
-                android:visibility="gone"
-                android:textSize="@dimen/text_size"
-                android:background="@drawable/rounded_btn"
-                android:textStyle="bold"
-                android:textColor="@color/TextColor"
-                android:textAppearance="?android:textAppearanceMedium"
-                />
-
-        </LinearLayout>
 
     </RelativeLayout>
 

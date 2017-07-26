@@ -33,7 +33,6 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.kesari.tkfops.Map.HttpConnection;
-import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.LocationServiceNew;
@@ -49,8 +48,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,12 +57,9 @@ import java.util.Random;
 public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback , NetworkUtilsReceiver.NetworkResponseInt{
 
     View f1;
-    private Context mContext;
     private SupportMapFragment supportMapFragment;
-    //private GPSTracker gps;
     private LatLng Current_Origin;
     private GoogleMap map;
-    List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
     HashMap<String, HashMap> extraMarkerInfo = new HashMap<String, HashMap>();
 
     private static final String TAG_ID = "id";
@@ -74,9 +68,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private static final String TAG_LONGITUDE = "longitude";
 
     private TextView instructions;
-
     private String TAG = this.getClass().getSimpleName();
-
     private NetworkUtilsReceiver networkUtilsReceiver;
 
     @Override
@@ -91,7 +83,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        /*Register receiver*/
+            /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
@@ -121,9 +113,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             }
             supportMapFragment.getMapAsync(this);
 
-            //gps = new GPSTracker(CustomerMapActivity.this);
-
-            Current_Origin = new LatLng(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
+           Current_Origin = new LatLng(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -134,8 +124,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        //getData();
-
         try
         {
 
@@ -143,19 +131,13 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            //map.setMyLocationEnabled(true);
+            map.setMyLocationEnabled(true);
             map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
             location.setLatitude(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
             location.setLongitude(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
 
-            //updateCurrentLocationMarker(location);
-
-        /*Bundle bundle = this.getArguments();
-        if (bundle != null) {
-
-        }*/
             Double latitude = getIntent().getDoubleExtra("Lat", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
             Double longitude = getIntent().getDoubleExtra("Lon", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
 
@@ -193,80 +175,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             Log.i(TAG, e.getMessage());
         }
 
-    }
-
-
-
-    public void updateCurrentLocationMarker(Location currentLatLng){
-
-        if(map != null){
-
-            /*LatLng latLng = new LatLng(currentLatLng.getLatitude(),currentLatLng.getLongitude());
-            if(currentPositionMarker == null){
-                currentPositionMarker = new MarkerOptions();
-
-                currentPositionMarker.position(latLng)
-                        .title("My Location").
-                        icon(BitmapDescriptorFactory.fromResource(R.drawable.van));
-                currentLocationMarker = map.addMarker(currentPositionMarker);
-            }
-
-            if(currentLocationMarker != null)
-                currentLocationMarker.setPosition(latLng);
-
-            ///currentPositionMarker.position(latLng);
-            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));*/
-
-            getData();
-        }
-    }
-
-    public void getData()
-    {
-        try {
-            JSONArray jsonArray = new JSONArray(loadJSONFromAsset());
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                JSONObject jo_inside = jsonArray.getJSONObject(i);
-
-                JSON_POJO js = new JSON_POJO();
-
-                String location_name = jo_inside.getString("location_name");
-                Double latitude = jo_inside.getDouble("latitude");
-                Double longitude = jo_inside.getDouble("longitude");
-                String id = jo_inside.getString("id");
-
-                js.setId(id);
-                js.setLatitude(latitude);
-                js.setLongitude(longitude);
-                js.setLocation_name(location_name);
-
-                jsonIndiaModelList.add(js);
-
-                addMarkers(id,location_name,latitude,longitude);
-                getMapsApiDirectionsUrl(latitude,longitude);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getAssets().open("mock_data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
     }
 
     private void addMarkers(String id,String location_name,Double latitude,Double longitude) {
@@ -333,7 +241,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             String data = "";
             try {
                 HttpConnection http = new HttpConnection();
-                //data = http.readUrl("https://maps.googleapis.com/maps/api/directions/json?origin=17.449797,78.373037&destination=17.47989,78.390095&%20waypoints=optimize:true|17.449797,78.373037||17.47989,78.390095&sensor=false");
                 data = http.readUrl(url[0]);
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());

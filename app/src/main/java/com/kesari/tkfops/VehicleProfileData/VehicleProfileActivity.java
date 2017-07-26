@@ -1,4 +1,4 @@
-package com.kesari.tkfops.BikerDeliveredOrder;
+package com.kesari.tkfops.VehicleProfileData;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,19 +8,12 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.kesari.tkfops.BikerOrderList.BikerOrderMainPOJO;
-import com.kesari.tkfops.OpenOrders.Order_POJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.LocationServiceNew;
@@ -32,38 +25,29 @@ import com.kesari.tkfops.network.NetworkUtilsReceiver;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class BikerDeliveredOrderActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt {
+public class VehicleProfileActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
 
-    private RecyclerView.Adapter adapterOrders;
-    private RecyclerView recListOrders;
-    private LinearLayoutManager Orders;
-    List<Order_POJO> jsonIndiaModelList = new ArrayList<>();
+    private static View view;
     private String TAG = this.getClass().getSimpleName();
+
     private NetworkUtilsReceiver networkUtilsReceiver;
 
-    private Gson gson;
-    private BikerOrderMainPOJO bikerOrderMainPOJO;
-
-    private RelativeLayout relativeLayout;
-    private TextView valueTV;
+    TextView driverName,vehicleNo,vehicleCompany,vehicleModel,vehicleRegNo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_biker_delivered_order);
+        setContentView(R.layout.activity_vehicle_profile);
+
         try
         {
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-            setTitle("Order Delivered");
 
         /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
@@ -73,7 +57,7 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
 
             if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
             {
-                IOUtils.buildAlertMessageNoGps(BikerDeliveredOrderActivity.this);
+                IOUtils.buildAlertMessageNoGps(VehicleProfileActivity.this);
             }
             else
             {
@@ -84,79 +68,57 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
                 }
             }
 
-            recListOrders = (RecyclerView) findViewById(R.id.recyclerView);
-            recListOrders.setHasFixedSize(true);
-            Orders = new LinearLayoutManager(this);
-            Orders.setOrientation(LinearLayoutManager.VERTICAL);
-            recListOrders.setLayoutManager(Orders);
+            driverName = (TextView) findViewById(R.id.driverName);
+            vehicleNo = (TextView) findViewById(R.id.vehicleNo);
+            vehicleCompany = (TextView) findViewById(R.id.vehicleCompany);
+            vehicleModel = (TextView) findViewById(R.id.vehicleModel);
+            vehicleRegNo = (TextView) findViewById(R.id.vehicleRegNo);
 
-            relativeLayout = (RelativeLayout)findViewById(R.id.relativelay_reclview);
-            getOrderList(BikerDeliveredOrderActivity.this);
-            gson = new Gson();
+            getProfileData();
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
-
     }
 
-    public void getOrderList(final Context context)
-    {
-        try
-        {
-            String url = Constants.BikerOrderListFilter + "Delivered";
+    private void getProfileData() {
+        try {
 
             IOUtils ioUtils = new IOUtils();
 
             Map<String, String> params = new HashMap<String, String>();
-            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(context));
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(VehicleProfileActivity.this));
 
-            ioUtils.getGETStringRequestHeader(context, url , params , new IOUtils.VolleyCallback() {
+            ioUtils.getPOSTStringRequestHeader(VehicleProfileActivity.this, Constants.VehicleProfile, params, new IOUtils.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {
-                    Log.d("OPenOrder", result.toString());
+                    Log.i("profile_result",result);
 
-                    getOrderListResponse(result,context);
+                    profileDataResponse(result);
+
                 }
             });
 
+
         } catch (Exception e) {
-            Log.i("OPenOrder", e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void getOrderListResponse(String Response,Context context)
+    private void profileDataResponse(String Response)
     {
         try
         {
-            bikerOrderMainPOJO = gson.fromJson(Response, BikerOrderMainPOJO.class);
-            valueTV = new TextView(BikerDeliveredOrderActivity.this);
+            SharedPrefUtil.setVehicleUser(getApplicationContext(), Response.toString());
 
-            if(bikerOrderMainPOJO.getData().isEmpty())
-            {
-                recListOrders.setVisibility(View.GONE);
-                relativeLayout.setVisibility(View.VISIBLE);
-                relativeLayout.removeAllViews();
-                valueTV.setText("No Order Delivered!!!");
-                valueTV.setGravity(Gravity.CENTER);
-                valueTV.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
-                ((RelativeLayout) relativeLayout).addView(valueTV);
-
-                adapterOrders = new BikerDeliveredOrderRecycler_Adapter(bikerOrderMainPOJO.getData(),context);
-                recListOrders.setAdapter(adapterOrders);
-            }
-            else
-            {
-                adapterOrders = new BikerDeliveredOrderRecycler_Adapter(bikerOrderMainPOJO.getData(),context);
-                recListOrders.setAdapter(adapterOrders);
-
-                relativeLayout.setVisibility(View.GONE);
-                recListOrders.setVisibility(View.VISIBLE);
-            }
-
+            driverName.setText(SharedPrefUtil.getVehicleUser(VehicleProfileActivity.this).getVehicleData().getDriverName());
+            vehicleNo.setText(SharedPrefUtil.getVehicleUser(VehicleProfileActivity.this).getVehicleData().getVehicleNo());
+            vehicleCompany.setText(SharedPrefUtil.getVehicleUser(VehicleProfileActivity.this).getVehicleData().getVehicleCompany());
+            vehicleModel.setText(SharedPrefUtil.getVehicleUser(VehicleProfileActivity.this).getVehicleData().getVehicleModel());
+            vehicleRegNo.setText(SharedPrefUtil.getVehicleUser(VehicleProfileActivity.this).getVehicleData().getVehicleRegNo());
 
         } catch (Exception e) {
-            Log.i("Openorder", e.getMessage());
+            Log.i(TAG, e.getMessage());
         }
     }
 
@@ -166,9 +128,8 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
             case android.R.id.home:
                 finish();
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

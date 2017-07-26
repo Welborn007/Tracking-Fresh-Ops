@@ -14,19 +14,6 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.network.IOUtils;
-import com.kesari.tkfops.network.MyApplication;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 /**
  * Created by kesari-Aniket  on 27/11/15.
  */
@@ -222,68 +209,4 @@ public class GPSTracker extends Service implements LocationListener {
         return null;
     }
 
-
-    public void sendLocationData(String LAT,String LON){
-
-        //String url = "http://192.168.1.220:8000/api/vehicle_positions";
-        String url = Constants.DriverLocationApi;
-
-        Log.i("url",url);
-
-        JSONObject jsonObject = new JSONObject();
-
-        try {
-
-            JSONObject postObject = new JSONObject();
-
-            postObject.put("driver_id","dr001");
-            postObject.put("latitude",LAT);
-            postObject.put("longitude",LON);
-
-            jsonObject.put("post",postObject);
-
-            Log.i("JSON CREATED", jsonObject.toString());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        IOUtils ioUtils = new IOUtils();
-
-        ioUtils.sendJSONObjectRequest(getApplicationContext(),url, jsonObject, new IOUtils.VolleyCallback() {
-            @Override
-            public void onSuccess(String result) {
-                Log.d(TAG, result.toString());
-            }
-        });
-
-
-        /*JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
-                url, jsonObject,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        Log.d(TAG, response.toString());
-                        // pDialog.hide();
-                    }
-                }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                VolleyLog.d(TAG, "Error: " + error.getMessage());
-                // hide the progress dialog
-                //pDialog.hide();
-            }
-        });
-
-        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
-                5000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-
-        //Adding request to request queue
-        MyApplication.getInstance().addRequestToQueue(jsonObjReq, "App Paramtr");*/
-
-    }
 }

@@ -62,14 +62,14 @@ public class StockReViewRecyclerAdapter extends RecyclerView.Adapter<StockReView
             holder.stock_accept.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AcceptRejectStock(OrdersListReView.get(position).get_id(),"Accepted");
+                    AcceptRejectStock(OrdersListReView.get(position).get_id(),"Accepted",OrdersListReView.get(position).getProductId());
                 }
             });
 
             holder.stock_reject.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    AcceptRejectStock(OrdersListReView.get(position).get_id(),"Rejected");
+                    AcceptRejectStock(OrdersListReView.get(position).get_id(),"Rejected",OrdersListReView.get(position).getProductId());
                 }
             });
         }
@@ -104,7 +104,7 @@ public class StockReViewRecyclerAdapter extends RecyclerView.Adapter<StockReView
     }
 
 
-    private void AcceptRejectStock(String productID, String productStatus) {
+    private void AcceptRejectStock(String ID, String productStatus,String productID) {
         try {
 
             String url = Constants.AcceptRejectStock;
@@ -115,9 +115,9 @@ public class StockReViewRecyclerAdapter extends RecyclerView.Adapter<StockReView
 
                 JSONObject postObject = new JSONObject();
 
-                postObject.put("id", productID);
+                postObject.put("id", ID);
                 postObject.put("status",productStatus);
-
+                postObject.put("productId",productID);
                 jsonObject.put("post", postObject);
 
                 Log.i("JSON CREATED", jsonObject.toString());

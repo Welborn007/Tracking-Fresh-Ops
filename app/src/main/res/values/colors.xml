@@ -30,7 +30,8 @@
     <color name="TextColor">#ffffff</color>
     <color name="TextBlackColor">#000000</color>
     <color name="textHintColor">#606060</color>
-
+    <color name="blue_trans">#CC017ad5</color>
+    <color name="full_trans">#00000000</color>
 
     <color name="colorEdittextBackground">#f1f1f1</color>
     <color name="colorImageviewBackground">#e5e5e5</color>

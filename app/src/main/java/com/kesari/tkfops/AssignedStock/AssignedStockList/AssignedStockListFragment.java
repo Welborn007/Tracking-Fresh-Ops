@@ -7,16 +7,18 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 
 import java.util.HashMap;
@@ -37,6 +39,9 @@ public class AssignedStockListFragment extends Fragment {
     public static Gson gson;
     public static AssignedStockListMain stockListMain;
 
+    public static RelativeLayout relativeLayout;
+    public static TextView valueTV;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,14 +55,13 @@ public class AssignedStockListFragment extends Fragment {
             view = inflater.inflate(R.layout.fragment_stock_list, container, false);
 
             gson = new Gson();
-
             recListStockList = (RecyclerView) view.findViewById(R.id.recyclerView);
-
             recListStockList.setHasFixedSize(true);
             StockList = new LinearLayoutManager(getActivity());
             StockList.setOrientation(LinearLayoutManager.VERTICAL);
             recListStockList.setLayoutManager(StockList);
 
+            relativeLayout = (RelativeLayout) view.findViewById(R.id.relativelay_reclview);
 
         } catch (InflateException e) {
     /* map is already there, just return view as it is */
@@ -111,15 +115,31 @@ public class AssignedStockListFragment extends Fragment {
         try
         {
             stockListMain = gson.fromJson(Response, AssignedStockListMain.class);
+            valueTV = new TextView(context);
 
             if(stockListMain.getData().isEmpty())
             {
-                FireToast.customSnackbar(context, "No Products!!!", "");
+                //FireToast.customSnackbar(context, "No Products!!!", "");
+                adapterStockList = new StockReViewRecyclerAdapter(stockListMain.getData(),context);
+                recListStockList.setAdapter(adapterStockList);
+                adapterStockList.notifyDataSetChanged();
+
+                recListStockList.setVisibility(View.GONE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                relativeLayout.removeAllViews();
+                valueTV.setText("No Products!!!");
+                valueTV.setGravity(Gravity.CENTER);
+                valueTV.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                ((RelativeLayout) relativeLayout).addView(valueTV);
             }
             else
             {
+                relativeLayout.setVisibility(View.GONE);
+                recListStockList.setVisibility(View.VISIBLE);
+
                 adapterStockList = new StockReViewRecyclerAdapter(stockListMain.getData(),context);
                 recListStockList.setAdapter(adapterStockList);
+                adapterStockList.notifyDataSetChanged();
             }
 
         } catch (Exception e) {

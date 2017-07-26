@@ -40,6 +40,46 @@ public class VehicleData {
 
     private String vehicleNo;
 
+    private String editedBy;
+
+    private String editedAt;
+
+    private String vehicleStatus;
+
+    private String statusChangedOn;
+
+    public String getStatusChangedOn() {
+        return statusChangedOn;
+    }
+
+    public void setStatusChangedOn(String statusChangedOn) {
+        this.statusChangedOn = statusChangedOn;
+    }
+
+    public String getEditedBy() {
+        return editedBy;
+    }
+
+    public void setEditedBy(String editedBy) {
+        this.editedBy = editedBy;
+    }
+
+    public String getEditedAt() {
+        return editedAt;
+    }
+
+    public void setEditedAt(String editedAt) {
+        this.editedAt = editedAt;
+    }
+
+    public String getVehicleStatus() {
+        return vehicleStatus;
+    }
+
+    public void setVehicleStatus(String vehicleStatus) {
+        this.vehicleStatus = vehicleStatus;
+    }
+
     public String getLoginStatus() {
         return loginStatus;
     }

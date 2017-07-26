@@ -6,16 +6,18 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 
 import java.util.HashMap;
@@ -37,6 +39,9 @@ public class AcceptedStockFragment extends Fragment {
     public Gson gson;
     public AcceptedListMain acceptedListMain;
 
+    private RelativeLayout relativeLayout;
+    private TextView valueTV;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,6 +61,8 @@ public class AcceptedStockFragment extends Fragment {
             Accepted = new LinearLayoutManager(getActivity());
             Accepted.setOrientation(LinearLayoutManager.VERTICAL);
             recListAcceptedAccepted.setLayoutManager(Accepted);
+
+            relativeLayout = (RelativeLayout) view.findViewById(R.id.relativelay_reclview);
             
         } catch (InflateException e) {
     /* map is already there, just return view as it is */
@@ -109,13 +116,28 @@ public class AcceptedStockFragment extends Fragment {
         try
         {
             acceptedListMain = gson.fromJson(Response, AcceptedListMain.class);
+            valueTV = new TextView(getActivity());
 
             if(acceptedListMain.getData().isEmpty())
             {
-                FireToast.customSnackbar(getActivity(), "No Products!!!", "");
+                //FireToast.customSnackbar(getActivity(), "No Products!!!", "");
+
+                adapterAccepted = new AcceptedStockRecyclerAdapter(acceptedListMain.getData(),getActivity());
+                recListAcceptedAccepted.setAdapter(adapterAccepted);
+
+                recListAcceptedAccepted.setVisibility(View.GONE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                relativeLayout.removeAllViews();
+                valueTV.setText("No Products!!!");
+                valueTV.setGravity(Gravity.CENTER);
+                valueTV.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                ((RelativeLayout) relativeLayout).addView(valueTV);
             }
             else
             {
+                relativeLayout.setVisibility(View.GONE);
+                recListAcceptedAccepted.setVisibility(View.VISIBLE);
+
                 adapterAccepted = new AcceptedStockRecyclerAdapter(acceptedListMain.getData(),getActivity());
                 recListAcceptedAccepted.setAdapter(adapterAccepted);
             }

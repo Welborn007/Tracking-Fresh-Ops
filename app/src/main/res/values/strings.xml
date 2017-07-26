@@ -42,7 +42,15 @@
 
     <string name="order_open">Order Open</string>
     <string name="order_delivered">Order Delivered</string>
-    <string name="route">Route</string>
+    <string name="order_assigned">Order Assigned</string>
+    <string name="order_pending">Order Pending</string>
+    <string name="order_rejected">Order Rejected</string>
+
+    <string name="order_open1">Order Open</string>
+    <string name="order_delivered1">Delivered</string>
+    <string name="order_assigned1">Order Assigned</string>
+    <string name="order_pending1">Pending</string>
+    <string name="order_rejected1">Rejected</string>
 
     <string name="assigned_stock">Assigned Stocks</string>
     <string name="stocks">Stocks</string>

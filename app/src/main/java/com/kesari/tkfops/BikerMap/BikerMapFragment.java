@@ -40,11 +40,8 @@ import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -144,7 +141,6 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
             updateCurrentLocationMarker(location);
 
-
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
                     13));
 
@@ -155,7 +151,6 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
-                    //sendLocationData(Lat,Long);
                 }
             });
 
@@ -193,21 +188,6 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
                     }
 
-                /*CustomerMapFragment mapFragment = new CustomerMapFragment();
-
-                Bundle bundle = new Bundle();
-                bundle.putString("place",place);
-                bundle.putString("id",id);
-                bundle.putDouble("Lat", Double.parseDouble(latitude));
-                bundle.putDouble("Lon", Double.parseDouble(longitude));
-                mapFragment.setArguments(bundle);
-
-                FragmentManager manager = getActivity().getSupportFragmentManager();
-                FragmentTransaction transaction = manager.beginTransaction();
-                transaction.add(R.id.fragment_holder, mapFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();*/
-
                     return false;
                 }
             });
@@ -216,49 +196,6 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             Log.i(TAG, e.getMessage());
         }
 
-    }
-
-    public void sendLocationData(String LAT,String LON){
-
-        try
-        {
-
-            String url = Constants.DriverLocationApi;
-
-            JSONObject jsonObject = new JSONObject();
-
-            try {
-
-                JSONObject postObject = new JSONObject();
-
-                //postObject.put("driver_id","dr001");
-                postObject.put("latitude",LAT);
-                postObject.put("longitude",LON);
-
-                jsonObject.put("post",postObject);
-
-                Log.i("JSON CREATED", jsonObject.toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            Map<String, String> params = new HashMap<String, String>();
-            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(getActivity()));
-
-            IOUtils ioUtils = new IOUtils();
-
-            ioUtils.sendJSONObjectRequestHeader(getActivity(),url, params ,jsonObject, new IOUtils.VolleyCallback() {
-                @Override
-                public void onSuccess(String result) {
-                    Log.d(TAG, result.toString());
-                }
-            });
-
-
-        } catch (Exception e) {
-            Log.i(TAG, e.getMessage());
-        }
     }
 
     public void updateCurrentLocationMarker(Location currentLatLng){
@@ -332,53 +269,6 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    public void getData()
-    {
-        try {
-            JSONArray jsonArray = new JSONArray(loadJSONFromAsset());
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                JSONObject jo_inside = jsonArray.getJSONObject(i);
-
-                JSON_POJO js = new JSON_POJO();
-
-                String location_name = jo_inside.getString("location_name");
-                Double latitude = jo_inside.getDouble("latitude");
-                Double longitude = jo_inside.getDouble("longitude");
-                String id = jo_inside.getString("id");
-
-                js.setId(id);
-                js.setLatitude(latitude);
-                js.setLongitude(longitude);
-                js.setLocation_name(location_name);
-
-                jsonIndiaModelList.add(js);
-
-                addMarkers(id,location_name,latitude,longitude);
-                getMapsApiDirectionsUrl(latitude,longitude);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getActivity().getAssets().open("mock_data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
 
     private void addMarkers(String id,String location_name,Double latitude,Double longitude) {
 
@@ -402,7 +292,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 extraMarkerInfo.put(marker.getId(),data);
 
                 map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
                         .title("TKF Vehicle"));
             }
 
@@ -444,7 +334,6 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             String data = "";
             try {
                 HttpConnection http = new HttpConnection();
-                //data = http.readUrl("https://maps.googleapis.com/maps/api/directions/json?origin=17.449797,78.373037&destination=17.47989,78.390095&%20waypoints=optimize:true|17.449797,78.373037||17.47989,78.390095&sensor=false");
                 data = http.readUrl(url[0]);
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());

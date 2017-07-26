@@ -18,7 +18,7 @@
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:background="?attr/colorPrimary"
+            android:background="@color/white"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:titleTextColor="@color/white"
             android:layout_height="?attr/actionBarSize">
@@ -36,9 +36,27 @@
                     android:src="@drawable/logo"
                     />
 
+                <TextView
+                    android:id="@+id/statVehicle"
+                    android:layout_toLeftOf="@+id/vehicleStatus"
+                    android:textSize="16sp"
+                    android:layout_centerInParent="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <Switch
+                    android:id="@+id/vehicleStatus"
+                    android:textColor="@color/black"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toLeftOf="@+id/filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
                 <ImageView
                     android:id="@+id/filter"
                     android:layout_width="35dp"
+                    android:layout_marginLeft="5dp"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_alignParentRight="true"
@@ -82,14 +100,13 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/route"
+                    android:id="@+id/order_assign"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@color/white"
                     android:gravity="center"
-                    android:padding="15dp"
-                    android:text="@string/route"
+                    android:text="@string/order_assigned"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size" />
 
@@ -118,10 +135,11 @@
                 <TextView
                     android:id="@+id/order_delivered"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:background="@color/white"
                     android:gravity="center"
+                    android:padding="15dp"
                     android:text="@string/order_delivered"
                     android:textColor="@color/black"
                     android:textSize="@dimen/text_size" />

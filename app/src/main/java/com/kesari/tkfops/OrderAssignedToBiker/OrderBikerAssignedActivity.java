@@ -1,4 +1,4 @@
-package com.kesari.tkfops.BikerDeliveredOrder;
+package com.kesari.tkfops.OrderAssignedToBiker;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.kesari.tkfops.BikerOrderList.BikerOrderMainPOJO;
 import com.kesari.tkfops.OpenOrders.Order_POJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BikerDeliveredOrderActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt {
+public class OrderBikerAssignedActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt {
 
     private RecyclerView.Adapter adapterOrders;
     private RecyclerView recListOrders;
@@ -47,7 +47,8 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
     private NetworkUtilsReceiver networkUtilsReceiver;
 
     private Gson gson;
-    private BikerOrderMainPOJO bikerOrderMainPOJO;
+    private OrderAssignedMainPOJO orderAssignedMainPOJO;
+    TextView pending,delivered,rejected;
 
     private RelativeLayout relativeLayout;
     private TextView valueTV;
@@ -55,15 +56,15 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_biker_delivered_order);
+        setContentView(R.layout.activity_order_biker_assigned);
+
         try
         {
-
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-            setTitle("Order Delivered");
+            setTitle("Biker Assigned Order");
 
         /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
@@ -73,7 +74,7 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
 
             if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
             {
-                IOUtils.buildAlertMessageNoGps(BikerDeliveredOrderActivity.this);
+                IOUtils.buildAlertMessageNoGps(OrderBikerAssignedActivity.this);
             }
             else
             {
@@ -84,76 +85,114 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
                 }
             }
 
+            pending = (TextView) findViewById(R.id.pending);
+            delivered = (TextView) findViewById(R.id.delivered);
+            rejected = (TextView) findViewById(R.id.rejected);
+
+            relativeLayout = (RelativeLayout) findViewById(R.id.relativelay_reclview);
+
             recListOrders = (RecyclerView) findViewById(R.id.recyclerView);
             recListOrders.setHasFixedSize(true);
             Orders = new LinearLayoutManager(this);
             Orders.setOrientation(LinearLayoutManager.VERTICAL);
             recListOrders.setLayoutManager(Orders);
 
-            relativeLayout = (RelativeLayout)findViewById(R.id.relativelay_reclview);
-            getOrderList(BikerDeliveredOrderActivity.this);
+            getBikerAssignedOrderList("Pending");
+            pending.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.colorHighlight));
+
+            pending.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    pending.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.colorHighlight));
+                    delivered.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
+                    rejected.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
+                    getBikerAssignedOrderList("Pending");
+                }
+            });
+
+            delivered.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getBikerAssignedOrderList("Delivered");
+                    pending.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
+                    delivered.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.colorHighlight));
+                    rejected.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
+                }
+            });
+
+            rejected.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getBikerAssignedOrderList("Rejected");
+                    pending.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
+                    delivered.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
+                    rejected.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.colorHighlight));
+                }
+            });
+
             gson = new Gson();
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
-
     }
 
-    public void getOrderList(final Context context)
+    public void getBikerAssignedOrderList(String OrderStatus)
     {
         try
         {
-            String url = Constants.BikerOrderListFilter + "Delivered";
+            String url = Constants.BikerAssignedOrderList + OrderStatus;
 
             IOUtils ioUtils = new IOUtils();
 
             Map<String, String> params = new HashMap<String, String>();
-            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(context));
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(OrderBikerAssignedActivity.this));
 
-            ioUtils.getGETStringRequestHeader(context, url , params , new IOUtils.VolleyCallback() {
+            ioUtils.getGETStringRequestHeader(OrderBikerAssignedActivity.this, url , params , new IOUtils.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {
-                    Log.d("OPenOrder", result.toString());
+                    Log.d(TAG, result.toString());
 
-                    getOrderListResponse(result,context);
+                    getOrderListResponse(result);
                 }
             });
 
         } catch (Exception e) {
-            Log.i("OPenOrder", e.getMessage());
+            Log.i(TAG, e.getMessage());
         }
     }
 
-    private void getOrderListResponse(String Response,Context context)
+    private void getOrderListResponse(String Response)
     {
         try
         {
-            bikerOrderMainPOJO = gson.fromJson(Response, BikerOrderMainPOJO.class);
-            valueTV = new TextView(BikerDeliveredOrderActivity.this);
+            orderAssignedMainPOJO = gson.fromJson(Response, OrderAssignedMainPOJO.class);
 
-            if(bikerOrderMainPOJO.getData().isEmpty())
+            valueTV = new TextView(OrderBikerAssignedActivity.this);
+
+            if(orderAssignedMainPOJO.getData().isEmpty())
             {
+                //FireToast.customSnackbar(OrderBikerAssignedActivity.this,"No Order Assigned!!!","Swipe");
+
                 recListOrders.setVisibility(View.GONE);
                 relativeLayout.setVisibility(View.VISIBLE);
                 relativeLayout.removeAllViews();
-                valueTV.setText("No Order Delivered!!!");
+                valueTV.setText("No Order Assigned!!!");
                 valueTV.setGravity(Gravity.CENTER);
                 valueTV.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
                 ((RelativeLayout) relativeLayout).addView(valueTV);
 
-                adapterOrders = new BikerDeliveredOrderRecycler_Adapter(bikerOrderMainPOJO.getData(),context);
+                adapterOrders = new BikerOrderAssignedRecycler_Adapter(orderAssignedMainPOJO.getData(),OrderBikerAssignedActivity.this);
                 recListOrders.setAdapter(adapterOrders);
             }
             else
             {
-                adapterOrders = new BikerDeliveredOrderRecycler_Adapter(bikerOrderMainPOJO.getData(),context);
-                recListOrders.setAdapter(adapterOrders);
-
                 relativeLayout.setVisibility(View.GONE);
                 recListOrders.setVisibility(View.VISIBLE);
-            }
 
+                adapterOrders = new BikerOrderAssignedRecycler_Adapter(orderAssignedMainPOJO.getData(),OrderBikerAssignedActivity.this);
+                recListOrders.setAdapter(adapterOrders);
+            }
 
         } catch (Exception e) {
             Log.i("Openorder", e.getMessage());

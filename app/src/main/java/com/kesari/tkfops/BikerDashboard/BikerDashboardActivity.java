@@ -23,12 +23,14 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kesari.tkfops.BikerDeliveredOrder.BikerDeliveredOrderActivity;
 import com.kesari.tkfops.BikerMap.BikerMapFragment;
 import com.kesari.tkfops.BikerOrderList.BikerOpenOrderFragment;
+import com.kesari.tkfops.BikerProfileData.BikerProfileActivity;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.SelectLogin.SelectLoginActivity;
 import com.kesari.tkfops.Utilities.LocationServiceNew;
@@ -53,6 +55,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
     TextView name_Login;
     boolean mShowingBack = false;
     TextView order_open,order_delivered,route;
+    RelativeLayout profile_holder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +115,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
             View header = navigationView.getHeaderView(0);
 
             name_Login = (TextView) header.findViewById(R.id.name_Login);
+            profile_holder = (RelativeLayout) header.findViewById(R.id.profile_holder);
 
             try
             {
@@ -122,6 +126,14 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
             {
                 name = "Guest";
             }
+
+            profile_holder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(BikerDashboardActivity.this, BikerProfileActivity.class);
+                    startActivity(intent);
+                }
+            });
 
             order_open.setOnClickListener(new View.OnClickListener() {
                 @Override

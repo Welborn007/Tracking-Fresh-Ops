@@ -113,7 +113,7 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
             holder.rejected.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    updateOrderDetails(OrdersListReView.get(position).getOrder().get_id(),"Rejected","");
+                    //updateOrderDetails(OrdersListReView.get(position).getOrder().get_id(),"Rejected","");
                 }
             });
 

@@ -12,7 +12,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.Map.JSON_POJO;
@@ -46,6 +50,9 @@ public class DriverListActivity extends AppCompatActivity implements NetworkUtil
     private BikerListMainPOJO bikerListMainPOJO;
     private String orderID;
 
+    private RelativeLayout relativeLayout;
+    private TextView valueTV;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,8 +65,7 @@ public class DriverListActivity extends AppCompatActivity implements NetworkUtil
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-/*Register receiver*/
+            /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
@@ -71,6 +77,8 @@ public class DriverListActivity extends AppCompatActivity implements NetworkUtil
             Orders = new LinearLayoutManager(DriverListActivity.this);
             Orders.setOrientation(LinearLayoutManager.VERTICAL);
             recListOrders.setLayoutManager(Orders);
+
+            relativeLayout = (RelativeLayout) findViewById(R.id.relativelay_reclview);
 
             final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
@@ -126,8 +134,29 @@ public class DriverListActivity extends AppCompatActivity implements NetworkUtil
         {
             bikerListMainPOJO = gson.fromJson(Response,BikerListMainPOJO.class);
 
-            adapterOrders = new BikerListRecyclerAdapter(bikerListMainPOJO.getData(),DriverListActivity.this,orderID);
-            recListOrders.setAdapter(adapterOrders);
+            valueTV = new TextView(DriverListActivity.this);
+
+            if(bikerListMainPOJO.getData().isEmpty())
+            {
+                recListOrders.setVisibility(View.GONE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                relativeLayout.removeAllViews();
+                valueTV.setText("No Biker Assigned!!!");
+                valueTV.setGravity(Gravity.CENTER);
+                valueTV.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                ((RelativeLayout) relativeLayout).addView(valueTV);
+
+                adapterOrders = new BikerListRecyclerAdapter(bikerListMainPOJO.getData(),DriverListActivity.this,orderID);
+                recListOrders.setAdapter(adapterOrders);
+            }
+            else
+            {
+                relativeLayout.setVisibility(View.GONE);
+                recListOrders.setVisibility(View.VISIBLE);
+
+                adapterOrders = new BikerListRecyclerAdapter(bikerListMainPOJO.getData(),DriverListActivity.this,orderID);
+                recListOrders.setAdapter(adapterOrders);
+            }
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());

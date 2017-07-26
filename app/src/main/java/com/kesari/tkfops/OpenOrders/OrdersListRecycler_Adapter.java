@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.kesari.tkfops.BikerList.DriverListActivity;
+import com.kesari.tkfops.Customer.CustomerMapActivity;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
@@ -158,6 +159,18 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
 
                     Intent intent = new Intent(context, DriverListActivity.class);
                     intent.putExtra("orderID",orderID);
+                    context.startActivity(intent);
+                }
+            });
+
+            holder.path.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, CustomerMapActivity.class);
+                    intent.putExtra("place",OrdersListReView.get(position).getAddress().getFullName());
+                    intent.putExtra("id",OrdersListReView.get(position).getAddressId());
+                    intent.putExtra("Lat", Double.parseDouble(OrdersListReView.get(position).getAddress().getLatitude()));
+                    intent.putExtra("Lon", Double.parseDouble(OrdersListReView.get(position).getAddress().getLongitude()));
                     context.startActivity(intent);
                 }
             });

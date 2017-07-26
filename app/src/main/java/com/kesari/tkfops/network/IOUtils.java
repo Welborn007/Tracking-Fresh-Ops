@@ -305,12 +305,12 @@ public class IOUtils {
 
         Log.i("url", url);
         Log.i("JSON CREATED", jsonObject.toString());
-        final Dialog dialog = new Dialog(context);
+       /* final Dialog dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.progressdialog);
         dialog.setCanceledOnTouchOutside(false);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        dialog.show();
+        dialog.show();*/
 
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST,
                 url, jsonObject,
@@ -319,7 +319,7 @@ public class IOUtils {
                     @Override
                     public void onResponse(JSONObject response) {
                         Log.d("response", response.toString());
-                        dialog.dismiss();
+                        //dialog.dismiss();
                         callback.onSuccess(response.toString());
                     }
                 }, new Response.ErrorListener() {
@@ -327,7 +327,7 @@ public class IOUtils {
             @Override
             public void onErrorResponse(VolleyError error) {
                 //VolleyLog.d("Error", "Error: " + error.getMessage());
-                dialog.dismiss();
+                //dialog.dismiss();
 
                 try{
                     String json = null;

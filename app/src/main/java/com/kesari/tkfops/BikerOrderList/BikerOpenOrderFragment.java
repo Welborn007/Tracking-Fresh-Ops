@@ -7,25 +7,20 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.Map.JSON_POJO;
-import com.kesari.tkfops.OpenOrders.OpenOrdersRecycler_Adapter;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,12 +42,16 @@ public class BikerOpenOrderFragment extends Fragment {
     private static Gson gson;
     private static BikerOrderMainPOJO bikerOrderMainPOJO;
 
+    private static RelativeLayout relativeLayout;
+    private static TextView valueTV;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View V = inflater.inflate(R.layout.fragment_biker_open_order, container, false);
         recListOrders = (RecyclerView) V.findViewById(R.id.recyclerView);
+        relativeLayout = (RelativeLayout) V.findViewById(R.id.relativelay_reclview);
 
         return V;
     }
@@ -64,16 +63,12 @@ public class BikerOpenOrderFragment extends Fragment {
 
         try
         {
-
-            //gps = new GPSTracker(getActivity());
-
             gson = new Gson();
 
             recListOrders.setHasFixedSize(true);
             Orders = new LinearLayoutManager(getActivity());
             Orders.setOrientation(LinearLayoutManager.VERTICAL);
             recListOrders.setLayoutManager(Orders);
-
 
             //getData();
             getOrderList(getActivity());
@@ -113,13 +108,26 @@ public class BikerOpenOrderFragment extends Fragment {
         try
         {
             bikerOrderMainPOJO = gson.fromJson(Response, BikerOrderMainPOJO.class);
+            valueTV = new TextView(context);
 
             if(bikerOrderMainPOJO.getData().isEmpty())
             {
-                FireToast.customSnackbar(context,"No Order Assigned!!!","Swipe");
+                recListOrders.setVisibility(View.GONE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                relativeLayout.removeAllViews();
+                valueTV.setText("No Order Assigned!!!");
+                valueTV.setGravity(Gravity.CENTER);
+                valueTV.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                ((RelativeLayout) relativeLayout).addView(valueTV);
+
+                adapterOrders = new BikerOrderRecyclerAdapter(bikerOrderMainPOJO.getData(),context);
+                recListOrders.setAdapter(adapterOrders);
             }
             else
             {
+                relativeLayout.setVisibility(View.GONE);
+                recListOrders.setVisibility(View.VISIBLE);
+
                 adapterOrders = new BikerOrderRecyclerAdapter(bikerOrderMainPOJO.getData(),context);
                 recListOrders.setAdapter(adapterOrders);
             }
@@ -129,61 +137,4 @@ public class BikerOpenOrderFragment extends Fragment {
         }
     }
 
-    public void getData() {
-        try {
-            JSONArray jsonArray = new JSONArray(loadJSONFromAsset());
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                JSONObject jo_inside = jsonArray.getJSONObject(i);
-
-                JSON_POJO js = new JSON_POJO();
-
-                String location_name = jo_inside.getString("location_name");
-                Double latitude = jo_inside.getDouble("latitude");
-                Double longitude = jo_inside.getDouble("longitude");
-                String id = jo_inside.getString("id");
-                String customer_name = jo_inside.getString("customer_name");
-                String payment_mode = jo_inside.getString("payment_mode");
-                String payment_confirmation = jo_inside.getString("payment_confirmation");
-
-                //getMapsApiDirectionsUrl(latitude,longitude);
-
-                js.setId(id);
-                js.setLatitude(latitude);
-                js.setLongitude(longitude);
-                js.setLocation_name(location_name);
-                js.setCustomer_name(customer_name);
-                js.setPayment_mode(payment_mode);
-                js.setPayment_confirmation(payment_confirmation);
-                /*js.setDistance(distance);
-                js.setTime(duration);*/
-
-                jsonIndiaModelList.add(js);
-
-            }
-
-            adapterOrders = new OpenOrdersRecycler_Adapter(jsonIndiaModelList, SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
-            recListOrders.setAdapter(adapterOrders);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getActivity().getAssets().open("mock_data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
 }

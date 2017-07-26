@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:background="@android:color/white"
-    tools:showIn="@layout/activity_vehicle_order_review"
+    tools:showIn="@layout/activity_assigned_order_review"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_height="match_parent">
 
@@ -20,7 +20,7 @@
 
             <TextView
                 android:id="@+id/delivery_text"
-                android:text="Order Review"
+                android:text="Biker Order Review"
                 android:textColor="@color/white"
                 android:drawablePadding="-190dp"
                 android:padding="10dp"
@@ -30,36 +30,58 @@
                 android:layout_height="wrap_content"/>
 
             <LinearLayout
-                android:orientation="vertical"
-                android:visibility="gone"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:id="@+id/bikeNo_Holder"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:text="Order Successful"
-                    android:textColor="@color/Button_Color"
-                    android:padding="10dp"
-                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Order assigned to Bike:"
+                    android:textColor="@color/DarkGray"
+                    android:textSize="@dimen/text_size14"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/bikeNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="bikeNo"
+                    android:layout_marginLeft="10dp"
                     android:gravity="center"
-                    android:textSize="@dimen/text_size18"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
-                <View
-                    android:background="@color/black"
-                    android:layout_width="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_height="1dp"/>
-
-                <TextView
-                    android:text="Your Order#123456 has been successfully placed. We will confirm your order shortly."
                     android:textColor="@color/black"
-                    android:padding="10dp"
+                    android:textSize="@dimen/text_size14"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bikerName_Holder"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Biker Name:"
+                    android:textColor="@color/DarkGray"
+                    android:textSize="@dimen/text_size14"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/bikerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="bikerName"
+                    android:layout_marginLeft="10dp"
                     android:gravity="center"
-                    android:textSize="14sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size14"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -283,7 +305,5 @@
         </LinearLayout>
 
     </ScrollView>
-
-
 
 </RelativeLayout>

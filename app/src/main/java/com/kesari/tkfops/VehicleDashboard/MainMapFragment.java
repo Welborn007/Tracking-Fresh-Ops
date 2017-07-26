@@ -43,8 +43,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -153,7 +151,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
-                    sendLocationData(Lat,Long);
+                    //sendLocationData(Lat,Long);
                 }
             });
 
@@ -251,7 +249,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
             //getData();
 
-            getOrderList(getActivity());
+            //getOrderList(getActivity());
         }
     }
 
@@ -316,53 +314,6 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    public void getData()
-    {
-        try {
-            JSONArray jsonArray = new JSONArray(loadJSONFromAsset());
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-
-                JSONObject jo_inside = jsonArray.getJSONObject(i);
-
-                JSON_POJO js = new JSON_POJO();
-
-                String location_name = jo_inside.getString("location_name");
-                Double latitude = jo_inside.getDouble("latitude");
-                Double longitude = jo_inside.getDouble("longitude");
-                String id = jo_inside.getString("id");
-
-                js.setId(id);
-                js.setLatitude(latitude);
-                js.setLongitude(longitude);
-                js.setLocation_name(location_name);
-
-                jsonIndiaModelList.add(js);
-
-                addMarkers(id,location_name,latitude,longitude);
-                getMapsApiDirectionsUrl(latitude,longitude);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String loadJSONFromAsset() {
-        String json = null;
-        try {
-            InputStream is = getActivity().getAssets().open("mock_data.json");
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
 
     private void addMarkers(String id,String location_name,Double latitude,Double longitude) {
 

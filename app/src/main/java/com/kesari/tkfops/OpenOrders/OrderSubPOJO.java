@@ -1,36 +1,51 @@
 package com.kesari.tkfops.OpenOrders;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by kesari on 07/06/17.
  */
 
 public class OrderSubPOJO {
 
-    private String createdBy;
-
-    private String _id;
+    private String vehicleId;
 
     private String status;
 
-    private String createdAt;
-
-    private String userId;
-
     private String __v;
-
-    private String active;
 
     private String total_price;
 
     private String addressId;
 
+    private String editedAt;
+
+    private String delivery_charge;
+
+    private String orderNo;
+
+    private String _id;
+
+    private String createdBy;
+
+    private AddressOrderPOJO address;
+
+    private String editedBy;
+
+    private String createdAt;
+
+    private String userId;
+
+    private String active;
+
     private String payment_Mode;
 
     private String payment_Status;
 
-    private String editedBy;
+    private String payment_Id;
 
-    private String editedAt;
+    private List<OrderDataPOJO> orders = new ArrayList<OrderDataPOJO>();
 
     public String getPayment_Mode() {
         return payment_Mode;
@@ -134,5 +149,53 @@ public class OrderSubPOJO {
 
     public void setAddressId(String addressId) {
         this.addressId = addressId;
+    }
+
+    public String getVehicleId() {
+        return vehicleId;
+    }
+
+    public void setVehicleId(String vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
+    public String getDelivery_charge() {
+        return delivery_charge;
+    }
+
+    public void setDelivery_charge(String delivery_charge) {
+        this.delivery_charge = delivery_charge;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public AddressOrderPOJO getAddress() {
+        return address;
+    }
+
+    public void setAddress(AddressOrderPOJO address) {
+        this.address = address;
+    }
+
+    public String getPayment_Id() {
+        return payment_Id;
+    }
+
+    public void setPayment_Id(String payment_Id) {
+        this.payment_Id = payment_Id;
+    }
+
+    public List<OrderDataPOJO> getData() {
+        return orders;
+    }
+
+    public void setData(List<OrderDataPOJO> data) {
+        this.orders = data;
     }
 }

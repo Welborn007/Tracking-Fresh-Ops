@@ -19,6 +19,13 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.kesari.tkfops.network.IOUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by kesari on 24/05/17.
@@ -144,5 +151,78 @@ public class LocationServiceNew extends Service implements LocationListener,
     @Override
     public void onLocationChanged(Location arg0) {
         newLocation(arg0);
+
+        String lat = String.valueOf(arg0.getLatitude());
+        String lon = String.valueOf(arg0.getLongitude());
+
+        Log.i("ChangedLat",lat);
+        Log.i("ChangedLon",lon);
+
+        try
+        {
+            if (SharedPrefUtil.getToken(this) != null) {
+                if (!SharedPrefUtil.getToken(this).isEmpty()) {
+
+                    if (SharedPrefUtil.getKeyLoginType(this) != null) {
+
+                        if(SharedPrefUtil.getKeyLoginType(this).equalsIgnoreCase("Vehicle"))
+                        {
+                            if(SharedPrefUtil.getVehicleUser(this).getVehicleData().getVehicleStatus().equalsIgnoreCase("ON"))
+                            {
+                                sendLocationData(lat,lon);
+                            }
+                        }
+                    }
+                }
+            }
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        //sendLocationData(lat,lon);
+    }
+
+    public void sendLocationData(String LAT,String LON){
+
+        try
+        {
+
+            String url = Constants.DriverLocationApi;
+
+            JSONObject jsonObject = new JSONObject();
+
+            try {
+
+                JSONObject postObject = new JSONObject();
+
+                //postObject.put("driver_id","dr001");
+                postObject.put("latitude",LAT);
+                postObject.put("longitude",LON);
+
+                jsonObject.put("post",postObject);
+
+                Log.i("JSON CREATED", jsonObject.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(this));
+
+            IOUtils ioUtils = new IOUtils();
+
+            ioUtils.sendJSONObjectRequestHeader(this,url, params ,jsonObject, new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d("Driver_Updates_Send", result.toString());
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("Driver_Updates_Exception", e.getMessage());
+        }
     }
 }
