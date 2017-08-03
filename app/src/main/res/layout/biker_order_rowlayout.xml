@@ -22,6 +22,7 @@
             <ImageView
                 android:id="@+id/order_status"
                 android:src="@drawable/rejected"
+                android:layout_centerInParent="true"
                 android:layout_alignParentRight="true"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
@@ -56,10 +57,63 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="Order No:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                        <TextView
+                            android:id="@+id/orderNo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textStyle="bold"
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Order placed on:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                        <TextView
+                            android:id="@+id/orderDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="Total Price:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                            />
 
                         <TextView
                             android:id="@+id/total_price"
@@ -70,7 +124,7 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                            />
 
                     </LinearLayout>
 
@@ -86,7 +140,7 @@
                             android:text="Payment Confirmation:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                            />
 
                         <TextView
                             android:id="@+id/payment_confirm"
@@ -97,7 +151,7 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                     </LinearLayout>
 
@@ -113,7 +167,7 @@
                             android:text="Payment Mode:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                            />
 
                         <TextView
                             android:id="@+id/payment_mode"
@@ -124,54 +178,18 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:visibility="gone">
 
-                        <mehdi.sakout.fancybuttons.FancyButton
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:padding="5dp"
-                            fancy:fb_borderColor="#000000"
-                            fancy:fb_borderWidth="1dp"
-                            fancy:fb_defaultColor="@color/colorPrimary"
-                            fancy:fb_focusColor="#2e5071"
-                            fancy:fb_fontIconSize="14dp"
-                            fancy:fb_radius="5dp"
-                            fancy:fb_text="Accept"
-                            fancy:fb_textColor="@color/DarkRed"
-                            fancy:fb_textSize="14sp" />
-
-                        <mehdi.sakout.fancybuttons.FancyButton
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginLeft="10dp"
-                            android:layout_weight="1"
-                            android:padding="5dp"
-                            fancy:fb_borderColor="#000000"
-                            fancy:fb_borderWidth="1dp"
-                            fancy:fb_defaultColor="@color/colorPrimary"
-                            fancy:fb_focusColor="#2e5071"
-                            fancy:fb_fontIconSize="14dp"
-                            fancy:fb_radius="5dp"
-                            fancy:fb_text="Reject"
-                            fancy:fb_textColor="@color/Gray"
-                            fancy:fb_textSize="14sp" />
-
-                    </LinearLayout>
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:gravity="right"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -210,13 +228,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <Button
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                fancy:fb_text="Delivered"
                 android:id="@+id/delivered"
+                fancy:fb_defaultColor="@color/Button_Color"
+                fancy:fb_focusColor="@color/colorPrimary"
+                fancy:fb_radius="5dp"
+                fancy:fb_textColor="@color/white"
+                fancy:fb_textSize="18sp" />
+
+
+            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Delivered"
                 android:layout_weight="1"
                 android:textSize="@dimen/text_size"
+                android:visibility="gone"
                 android:background="@drawable/rounded_btn"
                 android:textStyle="bold"
                 android:textColor="@color/TextColor"

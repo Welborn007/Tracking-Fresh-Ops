@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -44,6 +45,7 @@ public class BikerOpenOrderFragment extends Fragment {
 
     private static RelativeLayout relativeLayout;
     private static TextView valueTV;
+    private static SwipeRefreshLayout swipeContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,6 +54,23 @@ public class BikerOpenOrderFragment extends Fragment {
         View V = inflater.inflate(R.layout.fragment_biker_open_order, container, false);
         recListOrders = (RecyclerView) V.findViewById(R.id.recyclerView);
         relativeLayout = (RelativeLayout) V.findViewById(R.id.relativelay_reclview);
+
+        swipeContainer = (SwipeRefreshLayout) V.findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Your code to refresh the list here.
+                // Make sure you call swipeContainer.setRefreshing(false)
+                // once the network request has completed successfully.
+                getOrderList(getActivity());
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         return V;
     }
@@ -95,6 +114,11 @@ public class BikerOpenOrderFragment extends Fragment {
                     Log.d("OPenOrder", result.toString());
 
                     getOrderListResponse(result,context);
+
+                    if(swipeContainer.isRefreshing())
+                    {
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
             });
 

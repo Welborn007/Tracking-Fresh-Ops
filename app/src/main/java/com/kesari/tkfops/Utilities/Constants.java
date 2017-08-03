@@ -86,6 +86,9 @@ public interface Constants {
     //Assigned Order List to Biker
     String BikerAssignedOrderList = "http://" + StagingIP + "/api/vehicleStock/bikerOrderList?status=";
 
+    //Cancellation / Rejection reasons
+    String Reasons = "http://"+ StagingIP + "/api/order/reason?reason=";
+
     // Milliseconds per second
     public static final int MILLISECONDS_PER_SECOND = 1000;
     // Update frequency in seconds

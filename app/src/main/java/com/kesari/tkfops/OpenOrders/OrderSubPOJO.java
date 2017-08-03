@@ -45,6 +45,36 @@ public class OrderSubPOJO {
 
     private String payment_Id;
 
+    private String rejectReason;
+
+    private String cancelReason;
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
+    private OrderBikerDetails biker;
+
+    public OrderBikerDetails getBiker() {
+        return biker;
+    }
+
+    public void setBiker(OrderBikerDetails biker) {
+        this.biker = biker;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
+    }
+
     private List<OrderDataPOJO> orders = new ArrayList<OrderDataPOJO>();
 
     public String getPayment_Mode() {

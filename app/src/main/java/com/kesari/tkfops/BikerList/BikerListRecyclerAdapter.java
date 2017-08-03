@@ -1,5 +1,6 @@
 package com.kesari.tkfops.BikerList;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -168,6 +169,7 @@ public class BikerListRecyclerAdapter extends RecyclerView.Adapter<BikerListRecy
             if(!_id.isEmpty())
             {
                 Toast.makeText(context, "Order assigned to Biker!!!", Toast.LENGTH_SHORT).show();
+                ((Activity)context).finish();
             }
 
         }catch (Exception e)

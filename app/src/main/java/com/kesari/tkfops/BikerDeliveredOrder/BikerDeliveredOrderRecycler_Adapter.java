@@ -16,6 +16,8 @@ import com.kesari.tkfops.BikerOrderList.BikerOrderSubPOJO;
 import com.kesari.tkfops.BikerOrderReview.BikerOrderReviewActivity;
 import com.kesari.tkfops.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,7 +51,13 @@ public class BikerDeliveredOrderRecycler_Adapter extends RecyclerView.Adapter<Bi
 
             holder.order_number.setText(String.valueOf(position + 1));
             holder.customer_name.setText(OrdersListReView.get(position).getOrder().getCreatedBy());
+            holder.orderNo.setText(OrdersListReView.get(position).getOrder().getOrderNo());
 
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("dd-MM-yyyy");
+            Date d = sdfInput.parse(OrdersListReView.get(position).getOrder().getCreatedAt());
+            String orderDateFormatted = sdfOutput.format(d);
+            holder.orderDate.setText(orderDateFormatted);
 
             if(OrdersListReView.get(position).getOrder().getPayment_Status() == null)
             {
@@ -119,7 +127,7 @@ public class BikerDeliveredOrderRecycler_Adapter extends RecyclerView.Adapter<Bi
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder
     {
-        TextView order_number,customer_name,payment_confirm,payment_mode,time_txt,distance_txt,total_price;
+        TextView order_number,customer_name,payment_confirm,payment_mode,time_txt,distance_txt,total_price,orderDate,orderNo;
         CardView subItemCard_view;
         ImageView order_status;
         LinearLayout payment_confirmHolder,payment_modeHolder;
@@ -150,6 +158,9 @@ public class BikerDeliveredOrderRecycler_Adapter extends RecyclerView.Adapter<Bi
 
             assign = (Button) view.findViewById(R.id.assign);
             path = (Button) view.findViewById(R.id.path);
+
+            orderDate = (TextView) view.findViewById(R.id.orderDate);
+            orderNo = (TextView) view.findViewById(R.id.orderNo);
         }
     }
 }

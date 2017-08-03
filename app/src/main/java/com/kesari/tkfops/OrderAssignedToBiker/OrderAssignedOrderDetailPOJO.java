@@ -25,6 +25,33 @@ public class OrderAssignedOrderDetailPOJO {
     private String editedBy;
     private String editedAt;
     private String bikerId;
+    private String orderNo;
+    private String cancelReason;
+    private String rejectReason;
+
+    public String getCancelReason() {
+        return cancelReason;
+    }
+
+    public void setCancelReason(String cancelReason) {
+        this.cancelReason = cancelReason;
+    }
+
+    public String getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(String rejectReason) {
+        this.rejectReason = rejectReason;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
 
     private List<OrderAssignedOrderListPOJO> orders = new ArrayList<OrderAssignedOrderListPOJO>();
 

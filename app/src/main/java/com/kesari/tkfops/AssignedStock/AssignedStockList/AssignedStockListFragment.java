@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -42,6 +43,8 @@ public class AssignedStockListFragment extends Fragment {
     public static RelativeLayout relativeLayout;
     public static TextView valueTV;
 
+    private static SwipeRefreshLayout swipeContainer;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,6 +66,25 @@ public class AssignedStockListFragment extends Fragment {
 
             relativeLayout = (RelativeLayout) view.findViewById(R.id.relativelay_reclview);
 
+            swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    getStockList(getActivity());
+                }
+            });
+            // Configure the refreshing colors
+            swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light);
+
+            getStockList(getActivity());
+
         } catch (InflateException e) {
     /* map is already there, just return view as it is */
         }
@@ -76,7 +98,7 @@ public class AssignedStockListFragment extends Fragment {
         try
         {
 
-            getStockList(getActivity());
+
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -102,6 +124,11 @@ public class AssignedStockListFragment extends Fragment {
                     Log.d("StockListFragment", result.toString());
 
                     getStockListResponse(result,context);
+
+                    if(swipeContainer.isRefreshing())
+                    {
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
             });
 

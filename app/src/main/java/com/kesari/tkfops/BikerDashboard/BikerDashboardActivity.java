@@ -20,7 +20,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -31,9 +30,9 @@ import com.kesari.tkfops.BikerDeliveredOrder.BikerDeliveredOrderActivity;
 import com.kesari.tkfops.BikerMap.BikerMapFragment;
 import com.kesari.tkfops.BikerOrderList.BikerOpenOrderFragment;
 import com.kesari.tkfops.BikerProfileData.BikerProfileActivity;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.SelectLogin.SelectLoginActivity;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
@@ -43,6 +42,7 @@ import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 public class BikerDashboardActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener,NetworkUtilsReceiver.NetworkResponseInt{
 
@@ -261,13 +261,13 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
         TextView my_account = (TextView) view.findViewById(R.id.my_account);
 
-        /*my_account.setOnClickListener(new View.OnClickListener() {
+        my_account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(VehicleDashboardActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(BikerDashboardActivity.this, BikerProfileActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
 
         CircleImageView imgUserimage = (CircleImageView) view.findViewById(R.id.imgUserimage);
 
@@ -279,7 +279,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                     .into(imgUserimage);
         }*/
 
-        Button logout = (Button) view.findViewById(R.id.btnLogout);
+        FancyButton logout = (FancyButton) view.findViewById(R.id.btnLogout);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override

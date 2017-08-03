@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -49,17 +50,18 @@
         android:layout_height="1dp"
         android:background="#ccc"/>
 
-    <Button
+    <mehdi.sakout.fancybuttons.FancyButton
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Log Out"
+        android:padding="5dp"
+        fancy:fb_text="Log Out"
         android:id="@+id/btnLogout"
-        android:textSize="@dimen/text_size"
-        android:background="@drawable/rounded_btn"
         android:layout_margin="10dp"
-        android:textStyle="bold"
-        android:textColor="@color/TextColor"
-        android:textAppearance="?android:textAppearanceMedium"
-        />
+        fancy:fb_defaultColor="@color/Button_Color"
+        fancy:fb_focusColor="@color/colorPrimary"
+        fancy:fb_radius="5dp"
+        fancy:fb_textColor="@color/white"
+        fancy:fb_textSize="18sp" />
+
 
 </LinearLayout>

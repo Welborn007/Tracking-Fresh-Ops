@@ -1,5 +1,7 @@
 package com.kesari.tkfops.VehicleOrderReview;
 
+import com.kesari.tkfops.OpenOrders.OrderBikerDetails;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,26 @@ public class VehicleOrderReviewDataPOJO {
     private String payment_Status;
 
     private String active;
+
+    private String orderNo;
+
+    private OrderBikerDetails biker;
+
+    public OrderBikerDetails getBiker() {
+        return biker;
+    }
+
+    public void setBiker(OrderBikerDetails biker) {
+        this.biker = biker;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
 
     private List<VehicleOrderReviewProductPOJO> orders = new ArrayList<VehicleOrderReviewProductPOJO>();
 

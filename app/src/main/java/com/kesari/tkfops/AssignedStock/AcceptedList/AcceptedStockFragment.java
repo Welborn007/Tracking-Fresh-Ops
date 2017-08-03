@@ -3,6 +3,7 @@ package com.kesari.tkfops.AssignedStock.AcceptedList;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -42,6 +43,8 @@ public class AcceptedStockFragment extends Fragment {
     private RelativeLayout relativeLayout;
     private TextView valueTV;
 
+    private SwipeRefreshLayout swipeContainer;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -63,6 +66,25 @@ public class AcceptedStockFragment extends Fragment {
             recListAcceptedAccepted.setLayoutManager(Accepted);
 
             relativeLayout = (RelativeLayout) view.findViewById(R.id.relativelay_reclview);
+
+            swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    getAcceptedStockList();
+                }
+            });
+            // Configure the refreshing colors
+            swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light);
+
+            getAcceptedStockList();
             
         } catch (InflateException e) {
     /* map is already there, just return view as it is */
@@ -77,7 +99,7 @@ public class AcceptedStockFragment extends Fragment {
         try
         {
 
-            getAcceptedStockList();
+
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -103,6 +125,11 @@ public class AcceptedStockFragment extends Fragment {
                     Log.d(TAG, result.toString());
 
                     getAcceptedStockListResponse(result);
+
+                    if(swipeContainer.isRefreshing())
+                    {
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
             });
 

@@ -22,7 +22,7 @@ import com.google.gson.Gson;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;

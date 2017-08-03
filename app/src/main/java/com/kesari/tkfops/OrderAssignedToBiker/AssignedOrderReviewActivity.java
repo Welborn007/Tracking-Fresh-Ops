@@ -5,20 +5,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.VehicleOrderReview.VehicleOrderReViewRecyclerAdapter;
 import com.kesari.tkfops.VehicleOrderReview.VehicleOrderReviewMainPOJO;
@@ -29,8 +33,12 @@ import com.kesari.tkfops.network.NetworkUtilsReceiver;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import mehdi.sakout.fancybuttons.FancyButton;
 
 public class AssignedOrderReviewActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
 
@@ -43,8 +51,10 @@ public class AssignedOrderReviewActivity extends AppCompatActivity implements Ne
     private Gson gson;
     VehicleOrderReviewMainPOJO vehicleOrderReviewMainPOJO;
     private RecyclerView.Adapter adapterProducts;
-
-    TextView total_price,payment_status,payment_mode,fullName,buildingName,landmark,address,mobileNo,bikeNo,bikerName;
+    LinearLayout deliveryDateHolder;
+    TextView total_price,payment_status,payment_mode,fullName,buildingName,landmark,address,mobileNo,bikeNo,bikerName,deliveryCharge,orderDate,orderDeliverDate,orderNo;
+    private SwipeRefreshLayout swipeContainer;
+    FancyButton btnCall,btnCallCustomer;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,9 +89,17 @@ public class AssignedOrderReviewActivity extends AppCompatActivity implements Ne
             landmark = (TextView) findViewById(R.id.landmark);
             address = (TextView) findViewById(R.id.address);
             mobileNo = (TextView) findViewById(R.id.mobileNo);
+            btnCall = (FancyButton) findViewById(R.id.btnCall);
+            btnCallCustomer = (FancyButton) findViewById(R.id.btnCallCustomer);
 
             bikeNo = (TextView) findViewById(R.id.bikeNo);
             bikerName = (TextView) findViewById(R.id.bikerName);
+
+            deliveryCharge = (TextView) findViewById(R.id.deliveryCharge);
+            orderNo = (TextView) findViewById(R.id.orderNo);
+            orderDate = (TextView) findViewById(R.id.orderDate);
+            orderDeliverDate = (TextView) findViewById(R.id.orderDeliverDate);
+            deliveryDateHolder = (LinearLayout) findViewById(R.id.deliveryDateHolder);
 
             try
             {
@@ -108,6 +126,23 @@ public class AssignedOrderReviewActivity extends AppCompatActivity implements Ne
                 }
             }
 
+            swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    getOrderDetailsfromID();
+                }
+            });
+            // Configure the refreshing colors
+            swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light);
+
             getOrderDetailsfromID();
 
         } catch (Exception e) {
@@ -131,6 +166,11 @@ public class AssignedOrderReviewActivity extends AppCompatActivity implements Ne
                     Log.d(TAG, result.toString());
 
                     OrderDetailsResponse(result);
+
+                    if(swipeContainer.isRefreshing())
+                    {
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
             });
 
@@ -148,15 +188,8 @@ public class AssignedOrderReviewActivity extends AppCompatActivity implements Ne
             adapterProducts = new VehicleOrderReViewRecyclerAdapter(vehicleOrderReviewMainPOJO.getData().getOrders(),AssignedOrderReviewActivity.this);
             recListProducts.setAdapter(adapterProducts);
 
-            payment_status = (TextView) findViewById(R.id.payment_status);
-            payment_mode = (TextView) findViewById(R.id.payment_mode);
-            fullName = (TextView) findViewById(R.id.fullName);
-            buildingName = (TextView) findViewById(R.id.buildingName);
-            landmark = (TextView) findViewById(R.id.landmark);
-            address = (TextView) findViewById(R.id.address);
-            mobileNo = (TextView) findViewById(R.id.mobileNo);
-
             total_price.setText(vehicleOrderReviewMainPOJO.getData().getTotal_price() + " .Rs");
+            deliveryCharge.setText(vehicleOrderReviewMainPOJO.getData().getDelivery_charge() + " .Rs");
 
             if(vehicleOrderReviewMainPOJO.getData().getPayment_Status() != null)
             {
@@ -167,6 +200,49 @@ public class AssignedOrderReviewActivity extends AppCompatActivity implements Ne
             {
                 payment_mode.setText(vehicleOrderReviewMainPOJO.getData().getPayment_Mode());
             }
+
+            if(vehicleOrderReviewMainPOJO.getData().getStatus().equalsIgnoreCase("Delivered"))
+            {
+                deliveryDateHolder.setVisibility(View.VISIBLE);
+                SimpleDateFormat deliverInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                SimpleDateFormat deliverOutput = new SimpleDateFormat("dd-MM-yyyy");
+                Date deliver = deliverInput.parse(vehicleOrderReviewMainPOJO.getData().getEditedAt());
+                String orderdeliverDateFormatted = deliverOutput.format(deliver);
+                orderDeliverDate.setText(orderdeliverDateFormatted);
+
+                //delivery_textData.setText(" delivered the order.");
+            }
+            else
+            {
+                deliveryDateHolder.setVisibility(View.GONE);
+                //delivery_textData.setText(" will deliver the order.");
+            }
+
+            btnCallCustomer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String phone = vehicleOrderReviewMainPOJO.getData().getAddress().getMobileNo();
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                    startActivity(intent);
+                }
+            });
+
+            btnCall.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String phone = vehicleOrderReviewMainPOJO.getData().getBiker().getMobileNo();
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                    startActivity(intent);
+                }
+            });
+
+            orderNo.setText(vehicleOrderReviewMainPOJO.getData().getOrderNo());
+
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("dd-MM-yyyy");
+            Date d = sdfInput.parse(vehicleOrderReviewMainPOJO.getData().getCreatedAt());
+            String orderDateFormatted = sdfOutput.format(d);
+            orderDate.setText(orderDateFormatted);
 
             fullName.setText(vehicleOrderReviewMainPOJO.getData().getAddress().getFullName());
             buildingName.setText(vehicleOrderReviewMainPOJO.getData().getAddress().getFlat_No() + ", " + vehicleOrderReviewMainPOJO.getData().getAddress().getBuildingName());

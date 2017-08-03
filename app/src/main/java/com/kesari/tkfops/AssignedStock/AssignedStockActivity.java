@@ -20,7 +20,7 @@ import com.kesari.tkfops.R;
 import com.kesari.tkfops.AssignedStock.AcceptedList.AcceptedStockFragment;
 import com.kesari.tkfops.AssignedStock.RejectedList.RejectedStockFragment;
 import com.kesari.tkfops.AssignedStock.AssignedStockList.AssignedStockListFragment;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.NetworkUtils;

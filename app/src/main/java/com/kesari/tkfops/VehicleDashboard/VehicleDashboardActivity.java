@@ -20,7 +20,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
@@ -30,13 +29,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kesari.tkfops.AssignedStock.AssignedStockActivity;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.OpenOrders.OpenOrderFragment;
 import com.kesari.tkfops.OrderAssignedToBiker.OrderBikerAssignedActivity;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Route.RouteActivity;
 import com.kesari.tkfops.SelectLogin.SelectLoginActivity;
 import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.VehicleDeliveredOrders.VehicleDeliveredOrderActivity;
 import com.kesari.tkfops.VehicleProfileData.VehicleProfileActivity;
@@ -55,6 +54,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import mehdi.sakout.fancybuttons.FancyButton;
 
 public class VehicleDashboardActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener, NetworkUtilsReceiver.NetworkResponseInt{
 
@@ -80,7 +80,6 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
         try
         {
-
             final Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -210,8 +209,6 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             order_open.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-               /* Intent intent = new Intent(DashboardActivity.this, OpenOrderActivity.class);
-                startActivity(intent);*/
 
                     flipMapCard();
 
@@ -240,6 +237,8 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             });
 
             //flipCard();
+
+            Log.i("vehicleTOken",SharedPrefUtil.getToken(VehicleDashboardActivity.this));
 
             if (savedInstanceState == null) {
                 getFragmentManager()
@@ -274,7 +273,6 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
                 }
             });
-
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -380,13 +378,13 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
         TextView my_account = (TextView) view.findViewById(R.id.my_account);
 
-        /*my_account.setOnClickListener(new View.OnClickListener() {
+        my_account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(VehicleDashboardActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(VehicleDashboardActivity.this, VehicleProfileActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
 
         CircleImageView imgUserimage = (CircleImageView) view.findViewById(R.id.imgUserimage);
 
@@ -398,7 +396,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                     .into(imgUserimage);
         }*/
 
-        Button logout = (Button) view.findViewById(R.id.btnLogout);
+        FancyButton logout = (FancyButton) view.findViewById(R.id.btnLogout);
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override

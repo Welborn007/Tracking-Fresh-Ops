@@ -6,9 +6,11 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,9 +33,11 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import mehdi.sakout.fancybuttons.FancyButton;
+
 public class BikerLoginActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
 
-    Button btnLogin;
+    FancyButton btnLogin;
     EditText user_name,password;
     private String TAG = this.getClass().getSimpleName();
 
@@ -53,9 +57,40 @@ public class BikerLoginActivity extends AppCompatActivity implements NetworkUtil
 
         gson = new Gson();
 
-        btnLogin = (Button) findViewById(R.id.btnLogin);
+        btnLogin = (FancyButton) findViewById(R.id.btnLogin);
         user_name = (EditText) findViewById(R.id.user_name);
         password = (EditText) findViewById(R.id.password);
+
+        password.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (password.getRight() - password.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+
+                        password.setFocusable(true);
+                        password.requestFocus();
+
+                        if(password.getTransformationMethod() == PasswordTransformationMethod.getInstance())
+                        {
+                            password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                        }
+                        else if(password.getTransformationMethod() == HideReturnsTransformationMethod.getInstance())
+                        {
+                            password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                        }
+
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,11 +106,13 @@ public class BikerLoginActivity extends AppCompatActivity implements NetworkUtil
                 }
                 else if(username.isEmpty())
                 {
-                    Toast.makeText(BikerLoginActivity.this, "Username is empty", Toast.LENGTH_SHORT).show();
+                    user_name.setError("Username is empty");
+                    //Toast.makeText(BikerLoginActivity.this, "Username is empty", Toast.LENGTH_SHORT).show();
                 }
                 else if(pass.isEmpty())
                 {
-                    Toast.makeText(BikerLoginActivity.this, "Password is empty", Toast.LENGTH_SHORT).show();
+                    password.setError("Password is empty");
+                    //Toast.makeText(BikerLoginActivity.this, "Password is empty", Toast.LENGTH_SHORT).show();
                 }
 
             }

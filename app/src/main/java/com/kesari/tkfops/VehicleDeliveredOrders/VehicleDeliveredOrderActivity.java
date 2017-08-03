@@ -7,19 +7,24 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.OpenOrders.OrderMainPOJO;
 import com.kesari.tkfops.OpenOrders.Order_POJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
@@ -45,6 +50,10 @@ public class VehicleDeliveredOrderActivity extends AppCompatActivity implements 
     private Gson gson;
     private OrderMainPOJO orderMainPOJO;
 
+    private RelativeLayout relativeLayout;
+    private TextView valueTV;
+    private SwipeRefreshLayout swipeContainer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,14 +61,13 @@ public class VehicleDeliveredOrderActivity extends AppCompatActivity implements 
 
         try
         {
-
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             setTitle("Order Delivered");
 
-        /*Register receiver*/
+            /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
@@ -78,12 +86,30 @@ public class VehicleDeliveredOrderActivity extends AppCompatActivity implements 
                 }
             }
 
-
             recListOrders = (RecyclerView) findViewById(R.id.recyclerView);
             recListOrders.setHasFixedSize(true);
             Orders = new LinearLayoutManager(this);
             Orders.setOrientation(LinearLayoutManager.VERTICAL);
             recListOrders.setLayoutManager(Orders);
+
+            relativeLayout = (RelativeLayout) findViewById(R.id.relativelay_reclview);
+
+            swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    getOrderList(VehicleDeliveredOrderActivity.this);
+                }
+            });
+            // Configure the refreshing colors
+            swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light);
 
             getOrderList(VehicleDeliveredOrderActivity.this);
 
@@ -111,6 +137,11 @@ public class VehicleDeliveredOrderActivity extends AppCompatActivity implements 
                 public void onSuccess(String result) {
                     Log.d("OPenOrder", result.toString());
 
+                    if(swipeContainer.isRefreshing())
+                    {
+                        swipeContainer.setRefreshing(false);
+                    }
+
                     getOrderListResponse(result,context);
                 }
             });
@@ -125,15 +156,31 @@ public class VehicleDeliveredOrderActivity extends AppCompatActivity implements 
         try
         {
             orderMainPOJO = gson.fromJson(Response, OrderMainPOJO.class);
+            valueTV = new TextView(VehicleDeliveredOrderActivity.this);
 
             if(orderMainPOJO.getData().isEmpty())
             {
-                FireToast.customSnackbar(context,"No Order Delivered!!!","Swipe");
+                recListOrders.setVisibility(View.GONE);
+                relativeLayout.setVisibility(View.VISIBLE);
+                relativeLayout.removeAllViews();
+                valueTV.setText("No Order Delivered!!!");
+                valueTV.setGravity(Gravity.CENTER);
+                valueTV.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT));
+                ((RelativeLayout) relativeLayout).addView(valueTV);
+
+                swipeContainer.setVisibility(View.GONE);
+
+                adapterOrders = new VehicleDeliveredOrdersRecycler_Adapter(orderMainPOJO.getData(),context);
+                recListOrders.setAdapter(adapterOrders);
             }
             else
             {
                 adapterOrders = new VehicleDeliveredOrdersRecycler_Adapter(orderMainPOJO.getData(),context);
                 recListOrders.setAdapter(adapterOrders);
+
+                relativeLayout.setVisibility(View.GONE);
+                recListOrders.setVisibility(View.VISIBLE);
+                swipeContainer.setVisibility(View.VISIBLE);
             }
 
         } catch (Exception e) {

@@ -11,7 +11,8 @@
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:background="?attr/colorPrimary"
+        android:theme="@style/ToolbarStyle"
+        android:background="@color/white"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextColor="@color/white"
         android:layout_height="?attr/actionBarSize">
@@ -41,7 +42,7 @@
 
         <RelativeLayout
             android:id="@+id/header"
-            android:background="@color/blue_trans"
+            android:background="@color/colorPrimaryDark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -57,7 +58,7 @@
                     android:layout_width="96dp"
                     android:layout_height="96dp"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/profile_image_demo"
+                    android:src="@drawable/default_logo"
                     app:civ_border_width="2dp"
                     app:civ_border_color="#FFFFFFFF"/>
 
@@ -106,8 +107,9 @@
                         android:layout_height="wrap_content"
                         android:text="Basic Profile"
                         android:layout_centerVertical="true"
+                        android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:textSize="@dimen/text_size"
+                        android:textSize="@dimen/text_size18"
                         />
 
                 </RelativeLayout>
@@ -130,7 +132,7 @@
                         fancy:fb_text=""
                         fancy:fb_fontIconResource="&#xf10c;"
                         fancy:fb_defaultColor="@color/full_trans"
-                        fancy:fb_focusColor="#2e5071"
+                        fancy:fb_focusColor="@color/full_trans"
                         fancy:fb_radius="5dp"
                         fancy:fb_textColor="@color/Gray"
                         fancy:fb_textSize="18sp" />
@@ -151,7 +153,6 @@
                         android:layout_height="wrap_content"
                         android:text="Armaan Malik"
                         android:layout_marginLeft="10dp"
-                        android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size"
@@ -177,7 +178,7 @@
                         fancy:fb_text=""
                         fancy:fb_fontIconResource="&#xf10c;"
                         fancy:fb_defaultColor="@color/full_trans"
-                        fancy:fb_focusColor="#2e5071"
+                        fancy:fb_focusColor="@color/full_trans"
                         fancy:fb_radius="5dp"
                         fancy:fb_textColor="@color/Gray"
                         fancy:fb_textSize="18sp" />
@@ -198,7 +199,6 @@
                         android:layout_height="wrap_content"
                         android:text="vehicleNo1"
                         android:layout_marginLeft="10dp"
-                        android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size"
@@ -224,7 +224,7 @@
                         fancy:fb_text=""
                         fancy:fb_fontIconResource="&#xf10c;"
                         fancy:fb_defaultColor="@color/full_trans"
-                        fancy:fb_focusColor="#2e5071"
+                        fancy:fb_focusColor="@color/full_trans"
                         fancy:fb_radius="5dp"
                         fancy:fb_textColor="@color/Gray"
                         fancy:fb_textSize="18sp" />
@@ -245,7 +245,6 @@
                         android:layout_height="wrap_content"
                         android:text="vehicleCompany"
                         android:layout_marginLeft="10dp"
-                        android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size"
@@ -271,7 +270,7 @@
                         fancy:fb_text=""
                         fancy:fb_fontIconResource="&#xf10c;"
                         fancy:fb_defaultColor="@color/full_trans"
-                        fancy:fb_focusColor="#2e5071"
+                        fancy:fb_focusColor="@color/full_trans"
                         fancy:fb_radius="5dp"
                         fancy:fb_textColor="@color/Gray"
                         fancy:fb_textSize="18sp" />
@@ -292,7 +291,6 @@
                         android:layout_height="wrap_content"
                         android:text="vehicleModel"
                         android:layout_marginLeft="10dp"
-                        android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size"
@@ -318,7 +316,7 @@
                         fancy:fb_text=""
                         fancy:fb_fontIconResource="&#xf10c;"
                         fancy:fb_defaultColor="@color/full_trans"
-                        fancy:fb_focusColor="#2e5071"
+                        fancy:fb_focusColor="@color/full_trans"
                         fancy:fb_radius="5dp"
                         fancy:fb_textColor="@color/Gray"
                         fancy:fb_textSize="18sp" />
@@ -339,7 +337,6 @@
                         android:layout_height="wrap_content"
                         android:text="vehicleRegNo"
                         android:layout_marginLeft="10dp"
-                        android:textStyle="bold"
                         android:layout_gravity="center"
                         android:textColor="@color/black"
                         android:textSize="@dimen/text_size"

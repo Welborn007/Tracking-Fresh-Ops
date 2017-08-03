@@ -1,164 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_height="wrap_content">
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/subItemCard_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:background="@color/LightGray"
+    card_view:cardCornerRadius="4dp"
+    card_view:cardElevation="4dp">
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:background="@drawable/edittext_border"
-        android:layout_width="match_parent"
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:background="@color/white"
         android:layout_height="wrap_content">
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/images"
-            android:layout_margin="10dp"
-            android:layout_gravity="center"
-            android:layout_width="100dp"
-            android:layout_height="100dp" />
-
-        <View
-            android:background="@color/black"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"/>
-
         <LinearLayout
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="120dp">
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:text="Product"
-                    android:textColor="@color/black"
-                    android:padding="10dp"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_width="90dp"
-                    android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:id="@+id/product_name"
-                    android:text="Orange"
-                    android:textColor="@color/black"
-                    android:padding="10dp"
-                    android:gravity="center"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/images"
+                android:layout_margin="10dp"
+                android:layout_gravity="center"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
 
             <View
                 android:background="@color/black"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"/>
+                android:visibility="gone"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"/>
 
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
 
-                <TextView
-                    android:text="Qty"
-                    android:textColor="@color/black"
-                    android:padding="10dp"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:layout_width="90dp"
-                    android:layout_height="wrap_content"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/quantity"
-                    android:text="4"
-                    android:textColor="@color/black"
-                    android:padding="10dp"
-                    android:gravity="center"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    <TextView
+                        android:text="Product"
+                        android:textColor="@color/black"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/product_name"
+                        android:text="Orange"
+                        android:textColor="@color/black"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <View
+                    android:background="@color/black"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Qty"
+                        android:textColor="@color/black"
+                        android:padding="10dp"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/quantity"
+                        android:text="4"
+                        android:textColor="@color/black"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <View
+                    android:background="@color/black"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Price"
+                        android:textColor="@color/black"
+                        android:padding="10dp"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_width="90dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/price"
+                        android:text="Rs. 25"
+                        android:textColor="@color/black"
+                        android:padding="10dp"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <View
-                android:background="@color/black"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"/>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:text="Price"
-                    android:textColor="@color/black"
-                    android:padding="10dp"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_width="90dp"
-                    android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:id="@+id/price"
-                    android:text="Rs. 25"
-                    android:textColor="@color/black"
-                    android:padding="10dp"
-                    android:gravity="center"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
 
         </LinearLayout>
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_margin="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                fancy:fb_text="@string/accept"
+                android:id="@+id/stock_accept"
+                android:layout_weight="1"
+                fancy:fb_defaultColor="@color/Button_Color"
+                fancy:fb_focusColor="@color/colorPrimary"
+                fancy:fb_radius="5dp"
+                fancy:fb_textColor="@color/white"
+                fancy:fb_textSize="18sp" />
+
+            <mehdi.sakout.fancybuttons.FancyButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                fancy:fb_text="@string/reject"
+                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:id="@+id/stock_reject"
+                fancy:fb_defaultColor="@color/Button_Color"
+                fancy:fb_focusColor="@color/colorPrimary"
+                fancy:fb_radius="5dp"
+                fancy:fb_textColor="@color/white"
+                fancy:fb_textSize="18sp" />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:layout_margin="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    </android.support.v7.widget.CardView>
 
-        <Button
-            android:id="@+id/stock_accept"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/accept"
-            android:layout_weight="1"
-            android:background="@drawable/rounded_btn"
-            android:textSize="@dimen/text_size"
-            android:textStyle="bold"
-            android:textColor="@color/TextColor"
-            android:textAppearance="?android:textAppearanceMedium"
-            />
-
-        <Button
-            android:id="@+id/stock_reject"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/reject"
-            android:layout_weight="1"
-            android:layout_marginLeft="5dp"
-            android:background="@drawable/rounded_btn"
-            android:textSize="@dimen/text_size"
-            android:textStyle="bold"
-            android:textColor="@color/TextColor"
-            android:textAppearance="?android:textAppearanceMedium"
-            />
-
-    </LinearLayout>
-
-    <View
-        android:background="@color/black"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"/>
-
-</LinearLayout>

@@ -49,15 +49,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".OpenOrders.OpenOrderActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".VehicleDeliveredOrders.VehicleDeliveredOrderActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".OrderDetailsSection.OrdersProductListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -69,7 +61,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <service android:name=".Utilities.LocationServiceNew" />
+        <service android:name=".Map.LocationServiceNew" />
 
         <activity
             android:name=".SelectLogin.SelectLoginActivity"
@@ -115,7 +107,11 @@
             android:name=".VehicleProfileData.VehicleProfileActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BikerProfileData.BikerProfileActivity"
+        <activity
+            android:name=".BikerProfileData.BikerProfileActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".BikerMap.BikerMapActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

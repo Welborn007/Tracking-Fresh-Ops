@@ -22,6 +22,7 @@
             <ImageView
                 android:id="@+id/order_status"
                 android:src="@drawable/rejected"
+                android:layout_centerInParent="true"
                 android:layout_alignParentRight="true"
                 android:layout_width="120dp"
                 android:layout_height="120dp" />
@@ -56,10 +57,63 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:text="Order No:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                        <TextView
+                            android:id="@+id/orderNo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textStyle="bold"
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Order placed on:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                        <TextView
+                            android:id="@+id/orderDate"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:text="Total Price:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                         <TextView
                             android:id="@+id/total_price"
@@ -70,7 +124,7 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                     </LinearLayout>
 
@@ -86,7 +140,7 @@
                             android:text="Payment Confirmation:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                         <TextView
                             android:id="@+id/payment_confirm"
@@ -97,7 +151,7 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                     </LinearLayout>
 
@@ -113,7 +167,7 @@
                             android:text="Payment Mode:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                         <TextView
                             android:id="@+id/payment_mode"
@@ -124,7 +178,7 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                     </LinearLayout>
 
@@ -140,7 +194,7 @@
                             android:text="Order assigned to:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                         <TextView
                             android:id="@+id/bikeNo"
@@ -151,7 +205,7 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                     </LinearLayout>
 
@@ -167,7 +221,7 @@
                             android:text="Biker Name:"
                             android:textColor="@color/DarkGray"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                             />
 
                         <TextView
                             android:id="@+id/bikerName"
@@ -178,7 +232,61 @@
                             android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/text_size14"
-                            android:textStyle="bold" />
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/cancelHolder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Cancellation Reason:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                        <TextView
+                            android:id="@+id/cancelReason"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/rejectHolder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Reject Reason:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                        <TextView
+                            android:id="@+id/rejectReason"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            />
 
                     </LinearLayout>
 
@@ -187,6 +295,7 @@
                 <LinearLayout
                     android:gravity="right"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">

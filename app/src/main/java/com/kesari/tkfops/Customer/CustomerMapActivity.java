@@ -28,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -35,7 +36,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
@@ -81,7 +82,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
             /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
@@ -132,7 +133,16 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 return;
             }
             map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.zoomTo(15));
+            map.setTrafficEnabled(true);
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(18).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
             location.setLatitude(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
@@ -148,9 +158,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
             addMarkers(id,place,latitude,longitude);
             getMapsApiDirectionsUrl(latitude,longitude);
-
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                    13));
 
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -188,7 +195,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
             if (map != null) {
                 Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_man_icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_customer))
                         .title(location_name));
 
                 data.put(TAG_ID,id);

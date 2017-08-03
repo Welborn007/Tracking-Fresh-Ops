@@ -43,6 +43,16 @@ public class BikerOrderDetailPOJO {
 
     private String payment_Id;
 
+    private String orderNo;
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
     private List<BikerProductsListPOJO> products = new ArrayList<BikerProductsListPOJO>();
 
     public List<BikerProductsListPOJO> getProducts() {

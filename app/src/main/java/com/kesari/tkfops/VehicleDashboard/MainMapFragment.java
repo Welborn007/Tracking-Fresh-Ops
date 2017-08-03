@@ -110,8 +110,6 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             }
             supportMapFragment.getMapAsync(this);
 
-            //gps = new GPSTracker(getActivity());
-
             Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
 
         } catch (Exception e) {
@@ -139,7 +137,6 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             location.setLongitude(SharedPrefUtil.getLocation(getActivity()).getLongitude());
 
             updateCurrentLocationMarker(location);
-
 
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
                     13));
@@ -249,7 +246,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
             //getData();
 
-            //getOrderList(getActivity());
+            getOrderList(getActivity());
         }
     }
 
@@ -379,7 +376,6 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             String data = "";
             try {
                 HttpConnection http = new HttpConnection();
-                //data = http.readUrl("https://maps.googleapis.com/maps/api/directions/json?origin=17.449797,78.373037&destination=17.47989,78.390095&%20waypoints=optimize:true|17.449797,78.373037||17.47989,78.390095&sensor=false");
                 data = http.readUrl(url[0]);
             } catch (Exception e) {
                 Log.d("Background Task", e.toString());
@@ -462,5 +458,12 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        System.gc();
     }
 }

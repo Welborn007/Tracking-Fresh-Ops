@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.kesari.tkfops.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,6 +51,14 @@ public class BikerOrderAssignedRecycler_Adapter extends RecyclerView.Adapter<Bik
             holder.bikeNo.setText(OrdersListReView.get(position).getBiker().getBikeNo());
             holder.bikerName.setText(OrdersListReView.get(position).getBiker().getBikerName());
 
+            holder.orderNo.setText(OrdersListReView.get(position).getOrder().getOrderNo());
+
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("dd-MM-yyyy");
+            Date d = sdfInput.parse(OrdersListReView.get(position).getOrder().getCreatedAt());
+            String orderDateFormatted = sdfOutput.format(d);
+            holder.orderDate.setText(orderDateFormatted);
+
             if(OrdersListReView.get(position).getOrder().getPayment_Status() == null)
             {
                 holder.payment_confirmHolder.setVisibility(View.GONE);
@@ -73,24 +83,61 @@ public class BikerOrderAssignedRecycler_Adapter extends RecyclerView.Adapter<Bik
 
             if(OrdersListReView.get(position).getOrder().getStatus().equalsIgnoreCase("Rejected"))
             {
+                holder.cancelHolder.setVisibility(View.GONE);
+                holder.rejectHolder.setVisibility(View.VISIBLE);
                 holder.order_status.setImageResource(R.drawable.rejected);
+
+                if(OrdersListReView.get(position).getOrder().getRejectReason() != null)
+                {
+                    if(!OrdersListReView.get(position).getOrder().getRejectReason().isEmpty())
+                    {
+                        holder.rejectReason.setText(OrdersListReView.get(position).getOrder().getRejectReason());
+                        holder.rejectHolder.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        holder.rejectHolder.setVisibility(View.GONE);
+                    }
+                }
             }
             else if(OrdersListReView.get(position).getOrder().getStatus().equalsIgnoreCase("Accepted"))
             {
+                holder.cancelHolder.setVisibility(View.GONE);
+                holder.rejectHolder.setVisibility(View.GONE);
                 holder.order_status.setImageResource(R.drawable.accepted);
             }
             else if(OrdersListReView.get(position).getOrder().getStatus().equalsIgnoreCase("Pending"))
             {
+                holder.cancelHolder.setVisibility(View.GONE);
+                holder.rejectHolder.setVisibility(View.GONE);
                 holder.order_status.setImageResource(R.drawable.pending);
             }
             else if(OrdersListReView.get(position).getOrder().getStatus().equalsIgnoreCase("Cancelled"))
             {
+                holder.cancelHolder.setVisibility(View.VISIBLE);
+                holder.rejectHolder.setVisibility(View.GONE);
                 holder.order_status.setImageResource(R.drawable.cancel);
+
+                if(OrdersListReView.get(position).getOrder().getCancelReason() != null)
+                {
+                    if(!OrdersListReView.get(position).getOrder().getCancelReason().isEmpty())
+                    {
+                        holder.cancelReason.setText(OrdersListReView.get(position).getOrder().getCancelReason());
+                        holder.cancelHolder.setVisibility(View.VISIBLE);
+                    }
+                    else
+                    {
+                        holder.cancelHolder.setVisibility(View.GONE);
+                    }
+                }
             }
             else if(OrdersListReView.get(position).getOrder().getStatus().equalsIgnoreCase("Delivered"))
             {
+                holder.cancelHolder.setVisibility(View.GONE);
+                holder.rejectHolder.setVisibility(View.GONE);
                 holder.order_status.setImageResource(R.drawable.delivered);
             }
+
 
             holder.subItemCard_view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -118,10 +165,10 @@ public class BikerOrderAssignedRecycler_Adapter extends RecyclerView.Adapter<Bik
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder
     {
-        TextView order_number,customer_name,payment_confirm,payment_mode,total_price,bikeNo,bikerName;
+        TextView order_number,customer_name,payment_confirm,payment_mode,total_price,bikeNo,bikerName,orderDate,orderNo,rejectReason,cancelReason;
         CardView subItemCard_view;
         ImageView order_status;
-        LinearLayout payment_confirmHolder,payment_modeHolder;
+        LinearLayout payment_confirmHolder,payment_modeHolder,rejectHolder,cancelHolder;
 
         public RecyclerViewHolder(View view)
         {
@@ -134,11 +181,17 @@ public class BikerOrderAssignedRecycler_Adapter extends RecyclerView.Adapter<Bik
             total_price = (TextView) view.findViewById(R.id.total_price);
             bikeNo = (TextView) view.findViewById(R.id.bikeNo);
             bikerName = (TextView) view.findViewById(R.id.bikerName);
+            rejectReason = (TextView) view.findViewById(R.id.rejectReason);
+            cancelReason = (TextView) view.findViewById(R.id.cancelReason);
 
             payment_confirmHolder = (LinearLayout) view.findViewById(R.id.payment_confirmHolder);
             payment_modeHolder = (LinearLayout) view.findViewById(R.id.payment_modeHolder);
+            rejectHolder = (LinearLayout) view.findViewById(R.id.rejectHolder);
+            cancelHolder = (LinearLayout) view.findViewById(R.id.cancelHolder);
 
             order_status = (ImageView) view.findViewById(R.id.order_status);
+            orderDate = (TextView) view.findViewById(R.id.orderDate);
+            orderNo = (TextView) view.findViewById(R.id.orderNo);
 
         }
     }

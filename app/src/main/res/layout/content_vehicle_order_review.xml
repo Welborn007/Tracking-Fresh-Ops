@@ -4,136 +4,198 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white"
     tools:showIn="@layout/activity_vehicle_order_review"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipeContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
-            android:orientation="vertical"
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/delivery_text"
-                android:text="Order Review"
-                android:textColor="@color/white"
-                android:drawablePadding="-190dp"
-                android:padding="10dp"
-                android:textSize="@dimen/text_size"
-                android:background="@color/Button_Color"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
             <LinearLayout
                 android:orientation="vertical"
-                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <TextView
-                    android:text="Order Successful"
-                    android:textColor="@color/Button_Color"
+                    android:id="@+id/delivery_text"
+                    android:text="Order Review"
+                    android:textColor="@color/white"
+                    android:drawablePadding="-190dp"
                     android:padding="10dp"
+                    android:textSize="@dimen/text_size"
                     android:textStyle="bold"
-                    android:gravity="center"
-                    android:textSize="@dimen/text_size18"
+                    android:background="@color/Button_Color"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
-                <View
-                    android:background="@color/black"
-                    android:layout_width="match_parent"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_height="1dp"/>
-
-                <TextView
-                    android:text="Your Order#123456 has been successfully placed. We will confirm your order shortly."
-                    android:textColor="@color/black"
+                <LinearLayout
+                    android:orientation="vertical"
                     android:padding="10dp"
-                    android:gravity="center"
-                    android:textSize="14sp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent">
 
-            </LinearLayout>
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
+                        <TextView
+                            android:text="Order no: "
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/recyclerView"
-                android:scrollbars="vertical"
-                android:background="@color/white">
-            </android.support.v7.widget.RecyclerView>
+                        <TextView
+                            android:id="@+id/orderNo"
+                            android:text="nil"
+                            android:layout_marginLeft="5dp"
+                            android:textColor="@color/black"
+                            android:gravity="center"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_gravity="right"
-                android:padding="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                    </LinearLayout>
 
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-                    <TextView
-                        android:text="Subtotal"
-                        android:textColor="@color/black"
-                        android:textSize="14sp"
-                        android:textStyle="bold"
-                        android:layout_width="160dp"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:text="Order Placed On: "
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
 
-                    <TextView
-                        android:text="Rs. 100"
-                        android:textColor="@color/black"
-                        android:gravity="center"
-                        android:textSize="14sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        <TextView
+                            android:id="@+id/orderDate"
+                            android:text="nil"
+                            android:layout_marginLeft="5dp"
+                            android:textColor="@color/black"
+                            android:gravity="center"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/deliveryDateHolder"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Order Delivered On: "
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/orderDeliverDate"
+                            android:text="nil"
+                            android:layout_marginLeft="5dp"
+                            android:textColor="@color/black"
+                            android:gravity="center"
+                            android:textSize="14sp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:background="@color/Gray"/>
+
+                    <LinearLayout
+                        android:gravity="end"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Delivery Charges"
+                            android:textColor="@color/black"
+                            android:textStyle="bold"
+                            android:textSize="14sp"
+                            android:layout_width="160dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/deliveryCharge"
+                            android:text="nil"
+                            android:textColor="@color/black"
+                            android:gravity="end"
+                            android:textSize="14sp"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:gravity="end"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="Grand Total"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_width="160dp"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/total_price"
+                            android:text="nil"
+                            android:textColor="@color/black"
+                            android:gravity="end"
+                            android:textSize="14sp"
+                            android:layout_width="50dp"
+                            android:layout_height="wrap_content"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/recyclerView"
+                    android:scrollbars="vertical"
+                    android:background="@color/white">
+                </android.support.v7.widget.RecyclerView>
+
+
                 <LinearLayout
                     android:orientation="horizontal"
-                    android:visibility="gone"
+                    android:padding="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:text="Shipping &amp; Delivery"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:layout_width="160dp"
-                        android:layout_height="wrap_content"/>
-
-                    <TextView
-                        android:text="Rs.50"
-                        android:textColor="@color/black"
-                        android:gravity="center"
-                        android:textSize="14sp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:text="Grand Total"
+                        android:text="Payment Status"
                         android:textColor="@color/black"
                         android:textSize="14sp"
                         android:textStyle="bold"
@@ -141,7 +203,7 @@
                         android:layout_height="wrap_content"/>
 
                     <TextView
-                        android:id="@+id/total_price"
+                        android:id="@+id/payment_status"
                         android:text="nil"
                         android:textColor="@color/black"
                         android:gravity="center"
@@ -151,139 +213,192 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:padding="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                    <TextView
+                        android:text="Payment Mode"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_width="160dp"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/payment_mode"
+                        android:text="nil"
+                        android:textColor="@color/black"
+                        android:gravity="center"
+                        android:textSize="14sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black"/>
 
                 <TextView
-                    android:text="Payment Status"
+                    android:text="Your Delivery Address"
+                    android:padding="10dp"
                     android:textColor="@color/black"
-                    android:textSize="14sp"
                     android:textStyle="bold"
-                    android:layout_width="160dp"
+                    android:textSize="14sp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/payment_status"
-                    android:text="nil"
-                    android:textColor="@color/black"
-                    android:gravity="center"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"/>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:padding="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:text="Payment Mode"
+                    android:id="@+id/fullName"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:layout_width="160dp"
-                    android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:id="@+id/payment_mode"
-                    android:text="nil"
-                    android:textColor="@color/black"
-                    android:gravity="center"
-                    android:textSize="14sp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/black"/>
-
-            <TextView
-                android:text="Your Delivery Address"
-                android:padding="10dp"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:background="@drawable/edittext_border"
-                android:textSize="14sp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/fullName"
-                android:text=""
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:layout_marginLeft="10dp"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/buildingName"
-                android:text=""
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:layout_marginLeft="10dp"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/landmark"
-                android:text=""
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:layout_marginLeft="10dp"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"/>
-
-            <TextView
-                android:id="@+id/address"
-                android:text=""
-                android:textColor="@color/black"
-                android:textSize="14sp"
-                android:layout_marginLeft="10dp"
-                android:layout_width="160dp"
-                android:layout_height="wrap_content"/>
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/mobileNo"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:layout_gravity="center"
                     android:layout_marginLeft="10dp"
-                    android:layout_width="wrap_content"
+                    android:layout_width="160dp"
                     android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/buildingName"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/landmark"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"/>
+
+                <TextView
+                    android:id="@+id/address"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="14sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_width="160dp"
+                    android:layout_height="wrap_content"/>
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/mobileNo"
+                        android:textColor="@color/black"
+                        android:textSize="14sp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <mehdi.sakout.fancybuttons.FancyButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:text="Call Customer"
+                        android:id="@+id/btnCallCustomer"
+                        fancy:fb_defaultColor="@color/Button_Color"
+                        fancy:fb_focusColor="@color/colorPrimary"
+                        fancy:fb_radius="5dp"
+                        fancy:fb_textColor="@color/white"
+                        fancy:fb_textSize="16sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/BikerHolder"
+                    android:visibility="gone"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="Biker Details"
+                        android:textColor="@color/white"
+                        android:drawablePadding="-190dp"
+                        android:padding="10dp"
+                        android:textSize="@dimen/text_size"
+                        android:background="@color/Button_Color"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
+                    <LinearLayout
+                        android:padding="15dp"
+                        android:id="@+id/bikerNameHolder"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Biker "
+                            android:layout_gravity="center"
+                            android:textColor="@color/Gray"
+                            android:textSize="@dimen/text_size"
+                            />
+
+                        <TextView
+                            android:id="@+id/bikerName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:textStyle="bold"
+                            android:layout_gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size"
+                            />
+
+                        <TextView
+                            android:id="@+id/delivery_textData"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=" will deliver the order."
+                            android:layout_marginLeft="5dp"
+                            android:layout_gravity="center"
+                            android:textColor="@color/Gray"
+                            android:textSize="@dimen/text_size"
+                            />
+
+                        <mehdi.sakout.fancybuttons.FancyButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="5dp"
+                            android:text="Call Biker"
+                            android:id="@+id/btnCall"
+                            fancy:fb_defaultColor="@color/Button_Color"
+                            fancy:fb_focusColor="@color/colorPrimary"
+                            fancy:fb_radius="5dp"
+                            fancy:fb_textColor="@color/white"
+                            fancy:fb_textSize="16sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </ScrollView>
 
-    </ScrollView>
-
+        </android.support.v4.widget.SwipeRefreshLayout>
 
 
 </RelativeLayout>

@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.kesari.tkfops.BikerLogin.BikerLoginActivity;
 import com.kesari.tkfops.R;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.VehicleLogin.VehicleLoginActivity;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;

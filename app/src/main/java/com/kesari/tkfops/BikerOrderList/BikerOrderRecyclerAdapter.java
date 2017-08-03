@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,9 +21,13 @@ import com.kesari.tkfops.network.IOUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Created by kesari on 03/07/17.
@@ -58,7 +61,13 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
 
             holder.order_number.setText(String.valueOf(position + 1));
             holder.customer_name.setText(OrdersListReView.get(position).getOrder().getCreatedBy());
+            holder.orderNo.setText(OrdersListReView.get(position).getOrder().getOrderNo());
 
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("dd-MM-yyyy");
+            Date d = sdfInput.parse(OrdersListReView.get(position).getOrder().getCreatedAt());
+            String orderDateFormatted = sdfOutput.format(d);
+            holder.orderDate.setText(orderDateFormatted);
 
             if(OrdersListReView.get(position).getOrder().getPayment_Status() == null)
             {
@@ -110,21 +119,6 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
                 }
             });
 
-            holder.rejected.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //updateOrderDetails(OrdersListReView.get(position).getOrder().get_id(),"Rejected","");
-                }
-            });
-
-
-            holder.path.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            });
-
             holder.subItemCard_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -149,12 +143,12 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder
     {
-        TextView order_number,customer_name,payment_confirm,payment_mode,total_price;
+        TextView order_number,customer_name,payment_confirm,payment_mode,total_price,orderDate,orderNo;
         CardView subItemCard_view;
         ImageView order_status;
         LinearLayout payment_confirmHolder,payment_modeHolder;
 
-        Button delivered,path,rejected;
+        FancyButton delivered;
 
         public RecyclerViewHolder(View view)
         {
@@ -165,15 +159,16 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
             payment_mode = (TextView)view.findViewById(R.id.payment_mode);
             subItemCard_view = (CardView) view.findViewById(R.id.subItemCard_view);
             total_price = (TextView) view.findViewById(R.id.total_price);
+            orderDate = (TextView) view.findViewById(R.id.orderDate);
+            orderNo = (TextView) view.findViewById(R.id.orderNo);
 
             payment_confirmHolder = (LinearLayout) view.findViewById(R.id.payment_confirmHolder);
             payment_modeHolder = (LinearLayout) view.findViewById(R.id.payment_modeHolder);
 
             order_status = (ImageView) view.findViewById(R.id.order_status);
 
-            delivered = (Button) view.findViewById(R.id.delivered);
-            rejected = (Button) view.findViewById(R.id.rejected);
-            path = (Button) view.findViewById(R.id.path);
+            delivered = (FancyButton) view.findViewById(R.id.delivered);
+
         }
     }
 

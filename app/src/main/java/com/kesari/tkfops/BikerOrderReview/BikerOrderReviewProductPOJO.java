@@ -30,6 +30,16 @@ public class BikerOrderReviewProductPOJO {
 
     private String productId;
 
+    private String sub_total;
+
+    public String getSub_total() {
+        return sub_total;
+    }
+
+    public void setSub_total(String sub_total) {
+        this.sub_total = sub_total;
+    }
+
     public String getUnit() {
         return unit;
     }

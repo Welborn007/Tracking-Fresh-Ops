@@ -1,4 +1,4 @@
-package com.kesari.tkfops.Utilities;
+package com.kesari.tkfops.Map;
 
 import android.Manifest;
 import android.app.Service;
@@ -19,6 +19,8 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.kesari.tkfops.Utilities.Constants;
+import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.IOUtils;
 
 import org.json.JSONException;

@@ -23,12 +23,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
-import com.kesari.tkfops.Customer.CustomerMapActivity;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
@@ -133,7 +133,16 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 return;
             }
             map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.zoomTo(15));
+            map.setTrafficEnabled(true);
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(18).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
             location.setLatitude(SharedPrefUtil.getLocation(getActivity()).getLatitude());
@@ -141,8 +150,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
             updateCurrentLocationMarker(location);
 
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                    13));
+           //map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,18));
 
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -176,7 +184,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 /*Double latitude = marker.getPosition().latitude;
                 Double longitude = marker.getPosition().longitude;*/
 
-                        Intent intent = new Intent(getActivity(), CustomerMapActivity.class);
+                        Intent intent = new Intent(getActivity(), BikerMapActivity.class);
                         intent.putExtra("place",place);
                         intent.putExtra("id",id);
                         intent.putExtra("Lat", Double.parseDouble(latitude));
@@ -281,7 +289,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
             if (map != null) {
                 Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_man_icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_customer))
                         .title(location_name));
 
                 data.put(TAG_ID,id);

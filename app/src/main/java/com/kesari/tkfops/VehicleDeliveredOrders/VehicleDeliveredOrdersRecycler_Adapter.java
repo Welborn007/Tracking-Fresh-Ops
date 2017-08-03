@@ -16,6 +16,8 @@ import com.kesari.tkfops.OpenOrders.OrderSubPOJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.VehicleOrderReview.VehicleOrderReviewActivity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -49,7 +51,13 @@ public class VehicleDeliveredOrdersRecycler_Adapter extends RecyclerView.Adapter
 
             holder.order_number.setText(String.valueOf(position + 1));
             holder.customer_name.setText(OrdersListReView.get(position).getCreatedBy());
+            holder.orderNo.setText(OrdersListReView.get(position).getOrderNo());
 
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("dd-MM-yyyy");
+            Date d = sdfInput.parse(OrdersListReView.get(position).getCreatedAt());
+            String orderDateFormatted = sdfOutput.format(d);
+            holder.orderDate.setText(orderDateFormatted);
 
             if(OrdersListReView.get(position).getPayment_Status() == null)
             {
@@ -72,6 +80,7 @@ public class VehicleDeliveredOrdersRecycler_Adapter extends RecyclerView.Adapter
             }
 
             holder.total_price.setText(OrdersListReView.get(position).getTotal_price());
+
 
             if(OrdersListReView.get(position).getStatus().equalsIgnoreCase("Rejected"))
             {
@@ -119,7 +128,7 @@ public class VehicleDeliveredOrdersRecycler_Adapter extends RecyclerView.Adapter
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder
     {
-        TextView order_number,customer_name,payment_confirm,payment_mode,time_txt,distance_txt,total_price;
+        TextView order_number,customer_name,payment_confirm,payment_mode,time_txt,distance_txt,total_price,orderDate,orderNo;
         CardView subItemCard_view;
         ImageView order_status;
         LinearLayout payment_confirmHolder,payment_modeHolder;
@@ -138,6 +147,7 @@ public class VehicleDeliveredOrdersRecycler_Adapter extends RecyclerView.Adapter
             subItemCard_view = (CardView) view.findViewById(R.id.subItemCard_view);
             total_price = (TextView) view.findViewById(R.id.total_price);
 
+
             payment_confirmHolder = (LinearLayout) view.findViewById(R.id.payment_confirmHolder);
             payment_modeHolder = (LinearLayout) view.findViewById(R.id.payment_modeHolder);
 
@@ -150,6 +160,9 @@ public class VehicleDeliveredOrdersRecycler_Adapter extends RecyclerView.Adapter
 
             assign = (Button) view.findViewById(R.id.assign);
             path = (Button) view.findViewById(R.id.path);
+
+            orderDate = (TextView) view.findViewById(R.id.orderDate);
+            orderNo = (TextView) view.findViewById(R.id.orderNo);
         }
     }
 }

@@ -5,21 +5,24 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
@@ -28,8 +31,12 @@ import com.kesari.tkfops.network.NetworkUtilsReceiver;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.listeners.ActionClickListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import mehdi.sakout.fancybuttons.FancyButton;
 
 public class BikerOrderReviewActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
 
@@ -43,9 +50,10 @@ public class BikerOrderReviewActivity extends AppCompatActivity implements Netwo
     BikerOrderReviewMainPOJO orderReviewMainPOJO;
     private RecyclerView.Adapter adapterProducts;
 
-    TextView total_price,payment_status,payment_mode,fullName,buildingName,landmark,address,mobileNo;
-
-    Button btnSubmit;
+    TextView total_price,payment_status,payment_mode,fullName,buildingName,landmark,address,mobileNo,deliveryCharge,orderDate,orderDeliverDate,orderNo;
+    FancyButton btnCallCustomer;
+    private SwipeRefreshLayout swipeContainer;
+    LinearLayout deliveryDateHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,8 +88,13 @@ public class BikerOrderReviewActivity extends AppCompatActivity implements Netwo
             landmark = (TextView) findViewById(R.id.landmark);
             address = (TextView) findViewById(R.id.address);
             mobileNo = (TextView) findViewById(R.id.mobileNo);
+            btnCallCustomer = (FancyButton) findViewById(R.id.btnCallCustomer);
+            deliveryCharge = (TextView) findViewById(R.id.deliveryCharge);
+            orderNo = (TextView) findViewById(R.id.orderNo);
+            orderDate = (TextView) findViewById(R.id.orderDate);
+            orderDeliverDate = (TextView) findViewById(R.id.orderDeliverDate);
 
-            btnSubmit = (Button) findViewById(R.id.btnSubmit);
+            deliveryDateHolder = (LinearLayout) findViewById(R.id.deliveryDateHolder);
 
             final String orderID = getIntent().getStringExtra("orderID");
 
@@ -99,6 +112,23 @@ public class BikerOrderReviewActivity extends AppCompatActivity implements Netwo
                     Log.e(TAG, "Location service is already running");
                 }
             }
+
+            swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    getOrderDetailsfromID();
+                }
+            });
+            // Configure the refreshing colors
+            swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light);
 
             getOrderDetailsfromID();
 
@@ -123,6 +153,11 @@ public class BikerOrderReviewActivity extends AppCompatActivity implements Netwo
                     Log.d(TAG, result.toString());
 
                     OrderDetailsResponse(result);
+
+                    if(swipeContainer.isRefreshing())
+                    {
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
             });
 
@@ -140,15 +175,19 @@ public class BikerOrderReviewActivity extends AppCompatActivity implements Netwo
             adapterProducts = new BikerOrderReViewRecyclerAdapter(orderReviewMainPOJO.getData().getOrder(),BikerOrderReviewActivity.this);
             recListProducts.setAdapter(adapterProducts);
 
-            payment_status = (TextView) findViewById(R.id.payment_status);
-            payment_mode = (TextView) findViewById(R.id.payment_mode);
-            fullName = (TextView) findViewById(R.id.fullName);
-            buildingName = (TextView) findViewById(R.id.buildingName);
-            landmark = (TextView) findViewById(R.id.landmark);
-            address = (TextView) findViewById(R.id.address);
-            mobileNo = (TextView) findViewById(R.id.mobileNo);
+            btnCallCustomer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String phone = orderReviewMainPOJO.getData().getAddress().getMobileNo();
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                    startActivity(intent);
+                }
+            });
 
             total_price.setText(orderReviewMainPOJO.getData().getTotal_price() + " .Rs");
+            deliveryCharge.setText(orderReviewMainPOJO.getData().getDelivery_charge() + " .Rs");
+
+            orderNo.setText(orderReviewMainPOJO.getData().getOrderNo());
 
             if(orderReviewMainPOJO.getData().getPayment_Status() != null)
             {
@@ -158,6 +197,26 @@ public class BikerOrderReviewActivity extends AppCompatActivity implements Netwo
             if(orderReviewMainPOJO.getData().getPayment_Mode() != null)
             {
                 payment_mode.setText(orderReviewMainPOJO.getData().getPayment_Mode());
+            }
+
+            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            SimpleDateFormat sdfOutput = new SimpleDateFormat("dd-MM-yyyy");
+            Date d = sdfInput.parse(orderReviewMainPOJO.getData().getCreatedAt());
+            String orderDateFormatted = sdfOutput.format(d);
+            orderDate.setText(orderDateFormatted);
+
+            if(orderReviewMainPOJO.getData().getStatus().equalsIgnoreCase("Delivered"))
+            {
+                deliveryDateHolder.setVisibility(View.VISIBLE);
+                SimpleDateFormat deliverInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                SimpleDateFormat deliverOutput = new SimpleDateFormat("dd-MM-yyyy");
+                Date deliver = deliverInput.parse(orderReviewMainPOJO.getData().getEditedAt());
+                String orderdeliverDateFormatted = deliverOutput.format(deliver);
+                orderDeliverDate.setText(orderdeliverDateFormatted);
+            }
+            else
+            {
+                deliveryDateHolder.setVisibility(View.GONE);
             }
 
             fullName.setText(orderReviewMainPOJO.getData().getAddress().getFullName());

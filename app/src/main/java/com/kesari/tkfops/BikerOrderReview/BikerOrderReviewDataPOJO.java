@@ -35,6 +35,26 @@ public class BikerOrderReviewDataPOJO {
 
     private String payment_Id;
 
+    private String delivery_charge;
+
+    private String orderNo;
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
+    }
+
+    public String getDelivery_charge() {
+        return delivery_charge;
+    }
+
+    public void setDelivery_charge(String delivery_charge) {
+        this.delivery_charge = delivery_charge;
+    }
+
     private List<BikerOrderReviewProductPOJO> orders = new ArrayList<BikerOrderReviewProductPOJO>();
 
     public String getStatus() {

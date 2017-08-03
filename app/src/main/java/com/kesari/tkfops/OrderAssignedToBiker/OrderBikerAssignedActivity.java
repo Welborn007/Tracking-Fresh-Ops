@@ -8,6 +8,7 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,10 +21,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.OpenOrders.Order_POJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.Utilities.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
@@ -52,6 +53,8 @@ public class OrderBikerAssignedActivity extends AppCompatActivity implements Net
 
     private RelativeLayout relativeLayout;
     private TextView valueTV;
+    private SwipeRefreshLayout swipeContainer;
+    private String valueOrder = "Pending";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,13 +94,15 @@ public class OrderBikerAssignedActivity extends AppCompatActivity implements Net
 
             relativeLayout = (RelativeLayout) findViewById(R.id.relativelay_reclview);
 
+            swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+
             recListOrders = (RecyclerView) findViewById(R.id.recyclerView);
             recListOrders.setHasFixedSize(true);
             Orders = new LinearLayoutManager(this);
             Orders.setOrientation(LinearLayoutManager.VERTICAL);
             recListOrders.setLayoutManager(Orders);
 
-            getBikerAssignedOrderList("Pending");
+
             pending.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.colorHighlight));
 
             pending.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +112,7 @@ public class OrderBikerAssignedActivity extends AppCompatActivity implements Net
                     delivered.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
                     rejected.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
                     getBikerAssignedOrderList("Pending");
+                    valueOrder = "Pending";
                 }
             });
 
@@ -117,6 +123,7 @@ public class OrderBikerAssignedActivity extends AppCompatActivity implements Net
                     pending.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
                     delivered.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.colorHighlight));
                     rejected.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
+                    valueOrder = "Delivered";
                 }
             });
 
@@ -127,8 +134,27 @@ public class OrderBikerAssignedActivity extends AppCompatActivity implements Net
                     pending.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
                     delivered.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.white));
                     rejected.setBackgroundColor(ContextCompat.getColor(OrderBikerAssignedActivity.this,R.color.colorHighlight));
+                    valueOrder = "Rejected";
                 }
             });
+
+            getBikerAssignedOrderList(valueOrder);
+
+            // Setup refresh listener which triggers new data loading
+            swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    // Your code to refresh the list here.
+                    // Make sure you call swipeContainer.setRefreshing(false)
+                    // once the network request has completed successfully.
+                    getBikerAssignedOrderList(valueOrder);
+                }
+            });
+            // Configure the refreshing colors
+            swipeContainer.setColorSchemeResources(R.color.colorAccent,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light);
 
             gson = new Gson();
 
@@ -154,6 +180,11 @@ public class OrderBikerAssignedActivity extends AppCompatActivity implements Net
                     Log.d(TAG, result.toString());
 
                     getOrderListResponse(result);
+
+                    if(swipeContainer.isRefreshing())
+                    {
+                        swipeContainer.setRefreshing(false);
+                    }
                 }
             });
 

@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -21,6 +20,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
  * Created by kesari on 13/06/17.
@@ -87,7 +88,7 @@ public class StockReViewRecyclerAdapter extends RecyclerView.Adapter<StockReView
     {
         TextView product_name,quantity,price;
         SimpleDraweeView images;
-        Button stock_accept,stock_reject;
+        FancyButton stock_accept,stock_reject;
 
         public RecyclerViewHolder(View view)
         {
@@ -98,8 +99,8 @@ public class StockReViewRecyclerAdapter extends RecyclerView.Adapter<StockReView
 
             images = (SimpleDraweeView) view.findViewById(R.id.images);
 
-            stock_reject = (Button) view.findViewById(R.id.stock_reject);
-            stock_accept = (Button) view.findViewById(R.id.stock_accept);
+            stock_reject = (FancyButton) view.findViewById(R.id.stock_reject);
+            stock_accept = (FancyButton) view.findViewById(R.id.stock_accept);
         }
     }
 
