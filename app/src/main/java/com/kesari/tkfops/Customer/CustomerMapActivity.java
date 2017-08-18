@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
@@ -34,9 +33,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.kesari.tkfops.Map.HttpConnection;
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
-import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
@@ -54,8 +53,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback , NetworkUtilsReceiver.NetworkResponseInt{
+public class CustomerMapActivity extends AppCompatActivity implements OnMapReadyCallback, NetworkUtilsReceiver.NetworkResponseInt {
 
     View f1;
     private SupportMapFragment supportMapFragment;
@@ -72,13 +74,18 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     private String TAG = this.getClass().getSimpleName();
     private NetworkUtilsReceiver networkUtilsReceiver;
 
+    ScheduledExecutorService scheduleTaskExecutor;
+    Double latitude;
+    Double longitude;
+    String place;
+    String id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_map);
 
-        try
-        {
+        try {
 
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -88,14 +95,11 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-            final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+            final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-            if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
-            {
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 IOUtils.buildAlertMessageNoGps(CustomerMapActivity.this);
-            }
-            else
-            {
+            } else {
                 if (!IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                     // LOCATION SERVICE
                     startService(new Intent(this, LocationServiceNew.class));
@@ -106,6 +110,16 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             f1 = (View) findViewById(R.id.map_customer);
             instructions = (TextView) findViewById(R.id.instructions);
 
+            latitude = getIntent().getDoubleExtra("Lat", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
+            longitude = getIntent().getDoubleExtra("Lon", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
+
+            place = getIntent().getStringExtra("place");
+            id = getIntent().getStringExtra("id");
+
+            Log.i("place",place);
+
+            Current_Origin = new LatLng(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
+
             FragmentManager fm = getSupportFragmentManager();
             supportMapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map_customer);
             if (supportMapFragment == null) {
@@ -113,8 +127,6 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 fm.beginTransaction().replace(R.id.map_customer, supportMapFragment).commit();
             }
             supportMapFragment.getMapAsync(this);
-
-           Current_Origin = new LatLng(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -125,11 +137,18 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        try
-        {
+        try {
 
             map = googleMap;
+
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
             map.setMyLocationEnabled(true);
@@ -144,39 +163,27 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-            Location location = new Location(LocationManager.GPS_PROVIDER);
-            location.setLatitude(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
-            location.setLongitude(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
+            //addMarkers(id,place,latitude,longitude);
+            //getMapsApiDirectionsUrl(latitude,longitude);
 
-            Double latitude = getIntent().getDoubleExtra("Lat", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude());
-            Double longitude = getIntent().getDoubleExtra("Lon", SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
+            scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
-            String place = getIntent().getStringExtra("place");
-            String id = getIntent().getStringExtra("id");
+            // This schedule a task to run every 10 minutes:
+            scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+                public void run() {
 
-            Log.i("place",place);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Current_Origin = new LatLng(SharedPrefUtil.getLocation(CustomerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(CustomerMapActivity.this).getLongitude());
 
-            addMarkers(id,place,latitude,longitude);
-            getMapsApiDirectionsUrl(latitude,longitude);
-
-            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng latLng) {
-
-                    String Lat = String.valueOf(latLng.latitude);
-                    String Long = String.valueOf(latLng.longitude);
+                            addMarkers(id,place,latitude,longitude);
+                            getMapsApiDirectionsUrl(latitude,longitude);
+                        }
+                    });
                 }
-            });
+            }, 0, 5, TimeUnit.SECONDS);
 
-            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-
-
-
-                    return false;
-                }
-            });
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -188,7 +195,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
         try
         {
-
+            Log.i("test","######");
             LatLng dest = new LatLng(latitude, longitude);
 
             HashMap<String, String> data = new HashMap<String, String>();
@@ -209,6 +216,15 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_delivery_van))
                         .title("TKF Vehicle"));
             }
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(18).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -401,6 +417,11 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
 
         try {
             unregisterReceiver(networkUtilsReceiver);
+
+            if(!scheduleTaskExecutor.isShutdown())
+            {
+                scheduleTaskExecutor.shutdown();
+            }
 
             if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE

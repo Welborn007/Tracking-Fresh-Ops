@@ -32,6 +32,7 @@ import com.kesari.tkfops.BikerOrderList.BikerOpenOrderFragment;
 import com.kesari.tkfops.BikerProfileData.BikerProfileActivity;
 import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.R;
+import com.kesari.tkfops.Route.BikerRouteActivity;
 import com.kesari.tkfops.SelectLogin.SelectLoginActivity;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
@@ -55,7 +56,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
     TextView name_Login;
     boolean mShowingBack = false;
     TextView order_open,order_delivered,route;
-    RelativeLayout profile_holder;
+    RelativeLayout profile_holder,route_holder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +117,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
             name_Login = (TextView) header.findViewById(R.id.name_Login);
             profile_holder = (RelativeLayout) header.findViewById(R.id.profile_holder);
+            route_holder = (RelativeLayout) header.findViewById(R.id.route_holder);
 
             try
             {
@@ -135,6 +137,14 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                 }
             });
 
+            route_holder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(BikerDashboardActivity.this, BikerRouteActivity.class);
+                    startActivity(intent);
+                }
+            });
+
             order_open.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -145,13 +155,13 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
                     String order_text = order_open.getText().toString();
 
-                    if(order_text.equalsIgnoreCase("Order Open"))
+                    if(order_text.equalsIgnoreCase("Show Order"))
                     {
-                        order_open.setText("Map");
+                        order_open.setText("Show Map");
                     }
-                    else if(order_text.equalsIgnoreCase("Map"))
+                    else if(order_text.equalsIgnoreCase("Show Map"))
                     {
-                        order_open.setText("Order Open");
+                        order_open.setText("Show Order");
                     }
 
                 }
@@ -287,9 +297,11 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
 
                 Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
-                finish();
+
                 Intent i=new Intent(BikerDashboardActivity.this,SelectLoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
+                finish();
 
                 SharedPrefUtil.setClear(BikerDashboardActivity.this);
             }

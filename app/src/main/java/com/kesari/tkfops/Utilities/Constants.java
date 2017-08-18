@@ -89,7 +89,13 @@ public interface Constants {
     //Cancellation / Rejection reasons
     String Reasons = "http://"+ StagingIP + "/api/order/reason?reason=";
 
-    // Milliseconds per second
+    //Biker Vehicle Route
+    String Vehicle_BikerRoute = "http://"+ StagingIP + "/api/biker_positions/getVehicleRoutes";
+
+    //Biker Location
+    String BikerLocation = "http://"+ StagingIP + "/api/biker_positions/";
+
+ // Milliseconds per second
     public static final int MILLISECONDS_PER_SECOND = 1000;
     // Update frequency in seconds
     public static final int UPDATE_INTERVAL_IN_SECONDS = 10;

@@ -12,6 +12,25 @@ public class JSON_POJO {
 
     String Distance,Time;
 
+    private String startTime;
+    private String endTime;
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
     public String getDistance() {
         return Distance;
     }

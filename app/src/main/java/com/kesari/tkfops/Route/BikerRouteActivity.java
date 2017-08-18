@@ -11,14 +11,15 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,13 +48,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class RouteActivity extends AppCompatActivity implements OnMapReadyCallback ,NetworkUtilsReceiver.NetworkResponseInt{
+public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyCallback,NetworkUtilsReceiver.NetworkResponseInt{
 
     private Context mContext;
     private MapFragment supportMapFragment;
@@ -68,16 +71,19 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
     private static final String TAG_LOCATION_NAME = "location_name";
     private static final String TAG_LATITUDE = "latitude";
     private static final String TAG_LONGITUDE = "longitude";
+    private static final String TAG_FROM_TIME = "";
+    private static final String TAG_TO_TIME = "";
 
     private static View view;
     private String TAG = this.getClass().getSimpleName();
 
     private NetworkUtilsReceiver networkUtilsReceiver;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_route);
+        setContentView(R.layout.activity_biker_route);
 
         try
         {
@@ -94,7 +100,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
 
             if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
             {
-                IOUtils.buildAlertMessageNoGps(RouteActivity.this);
+                IOUtils.buildAlertMessageNoGps(BikerRouteActivity.this);
             }
             else
             {
@@ -113,7 +119,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             }
             supportMapFragment.getMapAsync(this);
 
-            Current_Origin = new LatLng(SharedPrefUtil.getLocation(RouteActivity.this).getLatitude(), SharedPrefUtil.getLocation(RouteActivity.this).getLongitude());
+            Current_Origin = new LatLng(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude(), SharedPrefUtil.getLocation(BikerRouteActivity.this).getLongitude());
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -143,8 +149,8 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
             map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
-            location.setLatitude(SharedPrefUtil.getLocation(RouteActivity.this).getLatitude());
-            location.setLongitude(SharedPrefUtil.getLocation(RouteActivity.this).getLongitude());
+            location.setLatitude(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude());
+            location.setLongitude(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLongitude());
 
             updateCurrentLocationMarker(location);
 
@@ -161,32 +167,63 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 }
             });
 
-            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
-                public boolean onMarkerClick(Marker marker) {
+                public View getInfoWindow(Marker arg0) {
+                    return null;
+                }
+                @Override
+                public View getInfoContents(Marker marker) {
+
+                    View myContentView = getLayoutInflater().inflate(
+                            R.layout.map_infolayout, null);
 
                     try
                     {
                         // Get extra data with marker ID
                         HashMap<String, String> marker_data = extraMarkerInfo.get(marker.getId());
+                        TextView mapLoc = ((TextView) myContentView.findViewById(R.id.mapLoc));
+                        TextView from_time = ((TextView) myContentView.findViewById(R.id.from_time));
+                        TextView to_time = ((TextView) myContentView.findViewById(R.id.to_time));
+                        View viewLine = ((View) myContentView.findViewById(R.id.viewLine));
+                        TextView viewHeader = ((TextView) myContentView.findViewById(R.id.viewHeader));
 
-                        // Getting the data from Map
-                        String latitude = marker_data.get(TAG_LATITUDE);
-                        String longitude = marker_data.get(TAG_LONGITUDE);
-                        String place = marker_data.get(TAG_LOCATION_NAME);
-                        String id = marker_data.get(TAG_ID);
+                        if(!marker.getTitle().equalsIgnoreCase("TKF Vehicle"))
+                        {
+                            // Getting the data from Map
+                            String latitude = marker_data.get(TAG_LATITUDE);
+                            String longitude = marker_data.get(TAG_LONGITUDE);
+                            String place = marker_data.get(TAG_LOCATION_NAME);
+                            String id = marker_data.get(TAG_ID);
+                            String startTime = marker_data.get(TAG_FROM_TIME);
+                            String endTime = marker_data.get(TAG_TO_TIME);
 
+                            from_time.setVisibility(View.VISIBLE);
+                            to_time.setVisibility(View.VISIBLE);
+                            viewLine.setVisibility(View.VISIBLE);
+                            viewHeader.setVisibility(View.VISIBLE);
+
+                            mapLoc.setText(place);
+                            from_time.setText(startTime);
+                            to_time.setText(endTime);
+                        }
+                        else
+                        {
+                            mapLoc.setText("TKF Vehicle");
+                            from_time.setVisibility(View.GONE);
+                            to_time.setVisibility(View.GONE);
+                            viewLine.setVisibility(View.GONE);
+                            viewHeader.setVisibility(View.GONE);
+                        }
 
                     }catch (NullPointerException npe)
                     {
-
+                        npe.printStackTrace();
                     }
 
-
-                    return false;
+                    return myContentView;
                 }
             });
-
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
@@ -207,14 +244,14 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         try
         {
 
-            String url = Constants.VehicleRoute;
+            String url = Constants.Vehicle_BikerRoute;
 
             IOUtils ioUtils = new IOUtils();
 
             Map<String, String> params = new HashMap<String, String>();
-            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(RouteActivity.this));
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(BikerRouteActivity.this));
 
-            ioUtils.getGETStringRequestHeader(RouteActivity.this, url , params , new IOUtils.VolleyCallback() {
+            ioUtils.getGETStringRequestHeader(BikerRouteActivity.this, url , params , new IOUtils.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {
                     Log.d(TAG, result.toString());
@@ -247,15 +284,19 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 Double latitude = jo_inside.getDouble("from_lat");
                 Double longitude = jo_inside.getDouble("from_lng");
                 String id = jo_inside.getString("_id");
+                String startTime = jo_inside.getString("startTime");
+                String endTime = jo_inside.getString("endTime");
 
                 js.setId(id);
                 js.setLatitude(latitude);
                 js.setLongitude(longitude);
                 js.setLocation_name(location_name);
+                js.setStartTime(startTime);
+                js.setEndTime(endTime);
 
                 jsonIndiaModelList.add(js);
 
-                addMarkers(id,location_name,latitude,longitude);
+                addMarkers(id,location_name,latitude,longitude,startTime,endTime);
 
                 if(i > 0 )
                 {
@@ -272,7 +313,7 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
         }
     }
 
-    private void addMarkers(String id,String location_name,Double latitude,Double longitude) {
+    private void addMarkers(String id,String location_name,Double latitude,Double longitude,final String startTime, final String endTime) {
 
         try
         {
@@ -290,6 +331,19 @@ public class RouteActivity extends AppCompatActivity implements OnMapReadyCallba
                 data.put(TAG_LOCATION_NAME,location_name);
                 data.put(TAG_LATITUDE, String.valueOf(latitude));
                 data.put(TAG_LONGITUDE, String.valueOf(longitude));
+
+                SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                SimpleDateFormat sdfOutput = new SimpleDateFormat("hh:mm aa");
+
+                Date d = sdfInput.parse(startTime);
+                String startTimeFormatted = sdfOutput.format(d);
+
+                Date d1 = sdfInput.parse(endTime);
+                String endTimeFormatted = sdfOutput.format(d1);
+
+                data.put(TAG_FROM_TIME,startTimeFormatted);
+                data.put(TAG_TO_TIME,endTimeFormatted);
+
 
                 extraMarkerInfo.put(marker.getId(),data);
 

@@ -136,7 +136,7 @@ public class LocationServiceNew extends Service implements LocationListener,
 
     }
 
-    public LatLng LocationCoords(Double lat, Double lon)
+    public static LatLng LocationCoords(Double lat, Double lon)
     {
         LatLng Current_Origin = new LatLng(lat, lon);
 
@@ -153,6 +153,8 @@ public class LocationServiceNew extends Service implements LocationListener,
     @Override
     public void onLocationChanged(Location arg0) {
         newLocation(arg0);
+
+        LocationCoords(arg0.getLatitude(),arg0.getLongitude());
 
         String lat = String.valueOf(arg0.getLatitude());
         String lon = String.valueOf(arg0.getLongitude());
@@ -171,8 +173,12 @@ public class LocationServiceNew extends Service implements LocationListener,
                         {
                             if(SharedPrefUtil.getVehicleUser(this).getVehicleData().getVehicleStatus().equalsIgnoreCase("ON"))
                             {
-                                sendLocationData(lat,lon);
+                                sendVehicleLocationData(lat,lon);
                             }
+                        }
+                        else if(SharedPrefUtil.getKeyLoginType(this).equalsIgnoreCase("Biker"))
+                        {
+                            sendBikerLocationData(lat,lon);
                         }
                     }
                 }
@@ -184,7 +190,7 @@ public class LocationServiceNew extends Service implements LocationListener,
         //sendLocationData(lat,lon);
     }
 
-    public void sendLocationData(String LAT,String LON){
+    public void sendVehicleLocationData(String LAT,String LON){
 
         try
         {
@@ -197,7 +203,6 @@ public class LocationServiceNew extends Service implements LocationListener,
 
                 JSONObject postObject = new JSONObject();
 
-                //postObject.put("driver_id","dr001");
                 postObject.put("latitude",LAT);
                 postObject.put("longitude",LON);
 
@@ -225,6 +230,49 @@ public class LocationServiceNew extends Service implements LocationListener,
         } catch (Exception e) {
             e.printStackTrace();
             Log.i("Driver_Updates_Exception", e.getMessage());
+        }
+    }
+
+    public void sendBikerLocationData(String LAT,String LON){
+
+        try
+        {
+
+            String url = Constants.BikerLocation;
+
+            JSONObject jsonObject = new JSONObject();
+
+            try {
+
+                JSONObject postObject = new JSONObject();
+
+                postObject.put("latitude",LAT);
+                postObject.put("longitude",LON);
+
+                jsonObject.put("post",postObject);
+
+                Log.i("JSON CREATED", jsonObject.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(this));
+
+            IOUtils ioUtils = new IOUtils();
+
+            ioUtils.sendJSONObjectRequestHeader(this,url, params ,jsonObject, new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d("Biker_Updates_Send", result.toString());
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("Biker_Updates_Exception", e.getMessage());
         }
     }
 }

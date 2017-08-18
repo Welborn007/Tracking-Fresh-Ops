@@ -40,7 +40,7 @@
 
     <string name="loading">Loading…</string>
 
-    <string name="order_open">Order Open</string>
+    <string name="order_open">Show Order</string>
     <string name="order_delivered">Order Delivered</string>
     <string name="order_assigned">Order Assigned</string>
     <string name="order_pending">Order Pending</string>

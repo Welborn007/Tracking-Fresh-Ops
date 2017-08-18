@@ -6,8 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -47,6 +46,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by kesari on 03/07/17.
@@ -74,6 +76,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
     private Gson gson;
     private OrderMainPOJO orderMainPOJO;
+    ScheduledExecutorService scheduleTaskExecutor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -144,13 +147,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-            Location location = new Location(LocationManager.GPS_PROVIDER);
-            location.setLatitude(SharedPrefUtil.getLocation(getActivity()).getLatitude());
-            location.setLongitude(SharedPrefUtil.getLocation(getActivity()).getLongitude());
-
-            updateCurrentLocationMarker(location);
-
-           //map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,18));
+            updateCurrentLocationMarker();
 
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -162,9 +159,6 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
 
-            map.addMarker(new MarkerOptions().position(Current_Origin)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
-                    .title("TKF Biker"));
 
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
@@ -184,12 +178,16 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 /*Double latitude = marker.getPosition().latitude;
                 Double longitude = marker.getPosition().longitude;*/
 
-                        Intent intent = new Intent(getActivity(), BikerMapActivity.class);
+                        /*Intent intent = new Intent(getActivity(), BikerMapActivity.class);
                         intent.putExtra("place",place);
                         intent.putExtra("id",id);
                         intent.putExtra("Lat", Double.parseDouble(latitude));
                         intent.putExtra("Lon", Double.parseDouble(longitude));
-                        startActivity(intent);
+                        startActivity(intent);*/
+
+                        String uri = "http://maps.google.com/maps?f=d&hl=en"+"&daddr="+latitude+","+longitude;
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                        startActivity(Intent.createChooser(intent, "Select an application"));
 
                     }catch (NullPointerException npe)
                     {
@@ -206,14 +204,26 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-    public void updateCurrentLocationMarker(Location currentLatLng){
+    public void updateCurrentLocationMarker(){
 
         if(map != null){
 
+            map.clear();
+            scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
-            //getData();
+            // This schedule a task to run every 10 minutes:
+            scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+                public void run() {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
+                            getOrderList(getActivity());
+                        }
+                    });
+                }
+            }, 0, 1, TimeUnit.MINUTES);
 
-            getOrderList(getActivity());
         }
     }
 
@@ -251,6 +261,11 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             if(orderMainPOJO.getData().isEmpty())
             {
                 FireToast.customSnackbar(getActivity(),"No Order Assigned!!!","Swipe");
+
+                map.clear();
+                map.addMarker(new MarkerOptions().position(Current_Origin)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
+                        .title("TKF Vehicle"));
             }
             else
             {
@@ -303,6 +318,15 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
                         .title("TKF Vehicle"));
             }
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(18).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -424,5 +448,27 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             }
         }
 
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if(!scheduleTaskExecutor.isShutdown())
+        {
+            scheduleTaskExecutor.shutdown();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        System.gc();
+
+        if(!scheduleTaskExecutor.isShutdown())
+        {
+            scheduleTaskExecutor.shutdown();
+        }
     }
 }

@@ -6,8 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,12 +22,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
-import com.kesari.tkfops.Customer.CustomerMapActivity;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.PathJSONParser;
@@ -48,6 +47,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by kesari on 18/04/17.
@@ -75,6 +77,8 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
     private  Gson gson;
     private  OrderMainPOJO orderMainPOJO;
+
+    ScheduledExecutorService scheduleTaskExecutor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -130,16 +134,18 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                 return;
             }
             map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.zoomTo(15));
+            map.setTrafficEnabled(true);
 
-            Location location = new Location(LocationManager.GPS_PROVIDER);
-            location.setLatitude(SharedPrefUtil.getLocation(getActivity()).getLatitude());
-            location.setLongitude(SharedPrefUtil.getLocation(getActivity()).getLongitude());
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(18).
+                    bearing(0).
+                    build();
 
-            updateCurrentLocationMarker(location);
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                    13));
+            updateCurrentLocationMarker();
 
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -148,13 +154,10 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
-                    //sendLocationData(Lat,Long);
+                    //sendVehicleLocationData(Lat,Long);
                 }
             });
 
-            map.addMarker(new MarkerOptions().position(Current_Origin)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
-                    .title("TKF Vehicle"));
 
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
@@ -174,12 +177,16 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                 /*Double latitude = marker.getPosition().latitude;
                 Double longitude = marker.getPosition().longitude;*/
 
-                        Intent intent = new Intent(getActivity(), CustomerMapActivity.class);
+                        /*Intent intent = new Intent(getActivity(), CustomerMapActivity.class);
                         intent.putExtra("place",place);
                         intent.putExtra("id",id);
                         intent.putExtra("Lat", Double.parseDouble(latitude));
                         intent.putExtra("Lon", Double.parseDouble(longitude));
-                        startActivity(intent);
+                        startActivity(intent);*/
+
+                        String uri = "http://maps.google.com/maps?f=d&hl=en"+"&daddr="+latitude+","+longitude;
+                        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                        startActivity(Intent.createChooser(intent, "Select an application"));
 
                     }catch (NullPointerException npe)
                     {
@@ -196,7 +203,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-    public void sendLocationData(String LAT,String LON){
+    public void sendVehicleLocationData(String LAT,String LON){
 
         try
         {
@@ -209,7 +216,6 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
                 JSONObject postObject = new JSONObject();
 
-                //postObject.put("driver_id","dr001");
                 postObject.put("latitude",LAT);
                 postObject.put("longitude",LON);
 
@@ -229,24 +235,37 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             ioUtils.sendJSONObjectRequestHeader(getActivity(),url, params ,jsonObject, new IOUtils.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {
-                    Log.d(TAG, result.toString());
+                    Log.d("Driver_Updates_Send", result.toString());
                 }
             });
 
 
         } catch (Exception e) {
-            Log.i(TAG, e.getMessage());
+            e.printStackTrace();
+            Log.i("Driver_Updates_Exception", e.getMessage());
         }
     }
 
-    public void updateCurrentLocationMarker(Location currentLatLng){
+    public void updateCurrentLocationMarker(){
 
         if(map != null){
 
+            map.clear();
+            scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
-            //getData();
+            // This schedule a task to run every 10 minutes:
+            scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+                public void run() {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
+                            getOrderList(getActivity());
+                        }
+                    });
+                }
+            }, 0, 1, TimeUnit.MINUTES);
 
-            getOrderList(getActivity());
         }
     }
 
@@ -284,6 +303,11 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             if(orderMainPOJO.getData().isEmpty())
             {
                 FireToast.customSnackbar(context,"No Orders!!!","Swipe");
+
+                map.clear();
+                map.addMarker(new MarkerOptions().position(Current_Origin)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .title("TKF Vehicle"));
             }
             else
             {
@@ -323,7 +347,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
             if (map != null) {
                 Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_man_icon))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_customer))
                         .title(location_name));
 
                 data.put(TAG_ID,id);
@@ -337,6 +361,15 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
                         .title("TKF Vehicle"));
             }
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(18).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -461,9 +494,24 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        if(!scheduleTaskExecutor.isShutdown())
+        {
+            scheduleTaskExecutor.shutdown();
+        }
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
 
         System.gc();
+
+        if(!scheduleTaskExecutor.isShutdown())
+        {
+            scheduleTaskExecutor.shutdown();
+        }
     }
 }

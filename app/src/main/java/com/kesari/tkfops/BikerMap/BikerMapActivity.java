@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
@@ -54,8 +53,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCallback, NetworkUtilsReceiver.NetworkResponseInt{
+public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCallback, NetworkUtilsReceiver.NetworkResponseInt {
 
     View f1;
     private SupportMapFragment supportMapFragment;
@@ -72,13 +74,18 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
     private String TAG = this.getClass().getSimpleName();
     private NetworkUtilsReceiver networkUtilsReceiver;
 
+    ScheduledExecutorService scheduleTaskExecutor;
+    Double latitude;
+    Double longitude;
+    String place;
+    String id;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biker_map);
 
-        try
-        {
+        try {
 
             final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             setSupportActionBar(toolbar);
@@ -88,14 +95,11 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
-            final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
+            final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-            if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
-            {
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 IOUtils.buildAlertMessageNoGps(BikerMapActivity.this);
-            }
-            else
-            {
+            } else {
                 if (!IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                     // LOCATION SERVICE
                     startService(new Intent(this, LocationServiceNew.class));
@@ -106,6 +110,16 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
             f1 = (View) findViewById(R.id.map_customer);
             instructions = (TextView) findViewById(R.id.instructions);
 
+            latitude = getIntent().getDoubleExtra("Lat", SharedPrefUtil.getLocation(BikerMapActivity.this).getLatitude());
+            longitude = getIntent().getDoubleExtra("Lon", SharedPrefUtil.getLocation(BikerMapActivity.this).getLongitude());
+
+            place = getIntent().getStringExtra("place");
+            id = getIntent().getStringExtra("id");
+
+            Log.i("place", place);
+
+            Current_Origin = new LatLng(SharedPrefUtil.getLocation(BikerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(BikerMapActivity.this).getLongitude());
+
             FragmentManager fm = getSupportFragmentManager();
             supportMapFragment = (SupportMapFragment) fm.findFragmentById(R.id.map_customer);
             if (supportMapFragment == null) {
@@ -114,20 +128,27 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
             }
             supportMapFragment.getMapAsync(this);
 
-            Current_Origin = new LatLng(SharedPrefUtil.getLocation(BikerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(BikerMapActivity.this).getLongitude());
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        try
-        {
+        try {
 
             map = googleMap;
+
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
             map.setMyLocationEnabled(true);
@@ -142,40 +163,23 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
 
             map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-            Location location = new Location(LocationManager.GPS_PROVIDER);
-            location.setLatitude(SharedPrefUtil.getLocation(BikerMapActivity.this).getLatitude());
-            location.setLongitude(SharedPrefUtil.getLocation(BikerMapActivity.this).getLongitude());
+            scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
-            Double latitude = getIntent().getDoubleExtra("Lat", SharedPrefUtil.getLocation(BikerMapActivity.this).getLatitude());
-            Double longitude = getIntent().getDoubleExtra("Lon", SharedPrefUtil.getLocation(BikerMapActivity.this).getLongitude());
+            // This schedule a task to run every 10 minutes:
+            scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+                public void run() {
 
-            String place = getIntent().getStringExtra("place");
-            String id = getIntent().getStringExtra("id");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Current_Origin = new LatLng(SharedPrefUtil.getLocation(BikerMapActivity.this).getLatitude(), SharedPrefUtil.getLocation(BikerMapActivity.this).getLongitude());
 
-            Log.i("place",place);
-
-            addMarkers(id,place,latitude,longitude);
-            getMapsApiDirectionsUrl(latitude,longitude);
-
-
-            map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                @Override
-                public void onMapClick(LatLng latLng) {
-
-                    String Lat = String.valueOf(latLng.latitude);
-                    String Long = String.valueOf(latLng.longitude);
+                            addMarkers(id,place,latitude,longitude);
+                            getMapsApiDirectionsUrl(latitude,longitude);
+                        }
+                    });
                 }
-            });
-
-            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(Marker marker) {
-
-
-
-                    return false;
-                }
-            });
+            }, 0, 5, TimeUnit.SECONDS);
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -208,6 +212,15 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
                         .title("TKF Vehicle"));
             }
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(18).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -400,6 +413,11 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
 
         try {
             unregisterReceiver(networkUtilsReceiver);
+
+            if(!scheduleTaskExecutor.isShutdown())
+            {
+                scheduleTaskExecutor.shutdown();
+            }
 
             if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE

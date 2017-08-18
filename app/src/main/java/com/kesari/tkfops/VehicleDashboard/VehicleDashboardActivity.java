@@ -33,7 +33,7 @@ import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.OpenOrders.OpenOrderFragment;
 import com.kesari.tkfops.OrderAssignedToBiker.OrderBikerAssignedActivity;
 import com.kesari.tkfops.R;
-import com.kesari.tkfops.Route.RouteActivity;
+import com.kesari.tkfops.Route.VehicleRouteActivity;
 import com.kesari.tkfops.SelectLogin.SelectLoginActivity;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
@@ -201,7 +201,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             route_holder.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(VehicleDashboardActivity.this, RouteActivity.class);
+                    Intent intent = new Intent(VehicleDashboardActivity.this, VehicleRouteActivity.class);
                     startActivity(intent);
                 }
             });
@@ -214,13 +214,13 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
                     String order_text = order_open.getText().toString();
 
-                    if(order_text.equalsIgnoreCase("Order Open"))
+                    if(order_text.equalsIgnoreCase("Show Order"))
                     {
-                        order_open.setText("Map");
+                        order_open.setText("Show Map");
                     }
-                    else if(order_text.equalsIgnoreCase("Map"))
+                    else if(order_text.equalsIgnoreCase("Show Map"))
                     {
-                        order_open.setText("Order Open");
+                        order_open.setText("Show Order");
                     }
 
                 }
@@ -403,9 +403,10 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             public void onClick(View v) {
 
                 Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
-                finish();
                 Intent i=new Intent(VehicleDashboardActivity.this,SelectLoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
+                finish();
 
                 SharedPrefUtil.setClear(VehicleDashboardActivity.this);
             }

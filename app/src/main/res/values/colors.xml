@@ -37,4 +37,10 @@
     <color name="colorImageviewBackground">#e5e5e5</color>
     <color name="Skip">#a9a8a8</color>
     <color name="Button_Color">#d40f14</color>
+
+    <!--Client colors-->
+    <color name="mint">#B3DBC0</color>
+    <color name="red">#FE0000</color>
+    <color name="porcelain">#FDF6F6</color>
+    <color name="fresh_blue">#67BACA</color>
 </resources>
