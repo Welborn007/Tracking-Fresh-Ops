@@ -133,7 +133,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                     ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
-            map.setMyLocationEnabled(true);
+            //map.setMyLocationEnabled(true);
             map.setTrafficEnabled(true);
 
             CameraPosition cameraPosition = new CameraPosition.Builder().
@@ -311,6 +311,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             }
             else
             {
+                map.clear();
                 JSONObject jsonObject = new JSONObject(Response);
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
 

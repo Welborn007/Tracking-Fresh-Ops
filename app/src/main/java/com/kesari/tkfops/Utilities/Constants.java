@@ -15,85 +15,85 @@ public interface Constants {
     String LIVEIP = "52.66.75.55:8000";
 
     //Vehicle Login API
-    String LoginVehicle = "http://" + StagingIP + "/api/vehicle/login";
+    String LoginVehicle = "http://" + LIVEIP + "/api/vehicle/login";
 
     //Biker Login API
-    String LoginBiker = "http://" + StagingIP + "/api/biker/login";
+    String LoginBiker = "http://" + LIVEIP + "/api/biker/login";
 
    //Send Location of driver
-   String DriverLocationApi = "http://" + StagingIP + "/api/vehicle_positions";
+   String DriverLocationApi = "http://" + LIVEIP + "/api/vehicle_positions";
 
     //Order List
-    String OrderList = "http://" + StagingIP + "/api/order/vehicle/";
+    String OrderList = "http://" + LIVEIP + "/api/order/vehicle/";
 
     //Order List Filter
-    String OrderListFilter = "http://" + StagingIP + "/api/order/vehicle/?status=";
+    String OrderListFilter = "http://" + LIVEIP + "/api/order/vehicle/?status=";
 
     //Update Order after payment Put Request
-    String UpdateOrder = "http://" + StagingIP + "/api/order/vehicle/update";
+    String UpdateOrder = "http://" + LIVEIP + "/api/order/vehicle/update";
 
     //get Biker Order details from order id
-    String BikerOrderDetails = "http://"+ StagingIP +"/api/bikerOrder/order/";
+    String BikerOrderDetails = "http://"+ LIVEIP +"/api/bikerOrder/order/";
 
     //get Vehicle Order details from order id
-    String VehicleOrderDetails = "http://"+ StagingIP +"/api/vehicle/order/";
+    String VehicleOrderDetails = "http://"+ LIVEIP +"/api/vehicle/order/";
 
     //Vehicle Profile
-    String VehicleProfile = "http://" + StagingIP + "/api/vehicle/profile";
+    String VehicleProfile = "http://" + LIVEIP + "/api/vehicle/profile";
 
     //Biker Profile
-    String BikerProfile = "http://" + StagingIP + "/api/biker/profile";
+    String BikerProfile = "http://" + LIVEIP + "/api/biker/profile";
 
     //Assigned Stock List
-    String AssignedStockList = "http://" + StagingIP + "/api/stock/vehicle/products?status=Pending";
+    String AssignedStockList = "http://" + LIVEIP + "/api/stock/vehicle/products?status=Pending";
 
     //Stock Accepted List
-    String StockAcceptedList = "http://" + StagingIP + "/api/stock/vehicle/products?status=Accepted";
+    String StockAcceptedList = "http://" + LIVEIP + "/api/stock/vehicle/products?status=Accepted";
 
     //Stock Rejected List
-    String StockRejectedList = "http://" + StagingIP + "/api/stock/vehicle/products?status=Rejected";
+    String StockRejectedList = "http://" + LIVEIP + "/api/stock/vehicle/products?status=Rejected";
 
     //Accept / Reject Stock
-    String AcceptRejectStock = "http://" + StagingIP + "/api/stock/vehicle";
+    String AcceptRejectStock = "http://" + LIVEIP + "/api/stock/vehicle";
 
     //Vehicle Stock List
-    String StockList = "http://" + StagingIP + "/api/vehicleStock/";
+    String StockList = "http://" + LIVEIP + "/api/vehicleStock/";
 
     //Biker List
-    String BikerList = "http://" + StagingIP + "/api/vehicle/biker/list";
+    String BikerList = "http://" + LIVEIP + "/api/vehicle/biker/list";
 
     //Single Biker Details
-    String BikerDetails = "http://" + StagingIP +"/api/vehicle/biker/";
+    String BikerDetails = "http://" + LIVEIP +"/api/vehicle/biker/";
 
     //Assign Order to Biker
-    String AssignOrderBiker = "http://" + StagingIP + "/api/vehicleStock/biker ";
+    String AssignOrderBiker = "http://" + LIVEIP + "/api/vehicleStock/biker ";
 
     //Vehicle Route
-    String VehicleRoute = "http://" + StagingIP + "/api/vehicleTimeTable/byVehicle";
+    String VehicleRoute = "http://" + LIVEIP + "/api/vehicleTimeTable/byVehicle";
 
     //Biker Stock List
-    String BikerStockList = "http://" + StagingIP + "/api/bikerOrder/";
+    String BikerStockList = "http://" + LIVEIP + "/api/bikerOrder/";
 
     //Biker Stock List
-    String BikerOrderListFilter = "http://" + StagingIP + "/api/bikerOrder/?status=";
+    String BikerOrderListFilter = "http://" + LIVEIP + "/api/bikerOrder/?status=";
 
     //Update Delivery Status Biker
-    String BikerDeliveryStatus = "http://" + StagingIP + "/api/bikerOrder/update";
+    String BikerDeliveryStatus = "http://" + LIVEIP + "/api/bikerOrder/update";
 
     //Visible / InVisble Mode
-    String VisibleInVisibleMode = "http://" + StagingIP + "/api/vehicle/status";
+    String VisibleInVisibleMode = "http://" + LIVEIP + "/api/vehicle/status";
 
     //Assigned Order List to Biker
-    String BikerAssignedOrderList = "http://" + StagingIP + "/api/vehicleStock/bikerOrderList?status=";
+    String BikerAssignedOrderList = "http://" + LIVEIP + "/api/vehicleStock/bikerOrderList?status=";
 
     //Cancellation / Rejection reasons
-    String Reasons = "http://"+ StagingIP + "/api/order/reason?reason=";
+    String Reasons = "http://"+ LIVEIP + "/api/order/reason?reason=";
 
     //Biker Vehicle Route
-    String Vehicle_BikerRoute = "http://"+ StagingIP + "/api/biker_positions/getVehicleRoutes";
+    String Vehicle_BikerRoute = "http://"+ LIVEIP + "/api/biker_positions/getVehicleRoutes";
 
     //Biker Location
-    String BikerLocation = "http://"+ StagingIP + "/api/biker_positions/";
+    String BikerLocation = "http://"+ LIVEIP + "/api/biker_positions/";
 
  // Milliseconds per second
     public static final int MILLISECONDS_PER_SECOND = 1000;
