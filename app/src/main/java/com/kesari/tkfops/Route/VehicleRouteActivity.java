@@ -543,11 +543,11 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
         try {
             unregisterReceiver(networkUtilsReceiver);
 
-            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+            /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
                 stopService(new Intent(this, LocationServiceNew.class));
                 Log.e(TAG, "Location service is stopped");
-            }
+            }*/
 
             if(!scheduleTaskExecutor.isShutdown())
             {

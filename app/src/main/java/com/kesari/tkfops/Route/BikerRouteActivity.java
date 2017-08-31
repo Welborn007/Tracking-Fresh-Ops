@@ -7,29 +7,36 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.Gson;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.LocationServiceNew;
@@ -48,6 +55,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,6 +63,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 
 public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyCallback,NetworkUtilsReceiver.NetworkResponseInt{
 
@@ -76,9 +88,13 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
 
     private static View view;
     private String TAG = this.getClass().getSimpleName();
-
+    private io.socket.client.Socket socket;
     private NetworkUtilsReceiver networkUtilsReceiver;
-
+    private Gson gson;
+    SocketLiveMainPOJO scoketLiveMainPOJO;
+    Marker markerVehicle;
+    String[] geoArray;
+    LatLng oldLocation, newLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,6 +111,8 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
         /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+            gson = new Gson();
 
             final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
@@ -166,6 +184,20 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                     String Long = String.valueOf(latLng.longitude);
                 }
             });
+
+            if (!NetworkUtils.isNetworkConnectionOn(BikerRouteActivity.this)) {
+                FireToast.customSnackbarWithListner(BikerRouteActivity.this, "No internet access", "Settings", new ActionClickListener() {
+                    @Override
+                    public void onActionClicked(Snackbar snackbar) {
+                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                    }
+                });
+                return;
+            }
+            else
+            {
+                startSocket();
+            }
 
             map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
@@ -313,10 +345,132 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
         }
     }
 
+    private void startSocket()
+    {
+        try {
+            socket = IO.socket(Constants.VehicleLiveLocation);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+
+                try
+                {
+                    JSONObject obj = new JSONObject();
+                    obj.put("hello", "server");
+                    obj.put("binary", new byte[42]);
+                    socket.emit("vehiclePosition", obj);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //socket.disconnect();
+                Log.i("Send","Data " + socket.id());
+            }
+
+        }).on("vehiclePosition", new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+
+                final JSONObject obj = (JSONObject)args[0];
+                Log.i("Connect",obj.toString());
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        DriverSocketLiveLocationResponse(obj.toString());
+                    }
+                });
+            }
+
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+
+            @Override
+            public void call(Object... args) {
+                Log.i("DisConnect","Connect");
+            }
+
+        });
+        socket.connect();
+    }
+
+    private void stopSocket()
+    {
+        socket.disconnect();
+        Log.i("SocketService","Disconnected");
+    }
+
+    public void DriverSocketLiveLocationResponse(String resp) {
+        //map.clear();
+        try {
+
+            scoketLiveMainPOJO = gson.fromJson(resp, SocketLiveMainPOJO.class);
+            //nearestRouteMainPOJO = SharedPrefUtil.getNearestRouteMainPOJO(RouteActivity.this);
+
+
+            if(SharedPrefUtil.getBikerUser(BikerRouteActivity.this).getData() != null)
+            {
+                if(!SharedPrefUtil.getBikerUser(BikerRouteActivity.this).getData().getVehicleId().isEmpty())
+                {
+
+                    if(scoketLiveMainPOJO.getData() != null)
+                    {
+                        String NearestVehicleRouteID = SharedPrefUtil.getBikerUser(BikerRouteActivity.this).getData().getVehicleId();
+                        String SocketVehicleID = scoketLiveMainPOJO.getData().getVehicle_id();
+
+                        Log.i("AssignedVehicle",SharedPrefUtil.getBikerUser(BikerRouteActivity.this).getData().getVehicleId());
+                        Log.i("SocketVehicle",SocketVehicleID);
+
+                        if(NearestVehicleRouteID.equalsIgnoreCase(SocketVehicleID))
+                        {
+                            if(markerVehicle != null)
+                            {
+                                    /*marker.setPosition(currentPosition);
+                                    marker.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));*/
+
+                                geoArray = scoketLiveMainPOJO.getData().getGeo().getCoordinates();
+
+                                Double cust_longitude = Double.parseDouble(geoArray[0]);
+                                Double cust_latitude = Double.parseDouble(geoArray[1]);
+
+                                newLocation = new LatLng(cust_latitude, cust_longitude);
+
+                                final LatLng finalPosition = new LatLng(cust_latitude, cust_longitude);
+
+                                LatLng currentPosition = new LatLng(
+                                        cust_latitude,
+                                        cust_longitude);
+
+                                animateMarker(map,markerVehicle,finalPosition,false);
+                                markerVehicle.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));
+
+                                oldLocation = newLocation;
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+
+            }
+
+        } catch (Exception e) {
+            //Toast.makeText(getActivity(), "exception", Toast.LENGTH_SHORT).show();
+            Log.i(TAG, e.getMessage());
+        }
+    }
+
     private void addMarkers(String id,String location_name,Double latitude,Double longitude,final String startTime, final String endTime) {
 
         try
         {
+            if(markerVehicle!=null){
+                markerVehicle.remove();
+            }
 
             LatLng dest = new LatLng(latitude, longitude);
 
@@ -344,13 +498,18 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                 data.put(TAG_FROM_TIME,startTimeFormatted);
                 data.put(TAG_TO_TIME,endTimeFormatted);
 
-
                 extraMarkerInfo.put(marker.getId(),data);
 
-                map.addMarker(new MarkerOptions().position(Current_Origin)
+                //String[] geoArray = nearestRouteMainPOJO.getData().get(0).getDist().getLocation().getCoordinates();
+
+                newLocation = new LatLng(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude(),SharedPrefUtil.getLocation(BikerRouteActivity.this).getLongitude());
+
+                markerVehicle = map.addMarker(new MarkerOptions().position(newLocation)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
                         .title("TKF Vehicle"));
             }
+
+            oldLocation = newLocation;
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -495,11 +654,13 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
         try {
             unregisterReceiver(networkUtilsReceiver);
 
-            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+            stopSocket();
+
+            /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
                 stopService(new Intent(this, LocationServiceNew.class));
                 Log.e(TAG, "Location service is stopped");
-            }
+            }*/
 
         }catch (Exception e)
         {
@@ -533,4 +694,64 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
             Log.i(TAG,e.getMessage());
         }
     }
+
+
+    public static void animateMarker(final GoogleMap map, final Marker marker, final LatLng toPosition,
+                                     final boolean hideMarker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = map.getProjection();
+        Point startPoint = proj.toScreenLocation(marker.getPosition());
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 500;
+
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed / duration);
+                double lng = t * toPosition.longitude + (1 - t) * startLatLng.longitude;
+                double lat = t * toPosition.latitude + (1 - t) * startLatLng.latitude;
+
+                marker.setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        marker.setVisible(false);
+                    } else {
+                        marker.setVisible(true);
+                    }
+                }
+            }
+        });
+    }
+
+    private double bearingBetweenLocations(LatLng latLng1, LatLng latLng2) {
+
+        double PI = 3.14159;
+        double lat1 = latLng1.latitude * PI / 180;
+        double long1 = latLng1.longitude * PI / 180;
+        double lat2 = latLng2.latitude * PI / 180;
+        double long2 = latLng2.longitude * PI / 180;
+
+        double dLon = (long2 - long1);
+
+        double y = Math.sin(dLon) * Math.cos(lat2);
+        double x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1)
+                * Math.cos(lat2) * Math.cos(dLon);
+
+        double brng = Math.atan2(y, x);
+
+        brng = Math.toDegrees(brng);
+        brng = (brng + 360) % 360;
+
+        return brng;
+    }
+
 }
+

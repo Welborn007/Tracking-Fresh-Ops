@@ -229,7 +229,7 @@ public class LocationServiceNew extends Service implements LocationListener,
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("Driver_Updates_Exception", e.getMessage());
+            Log.i("Driver_Update_Exception", e.getMessage());
         }
     }
 

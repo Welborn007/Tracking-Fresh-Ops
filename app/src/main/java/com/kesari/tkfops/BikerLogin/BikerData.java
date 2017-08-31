@@ -42,6 +42,17 @@ public class BikerData {
 
     private String mobileNo;
 
+    private String vehicleId;
+
+
+    public String getVehicleId() {
+        return vehicleId;
+    }
+
+    public void setVehicleId(String vehicleId) {
+        this.vehicleId = vehicleId;
+    }
+
     public String getBikeCompany() {
         return bikeCompany;
     }

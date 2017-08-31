@@ -71,9 +71,11 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-/*Register receiver*/
+            /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+            startService(new Intent(getBaseContext(), LocationServiceNew.class));
 
             final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
@@ -295,6 +297,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
             @Override
             public void onClick(View v) {
 
+                stopService(new Intent(getBaseContext(), LocationServiceNew.class));
 
                 Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
 
@@ -327,11 +330,11 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
         try {
             unregisterReceiver(networkUtilsReceiver);
 
-            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+            /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
                 stopService(new Intent(this, LocationServiceNew.class));
                 Log.e(TAG, "Location service is stopped");
-            }
+            }*/
 
         }catch (Exception e)
         {

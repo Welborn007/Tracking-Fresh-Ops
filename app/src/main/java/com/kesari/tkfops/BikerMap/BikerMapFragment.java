@@ -39,6 +39,7 @@ import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -156,6 +157,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
+                    //sendBikerLocationData(Lat,Long);
                 }
             });
 
@@ -202,6 +204,49 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             Log.i(TAG, e.getMessage());
         }
 
+    }
+
+    public void sendBikerLocationData(String LAT,String LON){
+
+        try
+        {
+
+            String url = Constants.BikerLocation;
+
+            JSONObject jsonObject = new JSONObject();
+
+            try {
+
+                JSONObject postObject = new JSONObject();
+
+                postObject.put("latitude",LAT);
+                postObject.put("longitude",LON);
+
+                jsonObject.put("post",postObject);
+
+                Log.i("JSON CREATED", jsonObject.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(getActivity()));
+
+            IOUtils ioUtils = new IOUtils();
+
+            ioUtils.sendJSONObjectRequestHeader(getActivity(),url, params ,jsonObject, new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d("Biker_Updates_Send", result.toString());
+                }
+            });
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i("Biker_Updates_Exception", e.getMessage());
+        }
     }
 
     public void updateCurrentLocationMarker(){
@@ -269,6 +314,8 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             }
             else
             {
+                map.clear();
+
                 JSONObject jsonObject = new JSONObject(Response);
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
 

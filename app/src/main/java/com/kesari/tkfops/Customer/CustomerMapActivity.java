@@ -423,11 +423,11 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
                 scheduleTaskExecutor.shutdown();
             }
 
-            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+            /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
                 stopService(new Intent(this, LocationServiceNew.class));
                 Log.e(TAG, "Location service is stopped");
-            }
+            }*/
 
         }catch (Exception e)
         {

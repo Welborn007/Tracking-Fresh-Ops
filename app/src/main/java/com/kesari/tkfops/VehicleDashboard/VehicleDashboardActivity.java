@@ -88,6 +88,8 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 
+            startService(new Intent(getBaseContext(), LocationServiceNew.class));
+
             final LocationManager locationManager = (LocationManager) getSystemService( Context.LOCATION_SERVICE );
 
             if ( !locationManager.isProviderEnabled( LocationManager.GPS_PROVIDER ) )
@@ -402,7 +404,10 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             @Override
             public void onClick(View v) {
 
+                stopService(new Intent(getBaseContext(), LocationServiceNew.class));
+
                 Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
+
                 Intent i=new Intent(VehicleDashboardActivity.this,SelectLoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
@@ -494,11 +499,11 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
         try {
             unregisterReceiver(networkUtilsReceiver);
 
-            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+            /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
                 stopService(new Intent(this, LocationServiceNew.class));
                 Log.e(TAG, "Location service is stopped");
-            }
+            }*/
 
         }catch (Exception e)
         {
