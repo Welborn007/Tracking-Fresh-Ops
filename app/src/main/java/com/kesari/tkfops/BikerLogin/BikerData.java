@@ -44,6 +44,15 @@ public class BikerData {
 
     private String vehicleId;
 
+    private String bikerImage;
+
+    public String getBikerImage() {
+        return bikerImage;
+    }
+
+    public void setBikerImage(String bikerImage) {
+        this.bikerImage = bikerImage;
+    }
 
     public String getVehicleId() {
         return vehicleId;

@@ -46,6 +46,7 @@ import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.listeners.ActionClickListener;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,7 +70,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
     TextView name_Login;
 
     RelativeLayout assigned_stock_holder,stock_holder,route_holder,profile_holder;
-
+    CircleImageView profile_image;
     TextView statVehicle;
     Switch vehicleStatus;
 
@@ -126,6 +127,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             stock_holder = (RelativeLayout) header.findViewById(R.id.stock_holder);
             route_holder = (RelativeLayout) header.findViewById(R.id.route_holder);
             profile_holder = (RelativeLayout) header.findViewById(R.id.profile_holder);
+            profile_image = (CircleImageView) header.findViewById(R.id.profile_image);
 
             statVehicle = (TextView) findViewById(R.id.statVehicle);
             vehicleStatus = (Switch) findViewById(R.id.vehicleStatus);
@@ -287,6 +289,14 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
         {
             SharedPrefUtil.setVehicleUser(getApplicationContext(), Response.toString());
 
+            if(SharedPrefUtil.getVehicleUser(VehicleDashboardActivity.this).getVehicleData().getVehicleImage() != null)
+            {
+                Picasso
+                        .with(VehicleDashboardActivity.this)
+                        .load(SharedPrefUtil.getVehicleUser(VehicleDashboardActivity.this).getVehicleData().getVehicleImage())
+                        .into(profile_image);
+            }
+
             if(SharedPrefUtil.getVehicleUser(this).getVehicleData().getVehicleStatus().equalsIgnoreCase("ON"))
             {
                 statVehicle.setText("ON");
@@ -390,15 +400,23 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
         CircleImageView imgUserimage = (CircleImageView) view.findViewById(R.id.imgUserimage);
 
-        /*if(SharedPrefUtil.getUser(VehicleDashboardActivity.this).getData().getProfileImage() != null)
+        if(SharedPrefUtil.getVehicleUser(VehicleDashboardActivity.this).getVehicleData().getVehicleImage() != null)
         {
             Picasso
                     .with(VehicleDashboardActivity.this)
-                    .load(SharedPrefUtil.getUser(VehicleDashboardActivity.this).getData().getProfileImage())
+                    .load(SharedPrefUtil.getVehicleUser(VehicleDashboardActivity.this).getVehicleData().getVehicleImage())
                     .into(imgUserimage);
-        }*/
+        }
 
         FancyButton logout = (FancyButton) view.findViewById(R.id.btnLogout);
+        FancyButton NotifyUser = (FancyButton) view.findViewById(R.id.Notify);
+
+        NotifyUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NearbyVehiclePushNotification();
+            }
+        });
 
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -429,6 +447,44 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
         popupWindow.setContentView(view);
 
         return popupWindow;
+    }
+
+    private void NearbyVehiclePushNotification() {
+        try {
+
+            String url = Constants.NearbyVehiclePush;
+
+            JSONObject jsonObject = new JSONObject();
+
+            /*try {
+
+                JSONObject postObject = new JSONObject();
+                //postObject.put("status",VehicleStatus);
+
+                jsonObject.put("post", postObject);
+
+                Log.i("JSON CREATED", jsonObject.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }*/
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(VehicleDashboardActivity.this));
+
+            IOUtils ioUtils = new IOUtils();
+
+            ioUtils.sendJSONObjectRequestHeader(VehicleDashboardActivity.this,url, params ,jsonObject, new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d("Push Send Successfull", result.toString());
+                }
+            });
+
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
     }
 
     private void VehicleStatusOnOFF(final String VehicleStatus) {

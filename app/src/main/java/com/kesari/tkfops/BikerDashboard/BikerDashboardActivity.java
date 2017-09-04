@@ -41,6 +41,7 @@ import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.listeners.ActionClickListener;
+import com.squareup.picasso.Picasso;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -57,6 +58,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
     boolean mShowingBack = false;
     TextView order_open,order_delivered,route;
     RelativeLayout profile_holder,route_holder;
+    CircleImageView profile_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +122,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
             name_Login = (TextView) header.findViewById(R.id.name_Login);
             profile_holder = (RelativeLayout) header.findViewById(R.id.profile_holder);
             route_holder = (RelativeLayout) header.findViewById(R.id.route_holder);
+            profile_image = (CircleImageView) header.findViewById(R.id.profile_image);
 
             try
             {
@@ -146,6 +149,13 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                     startActivity(intent);
                 }
             });
+
+            if(SharedPrefUtil.getBikerUser(BikerDashboardActivity.this).getData().getBikerImage() != null)
+            {
+                Picasso.with(BikerDashboardActivity.this)
+                        .load(SharedPrefUtil.getBikerUser(BikerDashboardActivity.this).getData().getBikerImage())
+                        .into(profile_image);
+            }
 
             order_open.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -266,7 +276,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
         // inflate your layout or dynamically add view
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-        View view = inflater.inflate(R.layout.custom_header_user, null);
+        View view = inflater.inflate(R.layout.custom_header_user_biker, null);
 
         TextView nameTxt = (TextView) view.findViewById(R.id.name);
         nameTxt.setText("Hello " + name);
@@ -283,13 +293,12 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
         CircleImageView imgUserimage = (CircleImageView) view.findViewById(R.id.imgUserimage);
 
-        /*if(SharedPrefUtil.getUser(VehicleDashboardActivity.this).getData().getProfileImage() != null)
+        if(SharedPrefUtil.getBikerUser(BikerDashboardActivity.this).getData().getBikerImage() != null)
         {
-            Picasso
-                    .with(VehicleDashboardActivity.this)
-                    .load(SharedPrefUtil.getUser(VehicleDashboardActivity.this).getData().getProfileImage())
+            Picasso.with(BikerDashboardActivity.this)
+                    .load(SharedPrefUtil.getBikerUser(BikerDashboardActivity.this).getData().getBikerImage())
                     .into(imgUserimage);
-        }*/
+        }
 
         FancyButton logout = (FancyButton) view.findViewById(R.id.btnLogout);
 

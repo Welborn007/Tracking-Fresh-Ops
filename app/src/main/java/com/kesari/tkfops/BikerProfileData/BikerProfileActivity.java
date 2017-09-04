@@ -14,9 +14,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
-import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
@@ -24,9 +24,12 @@ import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.listeners.ActionClickListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class BikerProfileActivity extends AppCompatActivity implements NetworkUtilsReceiver.NetworkResponseInt{
 
@@ -34,7 +37,7 @@ public class BikerProfileActivity extends AppCompatActivity implements NetworkUt
     private String TAG = this.getClass().getSimpleName();
 
     private NetworkUtilsReceiver networkUtilsReceiver;
-
+    CircleImageView profile_image;
     TextView bikerName,bikeNo,bikeCompany,bikeModel,licenseNo,mobileNo;
 
     @Override
@@ -74,6 +77,7 @@ public class BikerProfileActivity extends AppCompatActivity implements NetworkUt
             bikeModel = (TextView) findViewById(R.id.bikeModel);
             licenseNo = (TextView) findViewById(R.id.licenseNo);
             mobileNo = (TextView) findViewById(R.id.mobileNo);
+            profile_image = (CircleImageView) findViewById(R.id.profile_image);
 
             getProfileData();
 
@@ -118,6 +122,13 @@ public class BikerProfileActivity extends AppCompatActivity implements NetworkUt
             bikeModel.setText(SharedPrefUtil.getBikerUser(BikerProfileActivity.this).getData().getBikeModel());
             licenseNo.setText(SharedPrefUtil.getBikerUser(BikerProfileActivity.this).getData().getLicenseNo());
             mobileNo.setText(SharedPrefUtil.getBikerUser(BikerProfileActivity.this).getData().getMobileNo());
+
+            if(SharedPrefUtil.getBikerUser(BikerProfileActivity.this).getData().getBikerImage() != null)
+            {
+                Picasso.with(BikerProfileActivity.this)
+                        .load(SharedPrefUtil.getBikerUser(BikerProfileActivity.this).getData().getBikerImage())
+                        .into(profile_image);
+            }
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());

@@ -7,9 +7,11 @@ import android.text.TextUtils;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.crashlytics.android.Crashlytics;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -33,6 +35,7 @@ public class MyApplication extends Application
         Realm.getInstance(configuration);
 
         initFresco();
+        Fabric.with(this, new Crashlytics());
     }
 
     private void initFresco() {

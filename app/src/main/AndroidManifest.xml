@@ -25,6 +25,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="0736b1c8cd418d92fbe8137780b997d2ac5f4f20"
+            />
+
         <activity
             android:name=".Splash.SplashActivity"
             android:launchMode="singleTask"

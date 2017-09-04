@@ -44,20 +44,6 @@
         android:textColor="@color/black"
         />
 
-    <mehdi.sakout.fancybuttons.FancyButton
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        fancy:fb_text="Notify Nearby"
-        android:id="@+id/Notify"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        fancy:fb_defaultColor="@color/mint"
-        fancy:fb_focusColor="@color/colorPrimary"
-        fancy:fb_radius="5dp"
-        fancy:fb_textColor="@color/white"
-        fancy:fb_textSize="18sp" />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

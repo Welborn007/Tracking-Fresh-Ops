@@ -48,6 +48,16 @@ public class VehicleData {
 
     private String statusChangedOn;
 
+    private String vehicleImage;
+
+    public String getVehicleImage() {
+        return vehicleImage;
+    }
+
+    public void setVehicleImage(String vehicleImage) {
+        this.vehicleImage = vehicleImage;
+    }
+
     public String getStatusChangedOn() {
         return statusChangedOn;
     }
