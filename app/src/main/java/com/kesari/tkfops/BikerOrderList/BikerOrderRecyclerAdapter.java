@@ -1,5 +1,6 @@
 package com.kesari.tkfops.BikerOrderList;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
@@ -8,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,6 +41,7 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
     private List<BikerOrderSubPOJO> OrdersListReView;
     Context context;
     private String TAG = this.getClass().getSimpleName();
+    Dialog dialog;
 
     public BikerOrderRecyclerAdapter(List<BikerOrderSubPOJO> OrdersListReView,Context context)
     {
@@ -115,7 +119,7 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
             holder.delivered.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    updateOrderDetails(OrdersListReView.get(position).getOrder().get_id(),"Delivered","Received");
+                    DeliveryConfirmation(position);
                 }
             });
 
@@ -169,6 +173,51 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
 
             delivered = (FancyButton) view.findViewById(R.id.delivered);
 
+        }
+    }
+
+    private void DeliveryConfirmation(final int position)
+    {
+        try
+        {
+
+            // Create custom dialog object
+            dialog = new Dialog(context);
+            // Include dialog.xml file
+            dialog.setContentView(R.layout.delivery_confirmation_dialog);
+            // Set dialog title
+            dialog.setTitle("Custom Dialog");
+
+            FancyButton cancel = (FancyButton) dialog.findViewById(R.id.cancel);
+            FancyButton delivered = (FancyButton) dialog.findViewById(R.id.delivered);
+
+            cancel.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+            delivered.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    updateOrderDetails(OrdersListReView.get(position).getOrder().get_id(),"Delivered","Received");
+                }
+            });
+
+            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+            Window window = dialog.getWindow();
+            lp.copyFrom(window.getAttributes());
+
+            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
+            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            window.setAttributes(lp);
+
+            dialog.show();
+
+        }catch (Exception w)
+        {
+            w.printStackTrace();
         }
     }
 
@@ -230,6 +279,7 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
             if(message.equalsIgnoreCase("Updated Successfull!!"))
             {
                 BikerOpenOrderFragment.getOrderList(context);
+                dialog.dismiss();
             }
 
         } catch (Exception e) {
