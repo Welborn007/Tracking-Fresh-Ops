@@ -235,6 +235,33 @@
 
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/OrderTypeHolder"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Order type:"
+                            android:textColor="@color/DarkGray"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                        <TextView
+                            android:id="@+id/orderType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/text_size14"
+                            />
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout

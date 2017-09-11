@@ -49,6 +49,16 @@ public class OrderSubPOJO {
 
     private String cancelReason;
 
+    private String pickUp;
+
+    public String getPickUp() {
+        return pickUp;
+    }
+
+    public void setPickUp(String pickUp) {
+        this.pickUp = pickUp;
+    }
+
     public String getCancelReason() {
         return cancelReason;
     }

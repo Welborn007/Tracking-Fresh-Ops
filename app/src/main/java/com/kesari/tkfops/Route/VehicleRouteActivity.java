@@ -7,14 +7,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -22,22 +19,19 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
-import com.kesari.tkfops.BikerList.BikerListMainPOJO;
+import com.kesari.tkfops.BikerList.BikerAssign.BikerListMainPOJO;
 import com.kesari.tkfops.Map.HttpConnection;
 import com.kesari.tkfops.Map.JSON_POJO;
 import com.kesari.tkfops.Map.LocationServiceNew;
@@ -56,7 +50,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,9 +61,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.socket.client.IO;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 
 public class VehicleRouteActivity extends AppCompatActivity implements OnMapReadyCallback ,NetworkUtilsReceiver.NetworkResponseInt{
 
@@ -269,6 +260,8 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                             Current_Origin = new LatLng(SharedPrefUtil.getLocation(VehicleRouteActivity.this).getLatitude(), SharedPrefUtil.getLocation(VehicleRouteActivity.this).getLongitude());
                             vehicle.setPosition(Current_Origin);
                             vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+
+                            oldLocation = Current_Origin;
                         }
                     });
                 }
@@ -282,7 +275,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
     }
 
-    private void startBikerSocket()
+    /*private void startBikerSocket()
     {
         try {
             socketBiker = IO.socket(Constants.BikerLiveLocation);
@@ -341,8 +334,6 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
             bikerSocketLivePOJO = gson.fromJson(resp, BikerSocketLivePOJO.class);
 
-
-
             if(bikerSocketLivePOJO.getData().getBiker_id() != null)
             {
                 String SocketBikerID = bikerSocketLivePOJO.getData().getBiker_id();
@@ -361,7 +352,9 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
                         LatLng finalPosition = new LatLng(cust_latitude, cust_longitude);
                         //marker.setPosition(finalPosition);
-                        animateMarker(map,marker,finalPosition,false);
+                        //animateMarker(map,marker,finalPosition,false);
+
+                        addBikerMarkers(bikeNo);
                     }
                 }
 
@@ -369,13 +362,13 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
 
 
-                /*for(int i = 0; i < bikerListMainPOJO.getData().size() ; i++)
+                *//*for(int i = 0; i < bikerListMainPOJO.getData().size() ; i++)
                 {
                     if(SocketBikerID.equalsIgnoreCase(bikerListMainPOJO.getData().get(i).get_id()))
                     {
                         Log.i(SocketBikerID,bikerListMainPOJO.getData().get(i).get_id());
 
-                        *//*String[] geoArray = bikerSocketLivePOJO.getData().getGeo().getCoordinates();
+                        *//**//*String[] geoArray = bikerSocketLivePOJO.getData().getGeo().getCoordinates();
 
                         Double cust_longitude = Double.parseDouble(geoArray[0]);
                         Double cust_latitude = Double.parseDouble(geoArray[1]);
@@ -387,14 +380,14 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                             Biker.setPosition(finalPosition);
                         }
 
-                        animateMarker(map,Biker,finalPosition,false);*//*
-                       *//* newLocation = finalPosition;
+                        animateMarker(map,Biker,finalPosition,false);*//**//*
+                       *//**//* newLocation = finalPosition;
                         animateMarker(map,Biker,finalPosition,false);
                         Biker.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));
 
-                        oldLocation = newLocation;*//*
+                        oldLocation = newLocation;*//**//*
                     }
-                }*/
+                }*//*
             }
 
         } catch (Exception e) {
@@ -442,9 +435,9 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                 }
             }
         });
-    }
+    }*/
 
-    private void getBikerList()
+    /*private void getBikerList()
     {
         try
         {
@@ -489,7 +482,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
                     String bikeNo = jsonObject1.getString("_id");
 
-                    addBikerMarkers(bikeNo);
+                    //addBikerMarkers(bikeNo);
                 }
 
                 startBikerSocket();
@@ -498,7 +491,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
-    }
+    }*/
 
     private double bearingBetweenLocations(LatLng latLng1, LatLng latLng2) {
 
@@ -609,6 +602,10 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
         try
         {
+            if (Biker != null) {
+                Biker.remove();
+            }
+
             Biker = map.addMarker(new MarkerOptions().position(Current_Origin)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
                         .title(location_name));
@@ -809,7 +806,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                 scheduleTaskExecutor.shutdown();
             }
 
-            stopBikerSocket();
+            //stopBikerSocket();
         }catch (Exception e)
         {
             Log.i(TAG,e.getMessage());

@@ -324,6 +324,64 @@
             android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/biker_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/biker"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="account"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_myaccount" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/biker"
+                    android:gravity="center"
+                    android:padding="20dp"
+                    android:text="Biker List"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_arrow" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginRight="5dp"
+                android:background="#ccc" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
                 android:id="@+id/help_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">

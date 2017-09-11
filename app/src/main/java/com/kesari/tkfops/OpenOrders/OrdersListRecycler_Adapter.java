@@ -20,7 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.kesari.tkfops.BikerList.DriverListActivity;
+import com.kesari.tkfops.BikerList.BikerAssign.DriverListActivity;
 import com.kesari.tkfops.Customer.CustomerMapActivity;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
@@ -107,6 +107,22 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                 holder.payment_mode.setText(OrdersListReView.get(position).getPayment_Mode());
             }
 
+            if(OrdersListReView.get(position).getPickUp() != null)
+            {
+                if(OrdersListReView.get(position).getPickUp().equalsIgnoreCase("true"))
+                {
+                    holder.orderType.setText("Pick Up");
+                }
+                else
+                {
+                    holder.orderType.setText("Delivery");
+                }
+            }
+            else
+            {
+                holder.orderType.setText("Delivery");
+            }
+
             holder.total_price.setText(OrdersListReView.get(position).getTotal_price());
 
             if(OrdersListReView.get(position).getStatus().equalsIgnoreCase("Rejected"))
@@ -160,14 +176,37 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                 holder.accept.setVisibility(View.GONE);
                 holder.path.setVisibility(View.VISIBLE);
 
-                if(OrdersListReView.get(position).getBiker() != null)
+                if(OrdersListReView.get(position).getPickUp() != null)
                 {
-                    holder.assign.setVisibility(View.GONE);
+                    if(OrdersListReView.get(position).getPickUp().equalsIgnoreCase("true"))
+                    {
+                        holder.assign.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        if(OrdersListReView.get(position).getBiker() != null)
+                        {
+                            holder.assign.setVisibility(View.GONE);
+                        }
+                        else
+                        {
+                            holder.assign.setVisibility(View.VISIBLE);
+                        }
+                    }
                 }
                 else
                 {
-                    holder.assign.setVisibility(View.VISIBLE);
+                    if(OrdersListReView.get(position).getBiker() != null)
+                    {
+                        holder.assign.setVisibility(View.GONE);
+                    }
+                    else
+                    {
+                        holder.assign.setVisibility(View.VISIBLE);
+                    }
                 }
+
+
             }
             else if(OrdersListReView.get(position).getStatus().equalsIgnoreCase("Pending"))
             {
@@ -275,7 +314,7 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
 
     public static class RecyclerViewHolder extends RecyclerView.ViewHolder
     {
-        TextView order_number,customer_name,payment_confirm,payment_mode,total_price,rejectReason,cancelReason,orderDate,orderNo;
+        TextView order_number,customer_name,payment_confirm,payment_mode,total_price,rejectReason,cancelReason,orderDate,orderNo,orderType;
         CardView subItemCard_view;
         ImageView order_status;
         LinearLayout payment_confirmHolder,payment_modeHolder,rejectHolder,cancelHolder;
@@ -293,6 +332,7 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
             total_price = (TextView) view.findViewById(R.id.total_price);
             rejectReason = (TextView) view.findViewById(R.id.rejectReason);
             cancelReason = (TextView) view.findViewById(R.id.cancelReason);
+            orderType = (TextView) view.findViewById(R.id.orderType);
 
             payment_confirmHolder = (LinearLayout) view.findViewById(R.id.payment_confirmHolder);
             payment_modeHolder = (LinearLayout) view.findViewById(R.id.payment_modeHolder);

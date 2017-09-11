@@ -24,11 +24,9 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="0736b1c8cd418d92fbe8137780b997d2ac5f4f20"
-            />
+            android:value="0736b1c8cd418d92fbe8137780b997d2ac5f4f20" />
 
         <activity
             android:name=".Splash.SplashActivity"
@@ -77,7 +75,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".BikerList.DriverListActivity"
+            android:name=".BikerList.BikerAssign.DriverListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -120,9 +118,17 @@
             android:name=".BikerMap.BikerMapActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".Route.BikerRouteActivity"
+        <activity
+            android:name=".Route.BikerRouteActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".BikerList.BikerLocation.BikerLocationListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".BikerList.BikerLocation.BikerMapLocationActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" ></activity>
     </application>
 
 </manifest>

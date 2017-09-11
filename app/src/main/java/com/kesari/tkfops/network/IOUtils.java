@@ -1,16 +1,24 @@
 package com.kesari.tkfops.network;
 
+import android.animation.FloatEvaluator;
+import android.animation.PropertyValuesHolder;
+import android.animation.ValueAnimator;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Window;
+import android.view.animation.AccelerateDecelerateInterpolator;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -29,6 +37,11 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.imagepipeline.image.ImageInfo;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.Gson;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.ErrorPOJO;
@@ -477,5 +490,53 @@ public class IOUtils {
                 });
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public static void showRipples(LatLng latLng, GoogleMap map, int DURATION) {
+        GradientDrawable d = new GradientDrawable();
+        d.setShape(GradientDrawable.OVAL);
+        d.setSize(500,500);
+        d.setColor(0x5500ff00);
+        d.setStroke(0, Color.TRANSPARENT);
+
+        Bitmap bitmap = Bitmap.createBitmap(d.getIntrinsicWidth()
+                , d.getIntrinsicHeight()
+                , Bitmap.Config.ARGB_8888);
+
+        // Convert the drawable to bitmap
+        Canvas canvas = new Canvas(bitmap);
+        d.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        d.draw(canvas);
+
+        // Radius of the circle
+        final int radius = 100;
+
+        // Add the circle to the map
+        final GroundOverlay circle = map.addGroundOverlay(new GroundOverlayOptions()
+                .position(latLng, 2 * radius).image(BitmapDescriptorFactory.fromBitmap(bitmap)));
+
+        // Prep the animator
+        PropertyValuesHolder radiusHolder = PropertyValuesHolder.ofFloat("radius", 0, radius);
+        PropertyValuesHolder transparencyHolder = PropertyValuesHolder.ofFloat("transparency", 0, 1);
+
+        ValueAnimator valueAnimator = new ValueAnimator();
+        valueAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        valueAnimator.setRepeatMode(ValueAnimator.RESTART);
+        valueAnimator.setValues(radiusHolder, transparencyHolder);
+        valueAnimator.setDuration(DURATION);
+        valueAnimator.setEvaluator(new FloatEvaluator());
+        valueAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                float animatedRadius = (float) valueAnimator.getAnimatedValue("radius");
+                float animatedAlpha = (float) valueAnimator.getAnimatedValue("transparency");
+                circle.setDimensions(animatedRadius * 2);
+                circle.setTransparency(animatedAlpha);
+            }
+        });
+
+        // start the animation
+        valueAnimator.start();
     }
 }

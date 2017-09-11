@@ -1,4 +1,4 @@
-package com.kesari.tkfops.BikerList;
+package com.kesari.tkfops.BikerList.BikerAssign;
 
 /**
  * Created by kesari on 30/06/17.

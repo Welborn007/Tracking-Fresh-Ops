@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.kesari.tkfops.AssignedStock.AssignedStockActivity;
+import com.kesari.tkfops.BikerList.BikerLocation.BikerLocationListActivity;
 import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.OpenOrders.OpenOrderFragment;
 import com.kesari.tkfops.OrderAssignedToBiker.OrderBikerAssignedActivity;
@@ -69,7 +70,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
     String name;
     TextView name_Login;
 
-    RelativeLayout assigned_stock_holder,stock_holder,route_holder,profile_holder;
+    RelativeLayout assigned_stock_holder,stock_holder,route_holder,profile_holder,biker_holder;
     CircleImageView profile_image;
     TextView statVehicle;
     Switch vehicleStatus;
@@ -127,6 +128,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             stock_holder = (RelativeLayout) header.findViewById(R.id.stock_holder);
             route_holder = (RelativeLayout) header.findViewById(R.id.route_holder);
             profile_holder = (RelativeLayout) header.findViewById(R.id.profile_holder);
+            biker_holder = (RelativeLayout) header.findViewById(R.id.biker_holder);
             profile_image = (CircleImageView) header.findViewById(R.id.profile_image);
 
             statVehicle = (TextView) findViewById(R.id.statVehicle);
@@ -180,6 +182,14 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(VehicleDashboardActivity.this, StockListActivity.class);
+                    startActivity(intent);
+                }
+            });
+
+            biker_holder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(VehicleDashboardActivity.this, BikerLocationListActivity.class);
                     startActivity(intent);
                 }
             });
