@@ -21,6 +21,7 @@ public class SharedPrefUtil {
 
     public static String KEY_USER_TOKEN = "token";
     public static String KEY_LOGIN_TYPE = "login_type";
+    public static String KEY_FIREBASE_TOKEN = "firebase_token";
 
     public static BikerProfileMain getBikerUser(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -80,6 +81,18 @@ public class SharedPrefUtil {
         return Token;
     }
 
+    public static void setFirebaseToken(Context context, String Token) {
+        SharedPreferences preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        preferences.edit().putString(KEY_FIREBASE_TOKEN, Token).apply();
+    }
+
+    public static String getFirebaseToken(Context context) {
+        SharedPreferences preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String Token = preferences.getString(KEY_FIREBASE_TOKEN, "");
+
+        return Token;
+    }
+
     public static void setLocation(Context context, float lat, float lon) {
         SharedPreferences preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         preferences.edit().putFloat(KEY_LAT, lat).putFloat(KEY_LONGI, lon).commit();
@@ -96,7 +109,7 @@ public class SharedPrefUtil {
 
     public static void setClear(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        preferences.edit().remove(KEY_USER).remove(KEY_USER_TOKEN).remove(KEY_LOGIN_TYPE).commit();
+        preferences.edit().remove(KEY_USER).remove(KEY_USER_TOKEN).remove(KEY_LOGIN_TYPE).remove(KEY_FIREBASE_TOKEN).commit();
     }
 
 }

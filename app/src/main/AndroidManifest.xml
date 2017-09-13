@@ -25,6 +25,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
         <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
             android:name="io.fabric.ApiKey"
             android:value="0736b1c8cd418d92fbe8137780b997d2ac5f4f20" />
 
@@ -65,6 +68,17 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".Map.LocationServiceNew" />
+
+        <service android:name=".SNS.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service android:name=".SNS.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
 
         <activity
             android:name=".SelectLogin.SelectLoginActivity"
