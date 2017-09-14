@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import mehdi.sakout.fancybuttons.FancyButton;
 
 /**
@@ -440,7 +441,11 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                     }
                     else
                     {
-                        Toast.makeText(context, "Please mention reason!!!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(context, "Please mention reason!!!", Toast.LENGTH_SHORT).show();
+
+                        new SweetAlertDialog(context)
+                                .setTitleText("Please mention reason!!!")
+                                .show();
                     }
                 }
             });

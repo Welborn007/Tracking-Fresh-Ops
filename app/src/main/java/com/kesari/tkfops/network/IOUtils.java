@@ -50,6 +50,8 @@ import org.json.JSONObject;
 
 import java.util.Map;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 /**
  * Created by kesari on 13/04/17.
  */
@@ -288,7 +290,11 @@ public class IOUtils {
                 }catch (Exception e)
                 {
                     //Log.d("Error", e.getMessage());
-                    FireToast.customSnackbar(context, "Oops Something Went Wrong!!", "");
+                    //FireToast.customSnackbar(context, "Oops Something Went Wrong!!", "");
+
+                    new SweetAlertDialog(context)
+                            .setTitleText("Oops Something Went Wrong!!")
+                            .show();
                 }
             }
         })
@@ -353,7 +359,11 @@ public class IOUtils {
                 }catch (Exception e)
                 {
                     //Log.d("Error", e.getMessage());
-                    FireToast.customSnackbar(context, "Oops Something Went Wrong!!", "");
+                    //FireToast.customSnackbar(context, "Oops Something Went Wrong!!", "");
+
+                    new SweetAlertDialog(context)
+                            .setTitleText("Oops Something Went Wrong!!")
+                            .show();
                 }
             }
         })
@@ -449,16 +459,28 @@ public class IOUtils {
             String[] error = errorPOJO.getErrors();
             String errorString = error[0];
 
-            FireToast.customSnackbar(context, errorString,"");
+            //FireToast.customSnackbar(context, errorString,"");
+
+            new SweetAlertDialog(context)
+                    .setTitleText(errorString)
+                    .show();
 
         }
         else if(errorPOJO.getMessage() != null)
         {
-            FireToast.customSnackbar(context, errorPOJO.getMessage(),"");
+            //FireToast.customSnackbar(context, errorPOJO.getMessage(),"");
+
+            new SweetAlertDialog(context)
+                    .setTitleText(errorPOJO.getMessage())
+                    .show();
         }
         else
         {
-            FireToast.customSnackbar(context, "Oops Something Went Wrong!!","");
+            //FireToast.customSnackbar(context, "Oops Something Went Wrong!!","");
+
+            new SweetAlertDialog(context)
+                    .setTitleText("Oops Something Went Wrong!!")
+                    .show();
         }
 
 

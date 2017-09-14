@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
@@ -24,6 +23,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by kesari on 30/06/17.
@@ -168,7 +169,11 @@ public class BikerListRecyclerAdapter extends RecyclerView.Adapter<BikerListRecy
 
             if(!_id.isEmpty())
             {
-                Toast.makeText(context, "Order assigned to Biker!!!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Order assigned to Biker!!!", Toast.LENGTH_SHORT).show();
+
+                new SweetAlertDialog(context)
+                        .setTitleText("Order assigned to Biker!!!")
+                        .show();
                 ((Activity)context).finish();
             }
 

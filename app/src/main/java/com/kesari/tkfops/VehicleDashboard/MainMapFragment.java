@@ -51,6 +51,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 /**
  * Created by kesari on 18/04/17.
  */
@@ -302,7 +304,11 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
             if(orderMainPOJO.getData().isEmpty())
             {
-                FireToast.customSnackbar(context,"No Orders!!!","Swipe");
+                //FireToast.customSnackbar(context,"No Orders!!!","Swipe");
+
+                new SweetAlertDialog(context)
+                        .setTitleText("No Orders!!!")
+                        .show();
 
                 map.clear();
                 map.addMarker(new MarkerOptions().position(Current_Origin)

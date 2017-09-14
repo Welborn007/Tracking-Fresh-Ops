@@ -35,7 +35,6 @@ import com.kesari.tkfops.OpenOrders.OrderMainPOJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 
 import org.json.JSONArray;
@@ -50,6 +49,8 @@ import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by kesari on 03/07/17.
@@ -305,7 +306,11 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
             if(orderMainPOJO.getData().isEmpty())
             {
-                FireToast.customSnackbar(getActivity(),"No Order Assigned!!!","Swipe");
+                //FireToast.customSnackbar(getActivity(),"No Order Assigned!!!","Swipe");
+
+                new SweetAlertDialog(getActivity())
+                        .setTitleText("No Order Assigned!!!")
+                        .show();
 
                 map.clear();
                 map.addMarker(new MarkerOptions().position(Current_Origin)

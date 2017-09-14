@@ -26,7 +26,6 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.kesari.tkfops.AssignedStock.AssignedStockActivity;
 import com.kesari.tkfops.BikerList.BikerLocation.BikerLocationListActivity;
@@ -41,12 +40,9 @@ import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.VehicleDeliveredOrders.VehicleDeliveredOrderActivity;
 import com.kesari.tkfops.VehicleProfileData.VehicleProfileActivity;
 import com.kesari.tkfops.VehicleStockList.StockListActivity;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.listeners.ActionClickListener;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
@@ -55,6 +51,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -434,7 +431,11 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
                 stopService(new Intent(getBaseContext(), LocationServiceNew.class));
 
-                Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
+
+                new SweetAlertDialog(getApplicationContext())
+                        .setTitleText("Logged Out")
+                        .show();
 
                 Intent i=new Intent(VehicleDashboardActivity.this,SelectLoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -589,13 +590,26 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
         try {
 
             if (!NetworkUtils.isNetworkConnectionOn(this)) {
-                FireToast.customSnackbarWithListner(this, "No internet access", "Settings", new ActionClickListener() {
+                /*FireToast.customSnackbarWithListner(this, "No internet access", "Settings", new ActionClickListener() {
                     @Override
                     public void onActionClicked(Snackbar snackbar) {
                         startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                     }
                 });
-                return;
+                return;*/
+
+                new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE)
+                        .setTitleText("Oops! No internet access")
+                        .setContentText("Please Check Settings")
+                        .setConfirmText("Enable the Internet?")
+                        .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                            @Override
+                            public void onClick(SweetAlertDialog sDialog) {
+                                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                                sDialog.dismissWithAnimation();
+                            }
+                        })
+                        .show();
             }
 
         }catch (Exception e)
