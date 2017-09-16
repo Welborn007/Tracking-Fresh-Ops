@@ -44,6 +44,28 @@
         android:textColor="@color/black"
         />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#ccc"/>
+
+    <TextView
+        android:id="@+id/notificationList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/ic_bell"
+        android:padding="10dp"
+        android:text="Notification List"
+        android:gravity="center_vertical"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#ccc"/>
+
     <mehdi.sakout.fancybuttons.FancyButton
         android:layout_width="200dp"
         android:layout_height="wrap_content"

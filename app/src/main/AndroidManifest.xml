@@ -70,7 +70,6 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service android:name=".Map.LocationServiceNew" />
-
         <service android:name=".SNS.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -142,9 +141,16 @@
             android:name=".BikerList.BikerLocation.BikerLocationListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".BikerList.BikerLocation.BikerMapLocationActivity"
+        <activity
+            android:name=".BikerList.BikerLocation.BikerMapLocationActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" ></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".NotificationList.BikerNotifcationList.BikerNotificationListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".NotificationList.VehicleNotificationList.VehicleNotificationListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

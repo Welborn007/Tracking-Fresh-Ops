@@ -24,20 +24,29 @@ import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kesari.tkfops.BikerDeliveredOrder.BikerDeliveredOrderActivity;
 import com.kesari.tkfops.BikerMap.BikerMapFragment;
 import com.kesari.tkfops.BikerOrderList.BikerOpenOrderFragment;
 import com.kesari.tkfops.BikerProfileData.BikerProfileActivity;
 import com.kesari.tkfops.Map.LocationServiceNew;
+import com.kesari.tkfops.NotificationList.BikerNotifcationList.BikerNotificationListActivity;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Route.BikerRouteActivity;
 import com.kesari.tkfops.SelectLogin.SelectLoginActivity;
+import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
 import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -186,6 +195,17 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                 }
             });
 
+            Log.i("bikerTOken",SharedPrefUtil.getToken(BikerDashboardActivity.this));
+
+            try {
+                if (SharedPrefUtil.getFirebaseToken(BikerDashboardActivity.this) != null) {
+                    Log.i("FirebaseTOKEN", SharedPrefUtil.getFirebaseToken(BikerDashboardActivity.this));
+                    sendToken(SharedPrefUtil.getFirebaseToken(BikerDashboardActivity.this));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             if (savedInstanceState == null) {
                 getFragmentManager()
                         .beginTransaction()
@@ -201,6 +221,45 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
             Log.i(TAG, e.getMessage());
         }
 
+    }
+
+    private void sendToken(String TOKEN) {
+        try {
+
+            String url = Constants.BikerFBT;
+
+            JSONObject jsonObject = new JSONObject();
+
+            try {
+
+                JSONObject postObject = new JSONObject();
+
+                postObject.put("FBT", TOKEN);
+
+                jsonObject.put("post", postObject);
+
+                Log.i("JSON CREATED", jsonObject.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            IOUtils ioUtils = new IOUtils();
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(BikerDashboardActivity.this));
+
+            ioUtils.sendJSONObjectPutRequestHeader(BikerDashboardActivity.this, url, params, jsonObject, new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d(TAG, result.toString());
+
+                }
+            });
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
     }
 
     private void flipMapCard() {
@@ -279,6 +338,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
         nameTxt.setText("Hello " + name);
 
         TextView my_account = (TextView) view.findViewById(R.id.my_account);
+        TextView notificationList = (TextView) view.findViewById(R.id.notificationList);
 
         my_account.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -297,6 +357,14 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                     .into(imgUserimage);
         }
 
+        notificationList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(BikerDashboardActivity.this, BikerNotificationListActivity.class);
+                startActivity(intent);
+            }
+        });
+
         FancyButton logout = (FancyButton) view.findViewById(R.id.btnLogout);
 
         logout.setOnClickListener(new View.OnClickListener() {
@@ -305,11 +373,8 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
                 stopService(new Intent(getBaseContext(), LocationServiceNew.class));
 
-                //Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
 
-                new SweetAlertDialog(getApplicationContext())
-                        .setTitleText("Logged Out")
-                        .show();
 
                 Intent i=new Intent(BikerDashboardActivity.this,SelectLoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);

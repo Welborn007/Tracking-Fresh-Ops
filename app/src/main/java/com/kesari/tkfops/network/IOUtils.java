@@ -232,6 +232,7 @@ public class IOUtils {
                         }catch (Exception e)
                         {
                             //Log.d("Error", e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -292,9 +293,7 @@ public class IOUtils {
                     //Log.d("Error", e.getMessage());
                     //FireToast.customSnackbar(context, "Oops Something Went Wrong!!", "");
 
-                    new SweetAlertDialog(context)
-                            .setTitleText("Oops Something Went Wrong!!")
-                            .show();
+                    e.printStackTrace();
                 }
             }
         })
@@ -361,9 +360,7 @@ public class IOUtils {
                     //Log.d("Error", e.getMessage());
                     //FireToast.customSnackbar(context, "Oops Something Went Wrong!!", "");
 
-                    new SweetAlertDialog(context)
-                            .setTitleText("Oops Something Went Wrong!!")
-                            .show();
+                   e.printStackTrace();
                 }
             }
         })
@@ -430,6 +427,7 @@ public class IOUtils {
                         }catch (Exception e)
                         {
                             //Log.d("Error", e.getMessage());
+                            e.printStackTrace();
                         }
                     }
                 }

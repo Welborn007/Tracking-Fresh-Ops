@@ -158,7 +158,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
-                    sendBikerLocationData(Lat,Long);
+                    //sendBikerLocationData(Lat,Long);
                 }
             });
 
@@ -327,7 +327,8 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject jo_inside = jsonArray.getJSONObject(i);
 
-                    JSONObject jsonObject1Address = jo_inside.getJSONObject("address");
+                    JSONObject jsonObjectOrder = jo_inside.getJSONObject("order");
+                    JSONObject jsonObject1Address = jsonObjectOrder.getJSONObject("address");
 
                     String location_name = jsonObject1Address.getString("fullName");
                     Double latitude = jsonObject1Address.getDouble("latitude");

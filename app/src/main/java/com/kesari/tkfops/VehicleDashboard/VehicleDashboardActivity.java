@@ -26,10 +26,12 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kesari.tkfops.AssignedStock.AssignedStockActivity;
 import com.kesari.tkfops.BikerList.BikerLocation.BikerLocationListActivity;
 import com.kesari.tkfops.Map.LocationServiceNew;
+import com.kesari.tkfops.NotificationList.VehicleNotificationList.VehicleNotificationListActivity;
 import com.kesari.tkfops.OpenOrders.OpenOrderFragment;
 import com.kesari.tkfops.OrderAssignedToBiker.OrderBikerAssignedActivity;
 import com.kesari.tkfops.R;
@@ -251,6 +253,15 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
             Log.i("vehicleTOken",SharedPrefUtil.getToken(VehicleDashboardActivity.this));
 
+            try {
+                if (SharedPrefUtil.getFirebaseToken(VehicleDashboardActivity.this) != null) {
+                    Log.i("FirebaseTOKEN", SharedPrefUtil.getFirebaseToken(VehicleDashboardActivity.this));
+                    sendToken(SharedPrefUtil.getFirebaseToken(VehicleDashboardActivity.this));
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             if (savedInstanceState == null) {
                 getFragmentManager()
                         .beginTransaction()
@@ -261,6 +272,45 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             }
 
             getFragmentManager().addOnBackStackChangedListener(this);
+
+        } catch (Exception e) {
+            Log.i(TAG, e.getMessage());
+        }
+    }
+
+    private void sendToken(String TOKEN) {
+        try {
+
+            String url = Constants.VehicleFBT;
+
+            JSONObject jsonObject = new JSONObject();
+
+            try {
+
+                JSONObject postObject = new JSONObject();
+
+                postObject.put("FBT", TOKEN);
+
+                jsonObject.put("post", postObject);
+
+                Log.i("JSON CREATED", jsonObject.toString());
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            IOUtils ioUtils = new IOUtils();
+
+            Map<String, String> params = new HashMap<String, String>();
+            params.put("Authorization", "JWT " + SharedPrefUtil.getToken(VehicleDashboardActivity.this));
+
+            ioUtils.sendJSONObjectPutRequestHeader(VehicleDashboardActivity.this, url, params, jsonObject, new IOUtils.VolleyCallback() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.d(TAG, result.toString());
+
+                }
+            });
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -396,6 +446,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
         nameTxt.setText("Hello " + name);
 
         TextView my_account = (TextView) view.findViewById(R.id.my_account);
+        TextView notificationList = (TextView) view.findViewById(R.id.notificationList);
 
         my_account.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -415,6 +466,14 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                     .into(imgUserimage);
         }
 
+        notificationList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(VehicleDashboardActivity.this, VehicleNotificationListActivity.class);
+                startActivity(intent);
+            }
+        });
+
         FancyButton logout = (FancyButton) view.findViewById(R.id.btnLogout);
         FancyButton NotifyUser = (FancyButton) view.findViewById(R.id.Notify);
 
@@ -431,11 +490,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
                 stopService(new Intent(getBaseContext(), LocationServiceNew.class));
 
-                //Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
-
-                new SweetAlertDialog(getApplicationContext())
-                        .setTitleText("Logged Out")
-                        .show();
+                Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
 
                 Intent i=new Intent(VehicleDashboardActivity.this,SelectLoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK);
