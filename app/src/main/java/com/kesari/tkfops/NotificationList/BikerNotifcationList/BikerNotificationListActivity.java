@@ -142,6 +142,11 @@ public class BikerNotificationListActivity extends AppCompatActivity implements 
                     swipeContainer.setRefreshing(false);
 
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {

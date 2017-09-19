@@ -1,6 +1,8 @@
 package com.kesari.tkfops.VehicleDashboard;
 
+import android.app.AlarmManager;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -31,6 +33,7 @@ import android.widget.Toast;
 import com.kesari.tkfops.AssignedStock.AssignedStockActivity;
 import com.kesari.tkfops.BikerList.BikerLocation.BikerLocationListActivity;
 import com.kesari.tkfops.Map.LocationServiceNew;
+import com.kesari.tkfops.Map.RestartServiceReceiver;
 import com.kesari.tkfops.NotificationList.VehicleNotificationList.VehicleNotificationListActivity;
 import com.kesari.tkfops.OpenOrders.OpenOrderFragment;
 import com.kesari.tkfops.OrderAssignedToBiker.OrderBikerAssignedActivity;
@@ -74,6 +77,11 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
     TextView statVehicle;
     Switch vehicleStatus;
 
+    private PendingIntent pendingIntent;
+    private AlarmManager manager;
+    PopupWindow popupwindow_obj;
+    FancyButton NotifyUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,6 +113,12 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                     Log.e(TAG, "Location service is already running");
                 }
             }
+
+            // Retrieve a PendingIntent that will perform a broadcast
+            Intent alarmIntent = new Intent(this, RestartServiceReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+
+            startAlarm();
 
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             toggle = new ActionBarDrawerToggle(
@@ -197,7 +211,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                 @Override
                 public void onClick(View v) {
 
-                    PopupWindow popupwindow_obj = popupDisplay();
+                    popupwindow_obj = popupDisplay();
 //                popupwindow_obj.showAsDropDown(profile);
                     popupwindow_obj.showAtLocation(filter, Gravity.TOP| Gravity.RIGHT, 50, 150);
                 }
@@ -278,6 +292,14 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
         }
     }
 
+    public void startAlarm() {
+        manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        int interval = 1000;
+
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        //Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+    }
+
     private void sendToken(String TOKEN) {
         try {
 
@@ -310,6 +332,11 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                     Log.d(TAG, result.toString());
 
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {
@@ -331,6 +358,11 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                     Log.i("profile_result",result);
 
                     profileDataResponse(result);
+
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
 
                 }
             });
@@ -475,11 +507,12 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
         });
 
         FancyButton logout = (FancyButton) view.findViewById(R.id.btnLogout);
-        FancyButton NotifyUser = (FancyButton) view.findViewById(R.id.Notify);
+        NotifyUser = (FancyButton) view.findViewById(R.id.Notify);
 
         NotifyUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                NotifyUser.setClickable(false);
                 NearbyVehiclePushNotification();
             }
         });
@@ -544,6 +577,14 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                 @Override
                 public void onSuccess(String result) {
                     Log.d("Push Send Successfull", result.toString());
+                    Toast.makeText(VehicleDashboardActivity.this, "Nearby Users Notified!!", Toast.LENGTH_SHORT).show();
+                    NotifyUser.setClickable(true);
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+                    Toast.makeText(VehicleDashboardActivity.this, "Nearby Users Notified!!", Toast.LENGTH_SHORT).show();
+                    NotifyUser.setClickable(true);
                 }
             });
 
@@ -584,6 +625,11 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
                     Log.d(TAG, result.toString());
                     VehicleStatusResponse(result);
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {
@@ -620,6 +666,10 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
 
         try {
             unregisterReceiver(networkUtilsReceiver);
+
+            if ( popupwindow_obj !=null && popupwindow_obj.isShowing() ){
+                popupwindow_obj.dismiss();
+            }
 
             /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE

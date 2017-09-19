@@ -224,6 +224,11 @@ public class LocationServiceNew extends Service implements LocationListener,
                 public void onSuccess(String result) {
                     Log.d("Driver_Updates_Send", result.toString());
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
 
@@ -266,6 +271,11 @@ public class LocationServiceNew extends Service implements LocationListener,
                 @Override
                 public void onSuccess(String result) {
                     Log.d("Biker_Updates_Send", result.toString());
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
                 }
             });
 

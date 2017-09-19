@@ -239,6 +239,11 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                 public void onSuccess(String result) {
                     Log.d("Driver_Updates_Send", result.toString());
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
 
@@ -288,6 +293,11 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                     Log.d(TAG, result.toString());
 
                     getOrderListResponse(result,context);
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
                 }
             });
 

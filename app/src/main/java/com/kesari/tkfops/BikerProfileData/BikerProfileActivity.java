@@ -18,12 +18,9 @@ import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.listeners.ActionClickListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -101,6 +98,11 @@ public class BikerProfileActivity extends AppCompatActivity implements NetworkUt
                     Log.i("profile_result",result);
 
                     profileDataResponse(result);
+
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
 
                 }
             });

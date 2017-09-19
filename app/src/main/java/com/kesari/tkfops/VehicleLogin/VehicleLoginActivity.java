@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.R;
@@ -99,8 +98,8 @@ public class VehicleLoginActivity extends AppCompatActivity implements NetworkUt
 
                 if(!username.isEmpty() && !pass.isEmpty())
                 {
+                        btnLogin.setClickable(false);
                         sendSimpleLoginData(username,pass);
-
                 }
                 else if(username.isEmpty())
                 {
@@ -149,6 +148,12 @@ public class VehicleLoginActivity extends AppCompatActivity implements NetworkUt
                 @Override
                 public void onSuccess(String result) {
                     SimpleResponse(result.toString());
+                    btnLogin.setClickable(true);
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+                    btnLogin.setClickable(true);
                 }
             });
 
@@ -201,6 +206,11 @@ public class VehicleLoginActivity extends AppCompatActivity implements NetworkUt
                     Log.i("profile_result",result);
 
                     profileDataResponse(result);
+
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
 
                 }
             });

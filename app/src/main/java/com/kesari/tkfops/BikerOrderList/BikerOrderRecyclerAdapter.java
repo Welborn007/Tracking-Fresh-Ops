@@ -260,6 +260,11 @@ public class BikerOrderRecyclerAdapter extends RecyclerView.Adapter<BikerOrderRe
 
                     UpdateResponse(result);
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {

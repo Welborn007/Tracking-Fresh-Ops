@@ -140,6 +140,11 @@ public class StockReViewRecyclerAdapter extends RecyclerView.Adapter<StockReView
                     AssignedStockListFragment.getStockList(context);
 
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {

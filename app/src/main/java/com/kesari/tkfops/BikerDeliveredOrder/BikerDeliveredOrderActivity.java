@@ -26,12 +26,9 @@ import com.kesari.tkfops.OpenOrders.Order_POJO;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.listeners.ActionClickListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -143,6 +140,11 @@ public class BikerDeliveredOrderActivity extends AppCompatActivity implements Ne
                     }
 
                     getOrderListResponse(result,context);
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
                 }
             });
 

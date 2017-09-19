@@ -540,6 +540,11 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                     Log.d(TAG, result.toString());
                     SetVehicleRouteResponse(result);
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {

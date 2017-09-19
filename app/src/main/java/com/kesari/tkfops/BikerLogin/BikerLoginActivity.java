@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.BikerDashboard.BikerDashboardActivity;
@@ -100,7 +99,7 @@ public class BikerLoginActivity extends AppCompatActivity implements NetworkUtil
                 if(!username.isEmpty() && !pass.isEmpty())
                 {
                     sendSimpleLoginData(username,pass);
-
+                    btnLogin.setClickable(false);
                 }
                 else if(username.isEmpty())
                 {
@@ -149,6 +148,12 @@ public class BikerLoginActivity extends AppCompatActivity implements NetworkUtil
                 @Override
                 public void onSuccess(String result) {
                     SimpleResponse(result.toString());
+                    btnLogin.setClickable(true);
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+                    btnLogin.setClickable(true);
                 }
             });
 
@@ -201,6 +206,11 @@ public class BikerLoginActivity extends AppCompatActivity implements NetworkUtil
                     Log.i("profile_result",result);
 
                     profileDataResponse(result);
+
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
 
                 }
             });

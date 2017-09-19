@@ -1,6 +1,8 @@
 package com.kesari.tkfops.BikerDashboard;
 
+import android.app.AlarmManager;
 import android.app.FragmentManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -31,6 +33,7 @@ import com.kesari.tkfops.BikerMap.BikerMapFragment;
 import com.kesari.tkfops.BikerOrderList.BikerOpenOrderFragment;
 import com.kesari.tkfops.BikerProfileData.BikerProfileActivity;
 import com.kesari.tkfops.Map.LocationServiceNew;
+import com.kesari.tkfops.Map.RestartServiceReceiver;
 import com.kesari.tkfops.NotificationList.BikerNotifcationList.BikerNotificationListActivity;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Route.BikerRouteActivity;
@@ -66,6 +69,11 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
     RelativeLayout profile_holder,route_holder;
     CircleImageView profile_image;
 
+    private PendingIntent pendingIntent;
+    private AlarmManager manager;
+
+    PopupWindow popupwindow_obj;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,6 +108,12 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                 }
             }
 
+            // Retrieve a PendingIntent that will perform a broadcast
+            Intent alarmIntent = new Intent(this, RestartServiceReceiver.class);
+            pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+
+            startAlarm();
+
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -116,7 +130,7 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                 @Override
                 public void onClick(View v) {
 
-                    PopupWindow popupwindow_obj = popupDisplay();
+                    popupwindow_obj = popupDisplay();
 //                popupwindow_obj.showAsDropDown(profile);
                     popupwindow_obj.showAtLocation(filter, Gravity.TOP| Gravity.RIGHT, 50, 150);
                 }
@@ -223,6 +237,14 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
     }
 
+    public void startAlarm() {
+        manager = (AlarmManager)getSystemService(Context.ALARM_SERVICE);
+        int interval = 1000;
+
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
+        //Toast.makeText(this, "Alarm Set", Toast.LENGTH_SHORT).show();
+    }
+
     private void sendToken(String TOKEN) {
         try {
 
@@ -253,6 +275,11 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
                 @Override
                 public void onSuccess(String result) {
                     Log.d(TAG, result.toString());
+
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
 
                 }
             });
@@ -404,6 +431,10 @@ public class BikerDashboardActivity extends AppCompatActivity implements Fragmen
 
         try {
             unregisterReceiver(networkUtilsReceiver);
+
+            if ( popupwindow_obj !=null && popupwindow_obj.isShowing() ){
+                popupwindow_obj.dismiss();
+            }
 
             /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE

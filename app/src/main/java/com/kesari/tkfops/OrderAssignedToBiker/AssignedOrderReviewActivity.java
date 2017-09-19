@@ -170,6 +170,11 @@ public class AssignedOrderReviewActivity extends AppCompatActivity implements Ne
                         swipeContainer.setRefreshing(false);
                     }
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {

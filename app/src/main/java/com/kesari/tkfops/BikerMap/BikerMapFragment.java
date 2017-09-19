@@ -241,6 +241,11 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 public void onSuccess(String result) {
                     Log.d("Biker_Updates_Send", result.toString());
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
 
@@ -290,6 +295,11 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                     Log.d(TAG, result.toString());
 
                     getOrderListResponse(result,context);
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
                 }
             });
 

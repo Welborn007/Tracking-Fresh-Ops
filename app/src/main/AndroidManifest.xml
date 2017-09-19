@@ -151,6 +151,10 @@
         <activity android:name=".NotificationList.VehicleNotificationList.VehicleNotificationListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+
+        <receiver android:name=".Map.RestartServiceReceiver" >
+        </receiver>
+
     </application>
 
 </manifest>

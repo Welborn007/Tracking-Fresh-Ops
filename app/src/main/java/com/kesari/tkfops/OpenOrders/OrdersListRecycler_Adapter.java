@@ -17,7 +17,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.BikerList.BikerAssign.DriverListActivity;
@@ -371,6 +370,11 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                     Log.d(TAG, result.toString());
                     CancelReasonsResponse(result,pos);
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {
@@ -504,6 +508,11 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                     Log.d(TAG, result.toString());
 
                     PaymentUpdateResponse(result);
+                }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
                 }
             });
 

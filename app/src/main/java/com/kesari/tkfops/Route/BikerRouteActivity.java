@@ -300,6 +300,11 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                     Log.d(TAG, result.toString());
                     SetVehicleRouteResponse(result);
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
         } catch (Exception e) {

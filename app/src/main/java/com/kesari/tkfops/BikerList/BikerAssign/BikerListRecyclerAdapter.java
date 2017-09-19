@@ -148,6 +148,11 @@ public class BikerListRecyclerAdapter extends RecyclerView.Adapter<BikerListRecy
                     Log.d(TAG, result.toString());
                     AssignOrderResponse(result);
                 }
+            }, new IOUtils.VolleyFailureCallback() {
+                @Override
+                public void onFailure(String result) {
+
+                }
             });
 
 
