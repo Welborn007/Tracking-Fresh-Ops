@@ -2,16 +2,20 @@ package com.kesari.tkfops.Route;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.location.Location;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -19,12 +23,15 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -54,9 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.socket.client.Socket;
@@ -67,6 +71,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
     private MapFragment supportMapFragment;
     //private GPSTracker gps;
     private LatLng Current_Origin;
+    private Location Current_Location;
     private LatLng Old_Origin;
     private GoogleMap map;
     List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
@@ -83,14 +88,15 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
     private String TAG = this.getClass().getSimpleName();
     Marker vehicle,Biker;
     private NetworkUtilsReceiver networkUtilsReceiver;
-    ScheduledExecutorService scheduleTaskExecutor;
+    //ScheduledExecutorService scheduleTaskExecutor;
     private Socket socketBiker;
-    LatLng oldLocation, newLocation;
+    LatLng oldLocation, newLocation,oldLocationBiker;
     private Gson gson;
     private BikerListMainPOJO bikerListMainPOJO;
     BikerSocketLivePOJO bikerSocketLivePOJO;
 
     private ArrayList<Marker> mMarkerArray = new ArrayList<Marker>();
+    private BroadcastReceiver _refreshReceiver = new MyReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +113,9 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
         /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+            IntentFilter filter = new IntentFilter("SOMEACTION");
+            registerReceiver(_refreshReceiver, filter);
 
             gson = new Gson();
 
@@ -159,7 +168,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-           // map.setMyLocationEnabled(true);
+            map.setMyLocationEnabled(true);
             map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
@@ -170,7 +179,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
 
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                    13));
+                    18));
 
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -182,6 +191,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             });
 
             oldLocation = Current_Origin;
+            oldLocationBiker = Current_Origin;
 
             vehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
@@ -246,7 +256,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                 }
             });
 
-            scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
+            /*scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
             // This schedule a task to run every 10 minutes:
             scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
@@ -256,14 +266,15 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                         @Override
                         public void run() {
                             Current_Origin = new LatLng(SharedPrefUtil.getLocation(VehicleRouteActivity.this).getLatitude(), SharedPrefUtil.getLocation(VehicleRouteActivity.this).getLongitude());
-                            vehicle.setPosition(Current_Origin);
-                            vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+                            //vehicle.setPosition(Current_Origin);
+                            vehicle.setRotation((float) bearingBetweenLocations(oldLocationBiker,Current_Origin));
+                            animateMarker(map,vehicle,Current_Origin,false);
 
-                            oldLocation = Current_Origin;
+                            oldLocationBiker = Current_Origin;
                         }
                     });
                 }
-            }, 0, 2, TimeUnit.SECONDS);
+            }, 0, 2, TimeUnit.SECONDS);*/
 
             //getBikerList();
 
@@ -271,6 +282,41 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             Log.i(TAG, e.getMessage());
         }
 
+    }
+
+    public static void animateMarker(final GoogleMap map, final Marker marker, final LatLng toPosition,
+                                     final boolean hideMarker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = map.getProjection();
+        Point startPoint = proj.toScreenLocation(marker.getPosition());
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 3000;
+
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed / duration);
+                double lng = t * toPosition.longitude + (1 - t) * startLatLng.longitude;
+                double lat = t * toPosition.latitude + (1 - t) * startLatLng.latitude;
+
+                marker.setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        marker.setVisible(false);
+                    } else {
+                        marker.setVisible(true);
+                    }
+                }
+            }
+        });
     }
 
     /*private void startBikerSocket()
@@ -797,6 +843,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
         try {
             unregisterReceiver(networkUtilsReceiver);
+            unregisterReceiver(this._refreshReceiver);
 
             /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
@@ -804,11 +851,11 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                 Log.e(TAG, "Location service is stopped");
             }*/
 
-            if(!scheduleTaskExecutor.isShutdown())
+            /*if(!scheduleTaskExecutor.isShutdown())
             {
                 scheduleTaskExecutor.shutdown();
             }
-
+*/
             //stopBikerSocket();
         }catch (Exception e)
         {
@@ -853,6 +900,26 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
         }catch (Exception e)
         {
             Log.i(TAG,e.getMessage());
+        }
+    }
+
+    public class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
+
+            Double lat = intent.getDoubleExtra("lat",0.0);
+            Double lon = intent.getDoubleExtra("lon",0.0);
+
+            Log.i("LatReceiver_VehRoute", String.valueOf(lat));
+            Log.i("LonReceiver_VehRoute", String.valueOf(lon));
+
+            Current_Origin = new LatLng(lat, lon);
+            //vehicle.setPosition(Current_Origin);
+            vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+            animateMarker(map,vehicle,Current_Origin,false);
+
+            oldLocation = Current_Origin;
         }
     }
 }

@@ -2,13 +2,18 @@ package com.kesari.tkfops.BikerMap;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -16,16 +21,20 @@ import android.view.InflateException;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.gson.Gson;
 import com.kesari.tkfops.Map.HttpConnection;
@@ -50,8 +59,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import cn.pedant.SweetAlert.SweetAlertDialog;
-
 /**
  * Created by kesari on 03/07/17.
  */
@@ -63,7 +70,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
     private Context mContext;
     private MapFragment supportMapFragment;
     //private GPSTracker gps;
-    private LatLng Current_Origin;
+    private LatLng Current_Origin,oldLocation;
     private GoogleMap map;
     List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
     HashMap<String, HashMap> extraMarkerInfo = new HashMap<String, HashMap>();
@@ -79,6 +86,9 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
     private Gson gson;
     private OrderMainPOJO orderMainPOJO;
     ScheduledExecutorService scheduleTaskExecutor;
+    Marker biker;
+    List<Polyline> polylines = new ArrayList<Polyline>();
+    private BroadcastReceiver _refreshReceiver = new MyReceiver();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -117,6 +127,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             //gps = new GPSTracker(getActivity());
 
             Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
+            oldLocation = Current_Origin;
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -201,6 +212,12 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 }
             });
 
+            if (biker == null) {
+                biker = map.addMarker(new MarkerOptions().position(Current_Origin)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
+                        .title("TKF Vehicle"));
+            }
+
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
@@ -259,7 +276,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
         if(map != null){
 
-            map.clear();
+            //map.clear();
             scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
             // This schedule a task to run every 10 minutes:
@@ -318,18 +335,17 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             {
                 //FireToast.customSnackbar(getActivity(),"No Order Assigned!!!","Swipe");
 
-                new SweetAlertDialog(getActivity())
+                /*new SweetAlertDialog(getActivity())
                         .setTitleText("No Order Assigned!!!")
-                        .show();
+                        .show();*/
 
-                map.clear();
-                map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
-                        .title("TKF Vehicle"));
+                //map.clear();
+                polylines.clear();
             }
             else
             {
-                map.clear();
+                //map.clear();
+                polylines.clear();
 
                 JSONObject jsonObject = new JSONObject(Response);
                 JSONArray jsonArray = jsonObject.getJSONArray("data");
@@ -377,9 +393,9 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
                 extraMarkerInfo.put(marker.getId(),data);
 
-                map.addMarker(new MarkerOptions().position(Current_Origin)
+               /* map.addMarker(new MarkerOptions().position(Current_Origin)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
-                        .title("TKF Vehicle"));
+                        .title("TKF Vehicle"));*/
             }
 
             CameraPosition cameraPosition = new CameraPosition.Builder().
@@ -505,6 +521,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                 }
 
                 map.addPolyline(polyLineOptions);
+                polylines.add(map.addPolyline(polyLineOptions));
             }catch (Exception e)
             {
                 e.printStackTrace();
@@ -521,6 +538,14 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
         {
             scheduleTaskExecutor.shutdown();
         }
+
+        try
+        {
+            getActivity().unregisterReceiver(this._refreshReceiver);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -532,6 +557,112 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
         if(!scheduleTaskExecutor.isShutdown())
         {
             scheduleTaskExecutor.shutdown();
+        }
+
+        try
+        {
+            getActivity().unregisterReceiver(this._refreshReceiver);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
+
+            Double lat = intent.getDoubleExtra("lat",0.0);
+            Double lon = intent.getDoubleExtra("lon",0.0);
+
+            Log.i("ChangedLatReceiver_Main", String.valueOf(lat));
+            Log.i("ChangedLonReceiver_Main", String.valueOf(lon));
+
+            Current_Origin = new LatLng(lat, lon);
+            //vehicle.setPosition(Current_Origin);
+            biker.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+            animateMarker(map,biker,Current_Origin,false);
+
+            oldLocation = Current_Origin;
+        }
+    }
+
+    private double bearingBetweenLocations(LatLng latLng1, LatLng latLng2) {
+
+        double PI = 3.14159;
+        double lat1 = latLng1.latitude * PI / 180;
+        double long1 = latLng1.longitude * PI / 180;
+        double lat2 = latLng2.latitude * PI / 180;
+        double long2 = latLng2.longitude * PI / 180;
+
+        double dLon = (long2 - long1);
+
+        double y = Math.sin(dLon) * Math.cos(lat2);
+        double x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1)
+                * Math.cos(lat2) * Math.cos(dLon);
+
+        double brng = Math.atan2(y, x);
+
+        brng = Math.toDegrees(brng);
+        brng = (brng + 360) % 360;
+
+        return brng;
+    }
+
+    public static void animateMarker(final GoogleMap map, final Marker marker, final LatLng toPosition,
+                                     final boolean hideMarker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = map.getProjection();
+        Point startPoint = proj.toScreenLocation(marker.getPosition());
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 3000;
+
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed / duration);
+                double lng = t * toPosition.longitude + (1 - t) * startLatLng.longitude;
+                double lat = t * toPosition.latitude + (1 - t) * startLatLng.latitude;
+
+                marker.setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        marker.setVisible(false);
+                    } else {
+                        marker.setVisible(true);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        IntentFilter filter = new IntentFilter("SOMEACTION");
+        getActivity().registerReceiver(_refreshReceiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        try
+        {
+            getActivity().unregisterReceiver(this._refreshReceiver);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 }

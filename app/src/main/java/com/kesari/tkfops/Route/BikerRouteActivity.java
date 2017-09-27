@@ -732,7 +732,7 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
         Projection proj = map.getProjection();
         Point startPoint = proj.toScreenLocation(marker.getPosition());
         final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-        final long duration = 500;
+        final long duration = 3000;
 
         final Interpolator interpolator = new LinearInterpolator();
 

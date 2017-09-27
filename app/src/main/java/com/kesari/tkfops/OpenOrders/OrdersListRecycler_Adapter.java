@@ -3,6 +3,7 @@ package com.kesari.tkfops.OpenOrders;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,7 +21,6 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.kesari.tkfops.BikerList.BikerAssign.DriverListActivity;
-import com.kesari.tkfops.Customer.CustomerMapActivity;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.Constants;
 import com.kesari.tkfops.Utilities.RecyclerItemClickListener;
@@ -281,12 +281,17 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
             holder.path.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, CustomerMapActivity.class);
+
+                    String uri = "http://maps.google.com/maps?f=d&hl=en"+"&daddr="+OrdersListReView.get(position).getAddress().getLatitude()+","+OrdersListReView.get(position).getAddress().getLongitude();
+                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri));
+                    context.startActivity(Intent.createChooser(intent, "Select an application"));
+
+                    /*Intent intent = new Intent(context, CustomerMapActivity.class);
                     intent.putExtra("place",OrdersListReView.get(position).getAddress().getFullName());
                     intent.putExtra("id",OrdersListReView.get(position).getAddressId());
                     intent.putExtra("Lat", Double.parseDouble(OrdersListReView.get(position).getAddress().getLatitude()));
                     intent.putExtra("Lon", Double.parseDouble(OrdersListReView.get(position).getAddress().getLongitude()));
-                    context.startActivity(intent);
+                    context.startActivity(intent);*/
                 }
             });
 

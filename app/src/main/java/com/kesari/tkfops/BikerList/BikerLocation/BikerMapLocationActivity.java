@@ -1,5 +1,6 @@
 package com.kesari.tkfops.BikerList.BikerLocation;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -45,9 +46,6 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.HashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import io.socket.client.IO;
@@ -73,7 +71,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
     BikerSocketLivePOJO bikerSocketLivePOJO;
     boolean connectedBiker = false;
     boolean isDirectionSet = true;
-    ScheduledExecutorService scheduleTaskExecutor;
+    //ScheduledExecutorService scheduleTaskExecutor;
     Marker marker,vehicle;
     HashMap<String, HashMap> extraMarkerInfo = new HashMap<String, HashMap>();
 
@@ -81,6 +79,8 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
     private static final String TAG_LOCATION_NAME = "location_name";
     private static final String TAG_LATITUDE = "latitude";
     private static final String TAG_LONGITUDE = "longitude";
+
+    private BroadcastReceiver _refreshReceiver = new MyReceiver();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +96,9 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
             /*Register receiver*/
             networkUtilsReceiver = new NetworkUtilsReceiver(this);
             registerReceiver(networkUtilsReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+
+            IntentFilter filter = new IntentFilter("SOMEACTION");
+            registerReceiver(_refreshReceiver, filter);
 
             gson = new Gson();
 
@@ -199,7 +202,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
                         //.rotation((float) bearingBetweenLocations(vehicle.getPosition(),Current_Origin))
                         .title("TKF Vehicle"));
 
-                scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
+                /*scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
                 // This schedule a task to run every 10 minutes:
                 scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
@@ -216,7 +219,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
                             }
                         });
                     }
-                }, 0, 2, TimeUnit.SECONDS);
+                }, 0, 2, TimeUnit.SECONDS);*/
             }
 
             map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -454,7 +457,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
         Projection proj = map.getProjection();
         Point startPoint = proj.toScreenLocation(marker.getPosition());
         final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-        final long duration = 500;
+        final long duration = 3000;
 
         final Interpolator interpolator = new LinearInterpolator();
 
@@ -510,6 +513,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
 
         try {
             unregisterReceiver(networkUtilsReceiver);
+            unregisterReceiver(this._refreshReceiver);
 
             if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
@@ -517,10 +521,10 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
                 Log.e(TAG, "Location service is stopped");
             }
 
-            if(!scheduleTaskExecutor.isShutdown())
+            /*if(!scheduleTaskExecutor.isShutdown())
             {
                 scheduleTaskExecutor.shutdown();
-            }
+            }*/
 
             stopBikerSocket();
 
@@ -576,6 +580,26 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
         }catch (Exception e)
         {
             Log.i(TAG,e.getMessage());
+        }
+    }
+
+    public class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Toast.makeText(context, "Intent Detected.", Toast.LENGTH_LONG).show();
+
+            Double lat = intent.getDoubleExtra("lat",0.0);
+            Double lon = intent.getDoubleExtra("lon",0.0);
+
+            Log.i("LatReceiver_BikerMap", String.valueOf(lat));
+            Log.i("LonReceiver_BikerMap", String.valueOf(lon));
+
+            Current_Origin = new LatLng(lat, lon);
+            //vehicle.setPosition(Current_Origin);
+            vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+            animateMarker(map,vehicle,Current_Origin,false);
+
+            oldLocation = Current_Origin;
         }
     }
 }

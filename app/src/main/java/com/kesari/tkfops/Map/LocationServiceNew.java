@@ -159,8 +159,9 @@ public class LocationServiceNew extends Service implements LocationListener,
         String lat = String.valueOf(arg0.getLatitude());
         String lon = String.valueOf(arg0.getLongitude());
 
-        Log.i("ChangedLat",lat);
-        Log.i("ChangedLon",lon);
+
+
+        broadcastIntent(arg0.getLatitude(),arg0.getLongitude());
 
         try
         {
@@ -188,6 +189,14 @@ public class LocationServiceNew extends Service implements LocationListener,
             e.printStackTrace();
         }
         //sendLocationData(lat,lon);
+    }
+
+    public void broadcastIntent(Double lat,Double lon){
+        Intent intent = new Intent();
+        intent.setAction("SOMEACTION");
+        intent.putExtra("lat",lat);
+        intent.putExtra("lon",lon);
+        sendBroadcast(intent);
     }
 
     public void sendVehicleLocationData(String LAT,String LON){
