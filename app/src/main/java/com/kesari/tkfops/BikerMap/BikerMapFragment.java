@@ -9,6 +9,8 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -82,7 +84,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
     private static final String TAG = "driver_Parameters";
     private static View view;
-
+    private Location Current_Location,old_Location;
     private Gson gson;
     private OrderMainPOJO orderMainPOJO;
     ScheduledExecutorService scheduleTaskExecutor;
@@ -129,6 +131,10 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude(),SharedPrefUtil.getLocation(getActivity()).getLongitude());
             oldLocation = Current_Origin;
 
+            old_Location = new Location(LocationManager.GPS_PROVIDER);
+            old_Location.setLatitude(Current_Origin.latitude);
+            old_Location.setLongitude(Current_Origin.longitude);
+
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
@@ -154,7 +160,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).
                     tilt(0).
-                    zoom(18).
+                    zoom(17).
                     bearing(0).
                     build();
 
@@ -169,7 +175,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
-                    //sendBikerLocationData(Lat,Long);
+                    sendBikerLocationData(Lat,Long);
                 }
             });
 
@@ -401,7 +407,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).
                     tilt(0).
-                    zoom(18).
+                    zoom(17).
                     bearing(0).
                     build();
 
@@ -579,12 +585,24 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             Log.i("ChangedLatReceiver_Main", String.valueOf(lat));
             Log.i("ChangedLonReceiver_Main", String.valueOf(lon));
 
-            Current_Origin = new LatLng(lat, lon);
-            //vehicle.setPosition(Current_Origin);
-            biker.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
-            animateMarker(map,biker,Current_Origin,false);
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+            location.setLatitude(lat);
+            location.setLongitude(lon);
 
-            oldLocation = Current_Origin;
+            if(location.distanceTo(old_Location) > 40) {
+
+                Current_Origin = new LatLng(lat, lon);
+                //vehicle.setPosition(Current_Origin);
+                biker.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+                animateMarker(map,biker,Current_Origin,false);
+
+                oldLocation = Current_Origin;
+
+                old_Location = new Location(LocationManager.GPS_PROVIDER);
+                old_Location.setLatitude(lat);
+                old_Location.setLongitude(lon);
+            }
+
         }
     }
 

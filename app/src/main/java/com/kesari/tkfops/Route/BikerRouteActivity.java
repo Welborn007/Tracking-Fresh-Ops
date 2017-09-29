@@ -32,6 +32,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -93,6 +94,9 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
     Marker markerVehicle;
     String[] geoArray;
     LatLng oldLocation, newLocation;
+    private Location Current_Location,old_Location;
+
+    boolean isDirectionSet = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,6 +140,11 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
             supportMapFragment.getMapAsync(this);
 
             Current_Origin = new LatLng(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude(), SharedPrefUtil.getLocation(BikerRouteActivity.this).getLongitude());
+            oldLocation = Current_Origin;
+
+            old_Location = new Location(LocationManager.GPS_PROVIDER);
+            old_Location.setLatitude(Current_Origin.latitude);
+            old_Location.setLongitude(Current_Origin.longitude);
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -162,7 +171,6 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                 return;
             }
             map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
             location.setLatitude(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude());
@@ -171,8 +179,21 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
             updateCurrentLocationMarker(location);
 
 
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                    13));
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(17).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+            if(markerVehicle == null)
+            {
+                markerVehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .title("TKF Vehicle"));
+            }
 
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -267,6 +288,9 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                     return myContentView;
                 }
             });
+
+
+
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
@@ -460,10 +484,23 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                                         cust_latitude,
                                         cust_longitude);
 
-                                animateMarker(map,markerVehicle,finalPosition,false);
-                                markerVehicle.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));
+                                Location location = new Location(LocationManager.GPS_PROVIDER);
+                                location.setLatitude(cust_latitude);
+                                location.setLongitude(cust_longitude);
 
-                                oldLocation = newLocation;
+                                if(location.distanceTo(old_Location) > 40) {
+
+                                    animateMarker(map,markerVehicle,finalPosition,false);
+                                    markerVehicle.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));
+
+                                    oldLocation = newLocation;
+
+                                    old_Location = new Location(LocationManager.GPS_PROVIDER);
+                                    old_Location.setLatitude(cust_latitude);
+                                    old_Location.setLongitude(cust_longitude);
+                                }
+
+
                             }
                         }
                     }
@@ -484,10 +521,6 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
 
         try
         {
-            if(markerVehicle!=null){
-                markerVehicle.remove();
-            }
-
             LatLng dest = new LatLng(latitude, longitude);
 
             HashMap<String, String> data = new HashMap<String, String>();
@@ -518,14 +551,9 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
 
                 //String[] geoArray = nearestRouteMainPOJO.getData().get(0).getDist().getLocation().getCoordinates();
 
-                newLocation = new LatLng(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude(),SharedPrefUtil.getLocation(BikerRouteActivity.this).getLongitude());
+                //newLocation = new LatLng(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude(),SharedPrefUtil.getLocation(BikerRouteActivity.this).getLongitude());
 
-                markerVehicle = map.addMarker(new MarkerOptions().position(newLocation)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
-                        .title("TKF Vehicle"));
             }
-
-            oldLocation = newLocation;
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());

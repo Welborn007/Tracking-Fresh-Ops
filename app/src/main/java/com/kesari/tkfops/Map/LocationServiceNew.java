@@ -125,9 +125,9 @@ public class LocationServiceNew extends Service implements LocationListener,
 
     private void newLocation(Location location) {
         Log.d(TAG, "New location:" + location.toString());
-        float lat, lon;
-        lat = (float) location.getLatitude();
-        lon = (float) location.getLongitude();
+        double lat, lon;
+        lat = (double) location.getLatitude();
+        lon = (double) location.getLongitude();
         SharedPrefUtil.setLocation(LocationServiceNew.this, lat, lon);
 
 		/*// BROADCAST
@@ -174,12 +174,12 @@ public class LocationServiceNew extends Service implements LocationListener,
                         {
                             if(SharedPrefUtil.getVehicleUser(this).getVehicleData().getVehicleStatus().equalsIgnoreCase("ON"))
                             {
-                                sendVehicleLocationData(lat,lon);
+                                //sendVehicleLocationData(lat,lon);
                             }
                         }
                         else if(SharedPrefUtil.getKeyLoginType(this).equalsIgnoreCase("Biker"))
                         {
-                            sendBikerLocationData(lat,lon);
+                            //sendBikerLocationData(lat,lon);
                         }
                     }
                 }

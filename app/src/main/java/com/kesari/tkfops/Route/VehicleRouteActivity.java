@@ -33,6 +33,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -71,7 +72,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
     private MapFragment supportMapFragment;
     //private GPSTracker gps;
     private LatLng Current_Origin;
-    private Location Current_Location;
+    private Location Current_Location,old_Location;
     private LatLng Old_Origin;
     private GoogleMap map;
     List<JSON_POJO> jsonIndiaModelList = new ArrayList<>();
@@ -144,6 +145,10 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
 
             Current_Origin = new LatLng(SharedPrefUtil.getLocation(VehicleRouteActivity.this).getLatitude(), SharedPrefUtil.getLocation(VehicleRouteActivity.this).getLongitude());
 
+            old_Location = new Location(LocationManager.GPS_PROVIDER);
+            old_Location.setLatitude(Current_Origin.latitude);
+            old_Location.setLongitude(Current_Origin.longitude);
+
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
@@ -169,7 +174,15 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                 return;
             }
             map.setMyLocationEnabled(true);
-            map.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+            CameraPosition cameraPosition = new CameraPosition.Builder().
+                    target(Current_Origin).
+                    tilt(0).
+                    zoom(17).
+                    bearing(0).
+                    build();
+
+            map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
             location.setLatitude(SharedPrefUtil.getLocation(VehicleRouteActivity.this).getLatitude());
@@ -178,8 +191,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             updateCurrentLocationMarker(location);
 
 
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin,
-                    18));
+            //map.moveCamera(CameraUpdateFactory.newLatLngZoom(Current_Origin, 18));
 
             map.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                 @Override
@@ -193,10 +205,13 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             oldLocation = Current_Origin;
             oldLocationBiker = Current_Origin;
 
-            vehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
-                    //.rotation((float) bearingBetweenLocations(vehicle.getPosition(),Current_Origin))
-                    .title("TKF Vehicle"));
+            if(vehicle == null)
+            {
+                vehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        //.rotation((float) bearingBetweenLocations(vehicle.getPosition(),Current_Origin))
+                        .title("TKF Vehicle"));
+            }
 
             map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
                 @Override
@@ -911,15 +926,26 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             Double lat = intent.getDoubleExtra("lat",0.0);
             Double lon = intent.getDoubleExtra("lon",0.0);
 
-            Log.i("LatReceiver_VehRoute", String.valueOf(lat));
-            Log.i("LonReceiver_VehRoute", String.valueOf(lon));
+            Log.i("ChangedLatReceiver_Main", String.valueOf(lat));
+            Log.i("ChangedLonReceiver_Main", String.valueOf(lon));
 
-            Current_Origin = new LatLng(lat, lon);
-            //vehicle.setPosition(Current_Origin);
-            vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
-            animateMarker(map,vehicle,Current_Origin,false);
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+            location.setLatitude(lat);
+            location.setLongitude(lon);
 
-            oldLocation = Current_Origin;
+            if(location.distanceTo(old_Location) > 40) {
+                Current_Origin = new LatLng(lat, lon);
+                //vehicle.setPosition(Current_Origin);
+                vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+                animateMarker(map,vehicle,Current_Origin,false);
+
+                oldLocation = Current_Origin;
+
+                old_Location = new Location(LocationManager.GPS_PROVIDER);
+                old_Location.setLatitude(lat);
+                old_Location.setLongitude(lon);
+            }
+
         }
     }
 }

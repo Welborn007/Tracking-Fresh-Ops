@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -86,7 +88,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
     Marker vehicle;
     private  Gson gson;
     private  OrderMainPOJO orderMainPOJO;
-    private Location Current_Location;
+    private Location Current_Location,old_Location;
     PolylineOptions polyLineOptions = null;
     ScheduledExecutorService scheduleTaskExecutor/*,scheduleTaskExecutorOnlyVehicle*/;
     List<Polyline> polylines = new ArrayList<Polyline>();
@@ -130,6 +132,10 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             Current_Origin = new LatLng(SharedPrefUtil.getLocation(getActivity()).getLatitude(), SharedPrefUtil.getLocation(getActivity()).getLongitude());
             oldLocation = Current_Origin;
 
+            old_Location = new Location(LocationManager.GPS_PROVIDER);
+            old_Location.setLatitude(Current_Origin.latitude);
+            old_Location.setLongitude(Current_Origin.longitude);
+
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
         }
@@ -153,7 +159,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).
                     tilt(0).
-                    zoom(18).
+                    zoom(17).
                     bearing(0).
                     build();
 
@@ -170,7 +176,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
-                    //sendVehicleLocationData(Lat,Long);
+                    sendVehicleLocationData(Lat,Long);
                 }
             });
 
@@ -488,7 +494,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).
                     tilt(0).
-                    zoom(18).
+                    zoom(17).
                     bearing(0).
                     build();
 
@@ -698,12 +704,23 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             Log.i("ChangedLatReceiver_Main", String.valueOf(lat));
             Log.i("ChangedLonReceiver_Main", String.valueOf(lon));
 
-            Current_Origin = new LatLng(lat, lon);
-            //vehicle.setPosition(Current_Origin);
-            vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
-            animateMarker(map,vehicle,Current_Origin,false);
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+            location.setLatitude(lat);
+            location.setLongitude(lon);
 
-            oldLocation = Current_Origin;
+            if(location.distanceTo(old_Location) > 40) {
+                Current_Origin = new LatLng(lat, lon);
+                //vehicle.setPosition(Current_Origin);
+                vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+                animateMarker(map,vehicle,Current_Origin,false);
+
+                oldLocation = Current_Origin;
+
+                old_Location = new Location(LocationManager.GPS_PROVIDER);
+                old_Location.setLatitude(lat);
+                old_Location.setLongitude(lon);
+            }
+
         }
     }
 

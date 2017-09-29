@@ -60,7 +60,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
     //GoogleMap googleMap;
     private String TAG = this.getClass().getSimpleName();
     //private GPSTracker gps;
-    private Location Current_Location;
+    private Location Current_Location,old_Location,old_LocationBiker;
     LatLng oldLocation,oldLocationBiker, newLocation;
     private static final int DURATION = 3000;
     private GoogleMap map;
@@ -142,7 +142,13 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
             Log.i("latitude", String.valueOf(Current_Location.getLatitude()));
             Log.i("longitude", String.valueOf(Current_Location.getLongitude()));
 
+            old_Location = new Location(LocationManager.GPS_PROVIDER);
+            old_Location.setLatitude(Current_Origin.latitude);
+            old_Location.setLongitude(Current_Origin.longitude);
 
+            old_LocationBiker = new Location(LocationManager.GPS_PROVIDER);
+            old_LocationBiker.setLatitude(Current_Origin.latitude);
+            old_LocationBiker.setLongitude(Current_Origin.longitude);
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -334,14 +340,6 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
 
                         map.setTrafficEnabled(true);
 
-                        CameraPosition cameraPosition = new CameraPosition.Builder().
-                                target(finalPosition).
-                                tilt(60).
-                                zoom(18).
-                                bearing(0).
-                                build();
-
-                        map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                         newLocation = currentPosition;
 
@@ -354,28 +352,45 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
                         {
                                     /*marker.setPosition(currentPosition);
                                     marker.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));*/
+                            if(location.distanceTo(old_LocationBiker) > 40) {
 
-                            animateMarker(map,marker,finalPosition,false);
-                            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker));
-                            marker.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));
+                                CameraPosition cameraPosition = new CameraPosition.Builder().
+                                        target(finalPosition).
+                                        tilt(0).
+                                        zoom(17).
+                                        bearing(0).
+                                        build();
 
-                            oldLocation = newLocation;
+                                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+                                animateMarker(map,marker,finalPosition,false);
+                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker));
+                                marker.setRotation((float) bearingBetweenLocations(oldLocationBiker,newLocation));
+
+                                oldLocationBiker = newLocation;
+
+                                old_LocationBiker = new Location(LocationManager.GPS_PROVIDER);
+                                old_LocationBiker.setLatitude(cust_latitude);
+                                old_LocationBiker.setLongitude(cust_longitude);
+                            }
+
                         }
 
                         //getMapsApiDirectionsUrl(cust_latitude, cust_longitude);
                     }else
                     {
-                        setVehicleEmpty();
+                        //setVehicleEmpty();
                     }
                 }
                 else
                 {
-                    setVehicleEmpty();
+                    //setVehicleEmpty();
                 }
             }
             else
             {
-                setVehicleEmpty();
+                //setVehicleEmpty();
             }
 
         } catch (Exception e) {
@@ -399,7 +414,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
             if (map != null) {
                 marker = map.addMarker(new MarkerOptions().position(dest)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
-                        .rotation((float) bearingBetweenLocations(oldLocation,newLocation))
+                        .rotation((float) bearingBetweenLocations(oldLocationBiker,newLocation))
                         .title(location_name));
 
                 data.put(TAG_ID, id);
@@ -409,17 +424,9 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
 
                 extraMarkerInfo.put(marker.getId(), data);
 
-                IOUtils.showRipples(dest,map,DURATION);
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        IOUtils.showRipples(dest,map,DURATION);
-                    }
-                }, DURATION - 500);
-
             }
 
-            oldLocation = newLocation;
+            oldLocationBiker = newLocation;
             isDirectionSet = false;
 
         } catch (Exception e) {
@@ -496,7 +503,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
         CameraPosition cameraPosition = new CameraPosition.Builder().
                 target(Current_Origin).
                 tilt(0).
-                zoom(18).
+                zoom(17).
                 bearing(0).
                 build();
 
@@ -594,12 +601,23 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
             Log.i("LatReceiver_BikerMap", String.valueOf(lat));
             Log.i("LonReceiver_BikerMap", String.valueOf(lon));
 
-            Current_Origin = new LatLng(lat, lon);
-            //vehicle.setPosition(Current_Origin);
-            vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
-            animateMarker(map,vehicle,Current_Origin,false);
+            Location location = new Location(LocationManager.GPS_PROVIDER);
+            location.setLatitude(lat);
+            location.setLongitude(lon);
 
-            oldLocation = Current_Origin;
+            if(location.distanceTo(old_Location) > 40) {
+                Current_Origin = new LatLng(lat, lon);
+                //vehicle.setPosition(Current_Origin);
+                vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
+                animateMarker(map,vehicle,Current_Origin,false);
+
+                oldLocation = Current_Origin;
+
+                old_Location = new Location(LocationManager.GPS_PROVIDER);
+                old_Location.setLatitude(lat);
+                old_Location.setLongitude(lon);
+            }
+
         }
     }
 }

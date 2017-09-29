@@ -93,16 +93,16 @@ public class SharedPrefUtil {
         return Token;
     }
 
-    public static void setLocation(Context context, float lat, float lon) {
+    public static void setLocation(Context context, double lat, double lon) {
         SharedPreferences preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        preferences.edit().putFloat(KEY_LAT, lat).putFloat(KEY_LONGI, lon).commit();
+        preferences.edit().putLong(KEY_LAT, Double.doubleToRawLongBits(lat)).putLong(KEY_LONGI, Double.doubleToRawLongBits(lon)).commit();
     }
 
     public static Location getLocation(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         Location location = new Location(LocationManager.GPS_PROVIDER);
-        location.setLatitude(preferences.getFloat(KEY_LAT, 0.0f));
-        location.setLongitude(preferences.getFloat(KEY_LONGI, 0.0f));
+        location.setLatitude(Double.longBitsToDouble(preferences.getLong(KEY_LAT, 0)));
+        location.setLongitude(Double.longBitsToDouble(preferences.getLong(KEY_LONGI, 0)));
 
         return location;
     }
