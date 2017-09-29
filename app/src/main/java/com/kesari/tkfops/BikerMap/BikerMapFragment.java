@@ -175,7 +175,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
                     String Lat = String.valueOf(latLng.latitude);
                     String Long = String.valueOf(latLng.longitude);
 
-                    sendBikerLocationData(Lat,Long);
+                    //sendBikerLocationData(Lat,Long);
                 }
             });
 

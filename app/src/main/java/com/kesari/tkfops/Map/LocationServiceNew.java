@@ -174,12 +174,12 @@ public class LocationServiceNew extends Service implements LocationListener,
                         {
                             if(SharedPrefUtil.getVehicleUser(this).getVehicleData().getVehicleStatus().equalsIgnoreCase("ON"))
                             {
-                                //sendVehicleLocationData(lat,lon);
+                                sendVehicleLocationData(lat,lon);
                             }
                         }
                         else if(SharedPrefUtil.getKeyLoginType(this).equalsIgnoreCase("Biker"))
                         {
-                            //sendBikerLocationData(lat,lon);
+                            sendBikerLocationData(lat,lon);
                         }
                     }
                 }
