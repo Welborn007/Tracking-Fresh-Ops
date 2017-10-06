@@ -171,6 +171,7 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                 return;
             }
             map.setMyLocationEnabled(true);
+            map.getUiSettings().setRotateGesturesEnabled(false);
 
             Location location = new Location(LocationManager.GPS_PROVIDER);
             location.setLatitude(SharedPrefUtil.getLocation(BikerRouteActivity.this).getLatitude());
@@ -489,6 +490,15 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
                                 location.setLongitude(cust_longitude);
 
                                 if(location.distanceTo(old_Location) > 40) {
+
+                                    CameraPosition cameraPosition = new CameraPosition.Builder().
+                                            target(finalPosition).
+                                            tilt(0).
+                                            zoom(17).
+                                            bearing(0).
+                                            build();
+
+                                    map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                                     animateMarker(map,markerVehicle,finalPosition,false);
                                     markerVehicle.setRotation((float) bearingBetweenLocations(oldLocation,newLocation));

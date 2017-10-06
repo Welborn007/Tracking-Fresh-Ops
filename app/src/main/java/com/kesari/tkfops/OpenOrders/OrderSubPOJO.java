@@ -51,6 +51,16 @@ public class OrderSubPOJO {
 
     private String pickUp;
 
+    private String bikerId;
+
+    public String getBikerId() {
+        return bikerId;
+    }
+
+    public void setBikerId(String bikerId) {
+        this.bikerId = bikerId;
+    }
+
     public String getPickUp() {
         return pickUp;
     }

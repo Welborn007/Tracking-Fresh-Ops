@@ -59,4 +59,12 @@
     <string name="reject">Reject</string>
 
     <string name="googleMaps_ServerKey">AIzaSyDoJCSIjyCfQAO_F0NNaPXm_vPxrLhJWXM</string>
+
+    <string-array name="spinFilter">
+        <item>Pending</item>
+        <item>Accepted</item>
+        <item>Rejected</item>
+        <item>Delivered</item>
+    </string-array>
+
 </resources>

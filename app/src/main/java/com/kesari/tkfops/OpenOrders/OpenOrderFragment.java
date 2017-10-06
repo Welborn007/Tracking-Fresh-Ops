@@ -12,7 +12,9 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -41,6 +43,9 @@ public class OpenOrderFragment extends Fragment {
     private static TextView valueTV;
     private static SwipeRefreshLayout swipeContainer;
 
+    Spinner spinFilter;
+    String ListStatus = "Pending";
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -49,7 +54,7 @@ public class OpenOrderFragment extends Fragment {
         recListOrders = (RecyclerView) V.findViewById(R.id.recyclerView);
 
         relativeLayout = (RelativeLayout) V.findViewById(R.id.relativelay_reclview);
-
+        spinFilter = (Spinner) V.findViewById(R.id.spinFilter);
         swipeContainer = (SwipeRefreshLayout) V.findViewById(R.id.swipeContainer);
 
         return V;
@@ -77,7 +82,7 @@ public class OpenOrderFragment extends Fragment {
                     // Your code to refresh the list here.
                     // Make sure you call swipeContainer.setRefreshing(false)
                     // once the network request has completed successfully.
-                    getOrderList(getActivity());
+                    getOrderList(getActivity(),ListStatus);
                 }
             });
             // Configure the refreshing colors
@@ -85,6 +90,21 @@ public class OpenOrderFragment extends Fragment {
                     android.R.color.holo_green_light,
                     android.R.color.holo_orange_light,
                     android.R.color.holo_red_light);
+
+            spinFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                    ListStatus = spinFilter.getSelectedItem().toString().trim();
+                    getOrderList(getActivity(),ListStatus);
+                    //Log.i("spinData",spinFilter.getSelectedItem().toString().trim());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+
+                }
+            });
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());
@@ -95,14 +115,14 @@ public class OpenOrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        getOrderList(getActivity());
+        getOrderList(getActivity(),ListStatus);
     }
 
-    public static void getOrderList(final Context context)
+    public static void getOrderList(final Context context,String Status)
     {
         try
         {
-            String url = Constants.OrderList;
+            String url = Constants.OrderListFilter + Status;
 
             IOUtils ioUtils = new IOUtils();
 

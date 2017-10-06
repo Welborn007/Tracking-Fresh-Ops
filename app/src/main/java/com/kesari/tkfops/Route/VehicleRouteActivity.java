@@ -174,6 +174,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
                 return;
             }
             map.setMyLocationEnabled(true);
+            map.getUiSettings().setRotateGesturesEnabled(false);
 
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).
@@ -936,6 +937,15 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             if(location.distanceTo(old_Location) > 40) {
                 Current_Origin = new LatLng(lat, lon);
                 //vehicle.setPosition(Current_Origin);
+                CameraPosition cameraPosition = new CameraPosition.Builder().
+                        target(Current_Origin).
+                        tilt(0).
+                        zoom(17).
+                        bearing(0).
+                        build();
+
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
                 vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
                 animateMarker(map,vehicle,Current_Origin,false);
 

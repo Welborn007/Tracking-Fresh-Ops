@@ -37,12 +37,9 @@ import com.kesari.tkfops.Map.LocationServiceNew;
 import com.kesari.tkfops.Map.PathJSONParser;
 import com.kesari.tkfops.R;
 import com.kesari.tkfops.Utilities.SharedPrefUtil;
-import com.kesari.tkfops.network.FireToast;
 import com.kesari.tkfops.network.IOUtils;
 import com.kesari.tkfops.network.NetworkUtils;
 import com.kesari.tkfops.network.NetworkUtilsReceiver;
-import com.nispok.snackbar.Snackbar;
-import com.nispok.snackbar.listeners.ActionClickListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -155,6 +152,7 @@ public class CustomerMapActivity extends AppCompatActivity implements OnMapReady
             }
             map.setMyLocationEnabled(true);
             map.setTrafficEnabled(true);
+            map.getUiSettings().setRotateGesturesEnabled(false);
 
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).

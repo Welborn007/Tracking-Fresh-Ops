@@ -156,6 +156,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
             }
             map.setMyLocationEnabled(true);
             map.setTrafficEnabled(true);
+            map.getUiSettings().setRotateGesturesEnabled(false);
 
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).
@@ -593,6 +594,15 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
                 Current_Origin = new LatLng(lat, lon);
                 //vehicle.setPosition(Current_Origin);
+                CameraPosition cameraPosition = new CameraPosition.Builder().
+                        target(Current_Origin).
+                        tilt(0).
+                        zoom(17).
+                        bearing(0).
+                        build();
+
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
                 biker.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
                 animateMarker(map,biker,Current_Origin,false);
 

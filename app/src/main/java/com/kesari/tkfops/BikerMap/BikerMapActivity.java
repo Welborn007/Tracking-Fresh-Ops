@@ -152,6 +152,7 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
             }
             map.setMyLocationEnabled(true);
             map.setTrafficEnabled(true);
+            map.getUiSettings().setRotateGesturesEnabled(false);
 
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).

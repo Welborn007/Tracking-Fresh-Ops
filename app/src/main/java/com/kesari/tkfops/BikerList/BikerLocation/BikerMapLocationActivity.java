@@ -171,6 +171,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
             }
 
             map.setMyLocationEnabled(true);
+            map.getUiSettings().setRotateGesturesEnabled(false);
 
             if (!NetworkUtils.isNetworkConnectionOn(BikerMapLocationActivity.this)) {
                 /*FireToast.customSnackbarWithListner(BikerMapLocationActivity.this, "No internet access", "Settings", new ActionClickListener() {

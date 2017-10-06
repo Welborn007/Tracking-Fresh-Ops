@@ -155,6 +155,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             }
             map.setMyLocationEnabled(true);
             map.setTrafficEnabled(true);
+            map.getUiSettings().setRotateGesturesEnabled(false);
 
             CameraPosition cameraPosition = new CameraPosition.Builder().
                     target(Current_Origin).
@@ -310,7 +311,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
     {
         try
         {
-            String url = Constants.OrderListFilter + "Pending";
+            String url = Constants.OrderList /*+ "Pending"*/;
 
             IOUtils ioUtils = new IOUtils();
 
@@ -711,6 +712,16 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             if(location.distanceTo(old_Location) > 40) {
                 Current_Origin = new LatLng(lat, lon);
                 //vehicle.setPosition(Current_Origin);
+
+                CameraPosition cameraPosition = new CameraPosition.Builder().
+                        target(Current_Origin).
+                        tilt(0).
+                        zoom(17).
+                        bearing(0).
+                        build();
+
+                map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
                 vehicle.setRotation((float) bearingBetweenLocations(oldLocation,Current_Origin));
                 animateMarker(map,vehicle,Current_Origin,false);
 

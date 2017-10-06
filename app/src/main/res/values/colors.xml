@@ -43,4 +43,5 @@
     <color name="red">#FE0000</color>
     <color name="porcelain">#FDF6F6</color>
     <color name="fresh_blue">#67BACA</color>
+    <color name="back_color_white">#66FFFFFF</color>
 </resources>

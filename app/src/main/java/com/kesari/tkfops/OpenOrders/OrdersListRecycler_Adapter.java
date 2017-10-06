@@ -184,7 +184,7 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                     }
                     else
                     {
-                        if(OrdersListReView.get(position).getBiker() != null)
+                        if(OrdersListReView.get(position).getBikerId() != null)
                         {
                             holder.assign.setVisibility(View.GONE);
                         }
@@ -196,7 +196,7 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                 }
                 else
                 {
-                    if(OrdersListReView.get(position).getBiker() != null)
+                    if(OrdersListReView.get(position).getBikerId() != null)
                     {
                         holder.assign.setVisibility(View.GONE);
                     }
@@ -537,7 +537,7 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
 
             if(message.equalsIgnoreCase("Updated Successfull!!"))
             {
-                OpenOrderFragment.getOrderList(context);
+                OpenOrderFragment.getOrderList(context,"Pending");
             }
 
         } catch (Exception e) {
