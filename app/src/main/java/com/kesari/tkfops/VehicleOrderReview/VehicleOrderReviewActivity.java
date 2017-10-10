@@ -230,22 +230,23 @@ public class VehicleOrderReviewActivity extends AppCompatActivity implements Net
                 delivery_textData.setText(" will deliver the order.");
             }
 
-            if(vehicleOrderReviewMainPOJO.getData().getBiker() != null)
+            if(!vehicleOrderReviewMainPOJO.getData().getStatus().equalsIgnoreCase("Rejected") && !vehicleOrderReviewMainPOJO.getData().getStatus().equalsIgnoreCase("Cancelled"))
             {
-                BikerHolder.setVisibility(View.VISIBLE);
-                bikerName.setText(vehicleOrderReviewMainPOJO.getData().getBiker().getBikerName());
+                if(vehicleOrderReviewMainPOJO.getData().getBiker() != null)
+                {
+                    BikerHolder.setVisibility(View.VISIBLE);
+                    bikerName.setText(vehicleOrderReviewMainPOJO.getData().getBiker().getBikerName());
 
-                btnCall.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String phone = vehicleOrderReviewMainPOJO.getData().getBiker().getMobileNo();
-                        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
-                        startActivity(intent);
-                    }
-                });
+                    btnCall.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String phone = vehicleOrderReviewMainPOJO.getData().getBiker().getMobileNo();
+                            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+                            startActivity(intent);
+                        }
+                    });
+                }
             }
-
-
 
         } catch (Exception e) {
             Log.i(TAG, e.getMessage());

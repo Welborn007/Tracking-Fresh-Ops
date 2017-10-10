@@ -477,7 +477,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
 
             if (map != null) {
                 Marker marker = map.addMarker(new MarkerOptions().position(dest)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_customer))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_customer_marker))
                         .title(location_name));
 
                 data.put(TAG_ID,id);

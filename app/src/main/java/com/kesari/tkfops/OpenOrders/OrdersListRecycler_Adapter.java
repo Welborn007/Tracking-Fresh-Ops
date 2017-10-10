@@ -151,7 +151,7 @@ public class OrdersListRecycler_Adapter extends RecyclerView.Adapter<OrdersListR
                 holder.cancelHolder.setVisibility(View.GONE);
                 holder.rejectHolder.setVisibility(View.VISIBLE);
                 holder.assign.setVisibility(View.GONE);
-                holder.accept.setVisibility(View.VISIBLE);
+                holder.accept.setVisibility(View.GONE);
                 holder.reject.setVisibility(View.GONE);
                 holder.path.setVisibility(View.GONE);
 
