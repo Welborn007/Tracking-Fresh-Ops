@@ -192,7 +192,7 @@ public class BikerRouteActivity extends AppCompatActivity implements OnMapReadyC
             if(markerVehicle == null)
             {
                 markerVehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_truck))
                         .title("TKF Vehicle"));
             }
 

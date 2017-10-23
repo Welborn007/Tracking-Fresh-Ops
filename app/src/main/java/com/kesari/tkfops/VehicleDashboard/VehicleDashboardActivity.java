@@ -329,7 +329,7 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             ioUtils.sendJSONObjectPutRequestHeader(VehicleDashboardActivity.this, url, params, jsonObject, new IOUtils.VolleyCallback() {
                 @Override
                 public void onSuccess(String result) {
-                    Log.d(TAG, result.toString());
+                    Log.d("VehicleFBT", result.toString());
 
                 }
             }, new IOUtils.VolleyFailureCallback() {
@@ -521,7 +521,11 @@ public class VehicleDashboardActivity extends AppCompatActivity implements Fragm
             @Override
             public void onClick(View v) {
 
-                stopService(new Intent(getBaseContext(), LocationServiceNew.class));
+                if (IOUtils.isServiceRunning(LocationServiceNew.class, getApplicationContext())) {
+                    // LOCATION SERVICE
+                    stopService(new Intent(getBaseContext(), LocationServiceNew.class));
+                    Log.e(TAG, "Location service is already running");
+                }
 
                 Toast.makeText(getApplicationContext(),"Logged Out", Toast.LENGTH_SHORT).show();
 

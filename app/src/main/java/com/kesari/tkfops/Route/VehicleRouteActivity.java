@@ -209,7 +209,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             if(vehicle == null)
             {
                 vehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_truck))
                         //.rotation((float) bearingBetweenLocations(vehicle.getPosition(),Current_Origin))
                         .title("TKF Vehicle"));
             }
@@ -672,7 +672,7 @@ public class VehicleRouteActivity extends AppCompatActivity implements OnMapRead
             }
 
             Biker = map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bike))
                         .title(location_name));
 
             mMarkerArray.add(Biker);

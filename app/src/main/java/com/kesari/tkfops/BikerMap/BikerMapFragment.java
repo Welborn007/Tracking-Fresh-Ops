@@ -221,7 +221,7 @@ public class BikerMapFragment extends Fragment implements OnMapReadyCallback {
 
             if (biker == null) {
                 biker = map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bike))
                         .title("TKF Vehicle"));
             }
 

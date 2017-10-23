@@ -209,7 +209,7 @@ public class BikerMapActivity extends AppCompatActivity implements OnMapReadyCal
                 extraMarkerInfo.put(marker.getId(),data);
 
                 map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bike))
                         .title("TKF Vehicle"));
             }
 

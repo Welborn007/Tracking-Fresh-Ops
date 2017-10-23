@@ -205,7 +205,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
                 oldLocationBiker = Current_Origin;
 
                 vehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_truck))
                         //.rotation((float) bearingBetweenLocations(vehicle.getPosition(),Current_Origin))
                         .title("TKF Vehicle"));
 
@@ -366,7 +366,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
 
 
                                 animateMarker(map,marker,finalPosition,false);
-                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker));
+                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bike));
                                 marker.setRotation((float) bearingBetweenLocations(oldLocationBiker,newLocation));
 
                                 oldLocationBiker = newLocation;
@@ -414,7 +414,7 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
 
             if (map != null) {
                 marker = map.addMarker(new MarkerOptions().position(dest)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_biker))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bike))
                         .rotation((float) bearingBetweenLocations(oldLocationBiker,newLocation))
                         .title(location_name));
 
@@ -523,11 +523,11 @@ public class BikerMapLocationActivity extends AppCompatActivity implements Netwo
             unregisterReceiver(networkUtilsReceiver);
             unregisterReceiver(this._refreshReceiver);
 
-            if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
+            /*if (IOUtils.isServiceRunning(LocationServiceNew.class, this)) {
                 // LOCATION SERVICE
                 stopService(new Intent(this, LocationServiceNew.class));
                 Log.e(TAG, "Location service is stopped");
-            }
+            }*/
 
             /*if(!scheduleTaskExecutor.isShutdown())
             {

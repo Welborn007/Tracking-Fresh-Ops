@@ -223,7 +223,7 @@ public class MainMapFragment extends Fragment implements OnMapReadyCallback {
             if(vehicle == null)
             {
                 vehicle = map.addMarker(new MarkerOptions().position(Current_Origin)
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_red_car))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_truck))
                         //.rotation((float) bearingBetweenLocations(vehicle.getPosition(),Current_Origin))
                         .title("TKF Vehicle"));
             }
