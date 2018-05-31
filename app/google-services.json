@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "439603041274",
+    "firebase_url": "https://tkf-ops.firebaseio.com",
+    "project_id": "tkf-ops",
+    "storage_bucket": "tkf-ops.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:439603041274:android:a5dab9a9face94ee",
+        "android_client_info": {
+          "package_name": "com.kesari.tkfops"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "439603041274-1jj9km7i7rsa2m793l0r788a07kiuib5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kesari.tkfops",
+            "certificate_hash": "d7c4e7533483d677fdbc299002c4cfce7252d6ad"
+          }
+        },
+        {
+          "client_id": "439603041274-fd8japvsk8bhh31ishr8vk5uf74hkh6o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAL9jXiZpNETRQmOQsikj1Gb9LuYnIojPk"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "439603041274-fd8japvsk8bhh31ishr8vk5uf74hkh6o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

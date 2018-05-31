@@ -1,79 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:theme="@style/ThemeOverlay.AppCompat.Dark"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_marginTop="24dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:background="@color/colorPrimary"
-            android:orientation="horizontal"
             android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="horizontal"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:layout_height="150dp">
+            android:paddingTop="@dimen/activity_vertical_margin">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="@dimen/nav_header_vertical_spacing"
-                android:visibility="gone"
-                android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_account"
-                android:id="@+id/imageView" />
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                xmlns:app="http://schemas.android.com/apk/res-auto"
+            <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/profile_image"
                 android:layout_width="86dp"
                 android:layout_height="86dp"
                 android:layout_gravity="center"
                 android:src="@drawable/default_logo"
-                app:civ_border_width="2dp"
-                app:civ_border_color="@android:color/transparent"/>
+                app:civ_border_color="@android:color/transparent"
+                app:civ_border_width="2dp" />
 
-            <!--app:srcCompat="@android:drawable/sym_def_app_icon"-->
-
-            <LinearLayout
-                android:orientation="vertical"
+            <TextView
+                android:id="@+id/name_Login"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:text="Guest"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/text_size"
-                    android:text="Vaibhav Palyekar"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_gravity="center"
-                    android:text="Holiday@kesari.in"
-                    android:id="@+id/textView" />
-
-            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -81,29 +55,29 @@
 
                 <ImageView
                     android:id="@+id/payment_logo"
-                    android:src="@drawable/ic_payment"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
+                    android:src="@drawable/ic_payment" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/payment_logo"
+                    android:gravity="center"
+                    android:padding="20dp"
                     android:text="@string/payment"
                     android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/payment_logo"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:textStyle="bold"
                     android:textSize="@dimen/text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:src="@drawable/ic_arrow"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
+                    android:src="@drawable/ic_arrow" />
 
             </RelativeLayout>
 
@@ -111,43 +85,55 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginRight="5dp"
-                android:background="#ccc"/>
+                android:background="#ccc" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/profile_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
+                <net.steamcrafted.materialiconlib.MaterialIconView xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/account_logo"
-                    android:src="@drawable/ic_myaccount"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="account"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+
+                    android:src="@drawable/ic_myaccount"
+                    android:visibility="gone" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/account_logo"
+                    android:gravity="center"
+                    android:padding="20dp"
                     android:text="@string/myaccount"
                     android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/account_logo"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:textStyle="bold"
                     android:textSize="@dimen/text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:src="@drawable/ic_arrow"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
+                    android:src="@drawable/ic_arrow" />
 
             </RelativeLayout>
 
@@ -155,43 +141,57 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginRight="5dp"
-                android:background="#ccc"/>
+                android:background="#ccc" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/assigned_stock_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/refer_logo"
-                    android:src="@drawable/ic_refer"
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/assigned_stock_logo"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="database"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
+                    android:visibility="gone"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_myaccount" />
 
                 <TextView
-                    android:text="@string/refer_earn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/assigned_stock_logo"
+                    android:gravity="center"
+                    android:padding="20dp"
+                    android:text="@string/assigned_stock"
                     android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/refer_logo"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:textStyle="bold"
                     android:textSize="@dimen/text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:src="@drawable/ic_arrow"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
+                    android:src="@drawable/ic_arrow" />
 
             </RelativeLayout>
 
@@ -199,43 +199,231 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginRight="5dp"
-                android:background="#ccc"/>
+                android:background="#ccc" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <RelativeLayout
+                android:id="@+id/stock_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/help_logo"
-                    android:src="@drawable/ic_help"
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/stock_logo"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="database"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
+                    android:visibility="gone"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_myaccount" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/stock_logo"
+                    android:gravity="center"
+                    android:padding="20dp"
+                    android:text="@string/stocks"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_arrow" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginRight="5dp"
+                android:background="#ccc" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/route_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/route"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="routes"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_myaccount" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/route"
+                    android:gravity="center"
+                    android:padding="20dp"
+                    android:text="Route"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_arrow" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginRight="5dp"
+                android:background="#ccc" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/biker_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/biker"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="account"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_myaccount" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/biker"
+                    android:gravity="center"
+                    android:padding="20dp"
+                    android:text="Biker List"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size"
+                    android:textStyle="bold" />
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_arrow" />
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginRight="5dp"
+                android:background="#ccc" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/help_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/help_logo"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="help"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
+                    android:visibility="gone"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_help" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/help_logo"
+                    android:gravity="center"
+                    android:padding="20dp"
                     android:text="@string/help"
                     android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/help_logo"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:textStyle="bold"
                     android:textSize="@dimen/text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:src="@drawable/ic_arrow"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
+                    android:src="@drawable/ic_arrow" />
 
             </RelativeLayout>
 
@@ -243,88 +431,57 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginRight="5dp"
-                android:background="#ccc"/>
+                android:background="#ccc" />
         </LinearLayout>
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/settings_logo"
-                    android:src="@drawable/ic_settings"
-                    android:layout_alignParentLeft="true"
-                    android:layout_centerInParent="true"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
-
-                <TextView
-                    android:text="@string/settings"
-                    android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/settings_logo"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="@dimen/text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_arrow"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_marginRight="5dp"
-                android:background="#ccc"/>
-        </LinearLayout>
-
-        <LinearLayout
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
+                <net.steamcrafted.materialiconlib.MaterialIconView
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/legal_logo"
-                    android:src="@drawable/ic_legal"
+                    android:layout_width="40dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
+                    android:background="@android:color/transparent"
+                    android:scaleType="center"
+                    app:materialIcon="file_account"
+                    app:materialIconColor="@color/red"
+                    app:materialIconSize="40dp" />
+
+                <ImageView
+                   android:visibility="gone"
                     android:layout_width="40dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_legal" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@+id/legal_logo"
+                    android:gravity="center"
+                    android:padding="20dp"
                     android:text="@string/legal"
                     android:textColor="@color/black"
-                    android:layout_toRightOf="@+id/legal_logo"
-                    android:padding="20dp"
-                    android:gravity="center"
-                    android:textStyle="bold"
                     android:textSize="@dimen/text_size"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:textStyle="bold" />
 
                 <ImageView
-                    android:src="@drawable/ic_arrow"
+                    android:layout_width="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerInParent="true"
-                    android:layout_width="30dp"
-                    android:layout_height="wrap_content" />
+                    android:src="@drawable/ic_arrow" />
 
             </RelativeLayout>
 
@@ -332,7 +489,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_marginRight="5dp"
-                android:background="#ccc"/>
+                android:background="#ccc" />
 
         </LinearLayout>
 

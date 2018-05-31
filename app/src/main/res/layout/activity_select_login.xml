@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kesari.tkfops.SelectLogin.SelectLoginActivity">
+
+    <TextView
+        android:padding="20dp"
+        android:text="Please Select Login"
+        android:gravity="center"
+        android:layout_above="@+id/loginGroup"
+        android:textSize="30sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+    <RadioGroup
+        android:id="@+id/loginGroup"
+        android:layout_margin="20dp"
+        android:orientation="horizontal"
+        android:layout_centerInParent="true"
+        android:weightSum="2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/vehicle_login"
+            android:text="Vehicle Login"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/biker_login"
+            android:text="Biker Login"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+
+</RelativeLayout>

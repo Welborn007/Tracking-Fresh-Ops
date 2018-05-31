@@ -1,15 +1,50 @@
-[{"id":1,"location_name":"494, Meleagrina Apartment, Linking Road, Bandra West, Mumbai - 400050, Above Gazebo, Near National College","latitude":"19.0607","longitude":"72.8362"},
-{"id":2,"location_name":"D L Vaidya Road, Dadar West, Mumbai - 400028, Behind Shiv Sena Bhavan, Shivaji Park","latitude":"19.0213","longitude":"72.8424"},
-{"id":3,"location_name":"Regional Transport Office, 3rd Floor, B-2, Near Truck Terminal, Mukundrao Ambedkar Road, Wadala, Mumbai, Maharashtra 400037","latitude":"19.0151","longitude":"72.8581"},
-{"id":4,"location_name":"Trade Point, Kamala Mills Compound, Pandurang Budhkar Marg, Lower Parel, Mumbai, Maharashtra 400013","latitude":"19.0022","longitude":"72.8416"}/*,
-{"id":5,"location_name":"Parel","latitude":"19.0022","longitude":"72.8416"},
-{"id":6,"location_name":"Borivali","latitude":"19.2372","longitude":"72.8441"},
-{"id":7,"location_name":"Thane","latitude":"19.2183","longitude":"72.9781"},
-{"id":8,"location_name":"Navi Mumbai","latitude":"19.0330","longitude":"73.0297"},
-{"id":9,"location_name":"Vile Parle","latitude":"19.1031","longitude":"72.8467"},
-{"id":10,"location_name":"Marine Lines","latitude":"18.9431","longitude":"72.8272"},
-  {"id":11,"location_name":"Gorai","latitude":"19.2327","longitude":"72.7867"},
-  {"id":12,"location_name":"Mumbai Airport","latitude":"19.0896","longitude":"72.8656"},
-  {"id":13,"location_name":"Haji Ali Dargah","latitude":"18.9827","longitude":"72.8090"},
-  {"id":14,"location_name":"Chembur","latitude":"19.0328","longitude":"72.8964"},
-  {"id":15,"location_name":"Powai","latitude":"19.1197","longitude":"72.9051"}*/]
+[
+  {
+    "id": 1,
+    "customer_name":"Welborn Machado",
+    "location_name": "494, Meleagrina Apartment, Linking Road, Bandra West, Mumbai - 400050, Above Gazebo, Near National College",
+    "payment_mode":"COD",
+    "payment_confirmation":"Received",
+    "latitude": "19.0607",
+    "longitude": "72.8362"
+  },
+  {
+    "id": 2,
+    "customer_name":"Suraj Nirmal",
+    "location_name": "D L Vaidya Road, Dadar West, Mumbai - 400028, Behind Shiv Sena Bhavan, Shivaji Park",
+    "payment_mode":"",
+    "payment_confirmation":"Not Received",
+    "latitude": "19.0213",
+    "longitude": "72.8424"
+  },
+  {
+    "id": 3,
+    "customer_name":"Vaibhav Palyekar",
+    "location_name": "Regional Transport Office, 3rd Floor, B-2, Near Truck Terminal, Mukundrao Ambedkar Road, Wadala, Mumbai, Maharashtra 400037",
+    "payment_mode":"Debit Card",
+    "payment_confirmation":"Received",
+    "latitude": "19.0151",
+    "longitude": "72.8581"
+  },
+  {
+    "id": 4,
+    "customer_name":"Rakesh Yadav",
+    "location_name": "Trade Point, Kamala Mills Compound, Pandurang Budhkar Marg, Lower Parel, Mumbai, Maharashtra 400013",
+    "payment_mode":"Net Banking",
+    "payment_confirmation":"Received",
+    "latitude": "19.0022",
+    "longitude": "72.8416"
+  }
+  /*,
+  {"id":5,"location_name":"Parel","latitude":"19.0022","longitude":"72.8416"},
+  {"id":6,"location_name":"Borivali","latitude":"19.2372","longitude":"72.8441"},
+  {"id":7,"location_name":"Thane","latitude":"19.2183","longitude":"72.9781"},
+  {"id":8,"location_name":"Navi Mumbai","latitude":"19.0330","longitude":"73.0297"},
+  {"id":9,"location_name":"Vile Parle","latitude":"19.1031","longitude":"72.8467"},
+  {"id":10,"location_name":"Marine Lines","latitude":"18.9431","longitude":"72.8272"},
+    {"id":11,"location_name":"Gorai","latitude":"19.2327","longitude":"72.7867"},
+    {"id":12,"location_name":"Mumbai Airport","latitude":"19.0896","longitude":"72.8656"},
+    {"id":13,"location_name":"Haji Ali Dargah","latitude":"18.9827","longitude":"72.8090"},
+    {"id":14,"location_name":"Chembur","latitude":"19.0328","longitude":"72.8964"},
+    {"id":15,"location_name":"Powai","latitude":"19.1197","longitude":"72.9051"}*/
+]

@@ -16,6 +16,8 @@
     <string name="help">Help</string>
     <string name="settings">Settings</string>
     <string name="legal">Legal</string>
+    <string name="Advance_Order">Advance Order</string>
+    <string name="myOrders">My Orders</string>
 
     <string name="fruits">Fruits</string>
     <string name="vegetables">Vegetables</string>
@@ -38,6 +40,31 @@
 
     <string name="loading">Loading…</string>
 
-    <string name="order_open">Order Open</string>
+    <string name="order_open">Show Order</string>
     <string name="order_delivered">Order Delivered</string>
+    <string name="order_assigned">Order Assigned</string>
+    <string name="order_pending">Order Pending</string>
+    <string name="order_rejected">Order Rejected</string>
+
+    <string name="order_open1">Order Open</string>
+    <string name="order_delivered1">Delivered</string>
+    <string name="order_assigned1">Order Assigned</string>
+    <string name="order_pending1">Pending</string>
+    <string name="order_rejected1">Rejected</string>
+
+    <string name="assigned_stock">Assigned Stocks</string>
+    <string name="stocks">Stocks</string>
+    <string name="stockAccepted">Accepted</string>
+    <string name="stockRejected">Rejected</string>
+    <string name="reject">Reject</string>
+
+    <string name="googleMaps_ServerKey">AIzaSyDoJCSIjyCfQAO_F0NNaPXm_vPxrLhJWXM</string>
+
+    <string-array name="spinFilter">
+        <item>Pending</item>
+        <item>Accepted</item>
+        <item>Rejected</item>
+        <item>Delivered</item>
+    </string-array>
+
 </resources>
